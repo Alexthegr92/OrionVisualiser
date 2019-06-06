@@ -164,18 +164,13 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 
 void ARakNetRP::RPrpcRestart()
 {
-	RakNet::BitStream testBs;
-	testBs.WriteVector<float>(0, 0, 0);
-	testBs.WriteVector<float>(0, 0, 0);
-
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;
 	rakPeer->GetSystemList(addresses, guids);
 
-
 	for (unsigned int i = 0; i < addresses.Size(); ++i)
 	{
-		rpc.Signal("Reset", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+		rpc.Signal("Reset", nullptr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
 	}
 }
 
