@@ -220,20 +220,10 @@ void ARakNetRP::DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 {
 	int rank;
 	bitStream->Read<int>(rank);
-
-	int geomType;
-	bitStream->Read<int>(geomType);
-
-	FVector pos;
-	bitStream->ReadVector<float>(pos.X, pos.Y, pos.Z);
-
-	FVector size;
-	bitStream->ReadVector<float>(size.X, size.Y, size.Z);
-
-	DeleteBoundaryBox(rank, pos, size);
+	DeleteBoundaryBox(rank);
 }
 
-void ARakNetRP::DeleteBoundaryBox_Implementation(int rank, FVector pos, FVector size)
+void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
 {
 }
 
