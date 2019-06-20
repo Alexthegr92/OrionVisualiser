@@ -48,6 +48,14 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("DeleteBoundary", deleteFunction, 0);
 	auto cleanFunction = std::bind(&ARakNetRP::CleanReplicasSlot, this, _1, _2);
 	rpc.RegisterSlot("CleanLeftOvers", cleanFunction, 0);
+	auto checkServerFunction = std::bind(&ARakNetRP::CheckServerSlot, this, _1, _2);
+	rpc.RegisterSlot("InitComplete", checkServerFunction, 0);
+	auto totalServerFunction = std::bind(&ARakNetRP::TotalNumberServersSlot, this, _1, _2);
+	rpc.RegisterSlot("NumberServers", totalServerFunction, 0);
+
+	allServersChecked = false;
+	initChecks = false;
+	rand.GenerateNewSeed();
 }
 
 // Called every frame
@@ -114,6 +122,15 @@ void ARakNetRP::Tick(float DeltaTime)
 		if (rakPeer->GetInternalID(UNASSIGNED_SYSTEM_ADDRESS, 0).GetPort() != SERVER_PORT + i)
 			rakPeer->AdvertiseSystem("255.255.255.255", SERVER_PORT + i, 0, 0, 0);
 	}
+	if (numberServersChecked == totalServers)
+	{
+		allServersChecked = true;
+	}
+	else if(!initChecks)
+	{
+		signalCheckServer();
+		initChecks = true;
+	}
 }
 
 void ARakNetRP::RPStartup()
@@ -172,17 +189,37 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 	}
 }
 
+
 void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 {
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;
 	rakPeer->GetSystemList(addresses, guids);
-
 	const char* signalString = TCHAR_TO_ANSI(*sharedIdentifier);
 
 	for (unsigned int i = 0; i < addresses.Size(); ++i)
 	{
 		rpc.Signal(signalString, nullptr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
+void ARakNetRP::RPrpcSpawnType(FVector pos, FVector dir, FQuat rot, FVector scale, int meshType)
+{
+	RakNet::BitStream testBs;
+	testBs.WriteVector<float>(pos.X, pos.Z, pos.Y);
+	testBs.WriteVector<float>(dir.X, dir.Y, dir.Z);
+	testBs.WriteVector<float>(rot.X, rot.Y, rot.Z);
+	testBs.Write<float>(rot.W);
+	testBs.WriteVector<float>(scale.X, scale.Y, scale.Z);
+	testBs.Write<int>(meshType);
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("SpawnWithType", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+
 	}
 }
 
@@ -252,6 +289,52 @@ void ARakNetRP::CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet
 	CleanReplicas(rank);
 }
 
+void ARakNetRP::CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet)
+{
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+
+	bool check;
+	bitStream->Read<bool>(check);
+	if (check)
+	{
+		++numberServersChecked;
+	}
+}
+
+void ARakNetRP::TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * packet)
+{
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	int number;
+	bitStream->Read<int>(number);
+	totalServers = number;
+	numberServersChecked = 0;
+}
+
+void ARakNetRP::RPCReset()
+{
+	totalServers = 0;
+	initChecks = false;
+	allServersChecked = false;
+}
+
+void ARakNetRP::signalCheckServer()
+{
+	RakNet::BitStream testBs;
+
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("CheckServer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
 void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
 {
 }
@@ -277,6 +360,11 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 	delete connection;
 }
 
+bool ARakNetRP::getAllServersChecked()
+{
+	return allServersChecked;
+}
+
 void ARakNetRP::ConnectToIP(const FString& address)
 {
 	FString host;
@@ -290,4 +378,14 @@ void ARakNetRP::ConnectToIP(const FString& address)
 	}
 
 	RPConnect(host, portNumber);
+}
+
+FVector ARakNetRP::getRandomUnitVector()
+{
+	return rand.GetUnitVector();
+}
+
+float ARakNetRP::getNumberFromRange(float min, float max)
+{
+	return rand.RandRange(min, max);
 }

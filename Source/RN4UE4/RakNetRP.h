@@ -67,10 +67,16 @@ public:
 		void RPrpcSpawn(FVector pos, FVector dir);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalAllServers(const FString& sharedIdentifier);
+	void RPrpcSignalAllServers(const FString& sharedIdentifier);
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+	void RPrpcSpawnType(FVector pos, FVector dir, FQuat rot, FVector scale, int meshType);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
+
+	UPROPERTY(EditAnywhere, Category = "Need total reset")
+		bool		reset;
 
 	AReplica* GetObjectFromType(RakString typeName);
 
@@ -79,6 +85,14 @@ public:
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet);
+
+	void CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet);
+
+	void TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * packet);
+
+	void RPCReset();
+
+	void signalCheckServer();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
 		void DeleteBoundaryBox(int rank);
@@ -95,7 +109,13 @@ public:
 	virtual Connection_RM3* AllocConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID) const;
 	virtual void DeallocConnection(Connection_RM3 *connection) const;
 
+
 	bool GetInitialised() const { return initialised; }
+
+	bool				 getAllServersChecked();
+	FVector				 getRandomUnitVector();
+	float				 getNumberFromRange(float min, float max);
+
 
 private:
 
@@ -107,7 +127,16 @@ private:
 	
 	RPC4 rpc;
 
+
 	bool initialised;
 
 	static const int SERVER_PORT = 12345;
+
+	FRandomStream			rand;
+	int						totalServers;
+	int						activeTest;
+	bool					initChecks;
+	bool					resetTime;
+	int						numberServersChecked;
+	bool					allServersChecked;
 };
