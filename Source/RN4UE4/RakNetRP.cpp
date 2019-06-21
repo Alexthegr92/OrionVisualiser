@@ -148,7 +148,23 @@ void ARakNetRP::RPConnect(const FString& host, const int port)
 	rakPeer->Connect(TCHAR_TO_ANSI(*host), port, nullptr, 0);
 }
 
-void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
+//void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)                   //temple use key F
+//{
+//	RakNet::BitStream testBs;
+//	testBs.WriteVector<float>(pos.X, pos.Y, pos.Z);
+//	testBs.WriteVector<float>(dir.X, dir.Y, dir.Z);
+//
+//	DataStructures::List<RakNet::SystemAddress> addresses;
+//	DataStructures::List<RakNet::RakNetGUID> guids;
+//	rakPeer->GetSystemList(addresses, guids);
+//
+//	for (unsigned int i = 0; i < addresses.Size(); ++i)
+//	{
+//		rpc.Signal("Spawn", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+//	}
+//}
+
+void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)             //temple use key F
 {
 	RakNet::BitStream testBs;
 	testBs.WriteVector<float>(pos.X, pos.Y, pos.Z);
@@ -160,8 +176,13 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 
 	for (unsigned int i = 0; i < addresses.Size(); ++i)
 	{
-		rpc.Signal("Spawn", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+		rpc.Signal("SpawT", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
 	}
+}
+
+
+void ARakNetRP::RPRandomSpawn()                      //cannor find this function in blueprint
+{
 }
 
 AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
