@@ -306,6 +306,10 @@ void ARakNetRP::signalCheckServer()
 	}
 }
 
+void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
+{
+}
+
 void ARakNetRP::CreateBoundaryBox_Implementation(int rank, FVector pos, FVector size)
 {
 }
