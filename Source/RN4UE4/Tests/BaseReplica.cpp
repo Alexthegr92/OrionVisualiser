@@ -94,5 +94,10 @@ void ABaseReplica::sendMeshServer()
 {
 	FVector pos(GetActorLocation().X, GetActorLocation().Z, GetActorLocation().Y);
 	pos = pos / 50.0f;
+	float mass = MeshComponent->GetMass();
+	MeshComponent->GetInertiaTensor();
+	MeshComponent->GetLinearDamping();
+	MeshComponent->GetAngularDamping();
+	MeshComponent->IsGravityEnabled();
 	rakNetManager->RPrpcSpawnType(pos, ArrowComponent->GetForwardVector(),GetActorRotation().Quaternion(),GetActorScale() , meshType);
 }
