@@ -58,8 +58,6 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetLinearDamping());
 	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetAngularDamping());
 	constructionBitstream->Write<bool>(vismesh->GetStaticMeshComponent()->IsGravityEnabled());
-	vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom;
-	//vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom;
 	//if box
 	if (typeMesh == 0) {
 		FRotator rotAux = GetOwner()->GetActorRotation();
@@ -78,7 +76,6 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 		FBoxSphereBounds sph;
 		FTransform tr;
 		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
-		float radius;
 		radius = sph.SphereRadius;
 		constructionBitstream->Write<float>(radius);
 	}
@@ -88,12 +85,11 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 		FVector ext;
 		FBoxSphereBounds sph;
 		FTransform tr;
-		float radius;
 		GetOwner()->SetActorRotation(FQuat(0, 0, 0, 1));
 		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
 		ext = sph.BoxExtent;
 		constructionBitstream->Write<float>(ext.Y - ext.X);
-		constructionBitstream->Write<float>(ext.Y);
+		constructionBitstream->Write<float>(ext.X);
 		GetOwner()->SetActorRotation(rotAux);
 	}
 	//if mesh
