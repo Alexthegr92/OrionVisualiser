@@ -6,7 +6,9 @@ public class RN4UE4 : ModuleRules
 {
     public RN4UE4(ReadOnlyTargetRules Target) : base (Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RakNet", });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RakNet",
+            "PhysX", "APEX" //PhysX
+        });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "RakNet", });
 

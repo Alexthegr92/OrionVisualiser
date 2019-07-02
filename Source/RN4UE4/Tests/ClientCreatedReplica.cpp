@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RN4UE4.h"
+#include "PhysXPublic.h"
+#include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
+#include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
 #include "ClientCreatedReplica.h"
 
 
@@ -44,10 +47,10 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 	AStaticMeshActor * vismesh = dynamic_cast<AStaticMeshActor*>(GetOwner());
 	if (vismesh != nullptr) {
 	constructionBitstream->Write<int>(typeMesh);
-	constructionBitstream->WriteVector<float>(pos.X, pos.Y, pos.Z);
+	constructionBitstream->WriteVector<float>(pos.X, pos.Z, pos.Y);
 	constructionBitstream->WriteVector<float>(vismesh->GetActorForwardVector().X, vismesh->GetActorForwardVector().Z, vismesh->GetActorForwardVector().Y);
 	constructionBitstream->WriteVector<float>(vismesh->GetActorScale().X, vismesh->GetActorScale().Z, vismesh->GetActorScale().Y);
-	constructionBitstream->WriteVector<float>(rot.X, rot.Y, rot.Z);
+	constructionBitstream->WriteVector<float>(rot.X, rot.Z, rot.Y);
 	constructionBitstream->Write<float>(rot.W);
 	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetMass());
 	constructionBitstream->WriteVector<float>(vismesh->GetStaticMeshComponent()->GetInertiaTensor().X, vismesh->GetStaticMeshComponent()->GetInertiaTensor().Z, vismesh->GetStaticMeshComponent()->GetInertiaTensor().Y);
@@ -55,6 +58,51 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetLinearDamping());
 	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetAngularDamping());
 	constructionBitstream->Write<bool>(vismesh->GetStaticMeshComponent()->IsGravityEnabled());
+	vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom;
+	//vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom;
+	//if box
+	if (typeMesh == 0) {
+		FRotator rotAux = GetOwner()->GetActorRotation();
+		FVector ext;
+		FBoxSphereBounds sph;
+		FTransform tr;
+		GetOwner()->SetActorRotation(rotAux);
+		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
+		ext = sph.BoxExtent;
+		constructionBitstream->WriteVector<float>(ext.X, ext.Z, ext.Y);
+	}
+	
+	//if sphere
+	else if (typeMesh == 1) {
+		float radius;
+		FBoxSphereBounds sph;
+		FTransform tr;
+		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
+		float radius;
+		radius = sph.SphereRadius;
+		constructionBitstream->Write<float>(radius);
+	}
+	//if capsule
+	else if (typeMesh == 2) {
+		FRotator rotAux = GetOwner()->GetActorRotation();
+		FVector ext;
+		FBoxSphereBounds sph;
+		FTransform tr;
+		float radius;
+		GetOwner()->SetActorRotation(FQuat(0, 0, 0, 1));
+		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
+		ext = sph.BoxExtent;
+		constructionBitstream->Write<float>(ext.Y - ext.X);
+		constructionBitstream->Write<float>(ext.Y);
+		GetOwner()->SetActorRotation(rotAux);
+	}
+	//if mesh
+	else if (typeMesh == 3) {
+		for (FVector vec : vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
+		{
+			constructionBitstream->WriteVector<float>(vec.X, vec.Z, vec.Y);
+		}
+	}
 	SampleReplica::SerializeConstruction(constructionBitstream, destinationConnection);
 	}
 }
