@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RN4UE4.h"
+#include "PhysXIncludes.h" 
 #include "ClientCreatedReplica.h"
 
 
@@ -12,6 +13,8 @@ UClientCreatedReplica::UClientCreatedReplica()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
+	m_registered = false;
 }
 
 
@@ -21,7 +24,6 @@ void UClientCreatedReplica::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -31,6 +33,12 @@ void UClientCreatedReplica::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+
+	if (!m_registered && rakNetManager->getAllServersChecked())
+	{
+		m_registered = true;
+		rakNetManager->Reference(this);
+	}
 }
 
 

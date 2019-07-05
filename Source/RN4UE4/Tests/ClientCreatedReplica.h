@@ -15,6 +15,7 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 #include "Rand.h"
+#include "RakNetRP.h"
 #include "ClientCreatedReplica.generated.h"
 
 
@@ -44,7 +45,7 @@ public:
 		return RM3SR_DO_NOT_SERIALIZE;
 	}
 	virtual RM3ConstructionState QueryConstruction(Connection_RM3 *destinationConnection, ReplicaManager3 *replicaManager3) {
-		return QueryConstruction_ServerConstruction(destinationConnection, false);
+		return RM3CS_SEND_CONSTRUCTION;
 	}
 	virtual bool QueryRemoteConstruction(Connection_RM3 *sourceConnection) {
 		return QueryRemoteConstruction_ServerConstruction(sourceConnection, false);
@@ -60,5 +61,11 @@ public:
 
 	virtual void Deserialize(DeserializeParameters *deserializeParameters);
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
+
+	UPROPERTY(EditAnywhere, Category = "Raknet")
+		ARakNetRP*		rakNetManager;
+
+private:
+	bool m_registered;
 	
 };
