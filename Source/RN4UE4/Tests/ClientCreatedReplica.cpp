@@ -4,6 +4,7 @@
 #include "PhysXPublic.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
+#include "PhysXIncludes.h" 
 #include "ClientCreatedReplica.h"
 
 
@@ -15,6 +16,8 @@ UClientCreatedReplica::UClientCreatedReplica()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
+	m_registered = false;
 }
 
 
@@ -24,7 +27,6 @@ void UClientCreatedReplica::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -34,6 +36,12 @@ void UClientCreatedReplica::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+
+	if (!m_registered && rakNetManager->getAllServersChecked())
+	{
+		m_registered = true;
+		rakNetManager->Reference(this);
+	}
 }
 
 

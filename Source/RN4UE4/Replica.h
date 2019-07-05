@@ -14,7 +14,6 @@
 #include "GetTime.h"
 #include "Rand.h"
 #include "PhysXIncludes.h"
-
 #include "GameFramework/Actor.h"
 #include "Replica.generated.h"
 
@@ -22,6 +21,24 @@
 DECLARE_LOG_CATEGORY_EXTERN(RakNet_Replica, Log, All);
 
 using namespace RakNet;
+
+
+/*struct PxGeometryType
+{
+	enum Enum
+	{
+		eSPHERE,
+		ePLANE,
+		eCAPSULE,
+		eBOX,
+		eCONVEXMESH,
+		eTRIANGLEMESH,
+		eHEIGHTFIELD,
+
+		eGEOMETRY_COUNT,	//!< internal use only!
+		eINVALID = -1		//!< internal use only!
+	};
+};*/
 
 class SampleReplica : public Replica3
 {
