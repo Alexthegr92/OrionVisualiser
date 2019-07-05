@@ -38,22 +38,22 @@ public:
 		int typeMesh;
 
 	void SerializeConstruction(BitStream *constructionBitstream, Connection_RM3 *destinationConnection) override;
-	virtual RakString GetName(void) const { return RakString("ServerCreated_ServerSerialized"); }
+	virtual RakString GetName(void) const { return RakString("ClientCreatedReplica"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
 		return RM3SR_DO_NOT_SERIALIZE;
 	}
 	virtual RM3ConstructionState QueryConstruction(Connection_RM3 *destinationConnection, ReplicaManager3 *replicaManager3) {
-		return QueryConstruction_ServerConstruction(destinationConnection, false);
+		return QueryConstruction_ClientConstruction(destinationConnection, false);
 	}
 	virtual bool QueryRemoteConstruction(Connection_RM3 *sourceConnection) {
-		return QueryRemoteConstruction_ServerConstruction(sourceConnection, false);
+		return QueryRemoteConstruction_ClientConstruction(sourceConnection, false);
 	}
 	virtual RM3QuerySerializationResult QuerySerialization(Connection_RM3 *destinationConnection) {
-		return QuerySerialization_ServerSerializable(destinationConnection, false);
+		return QuerySerialization_ClientSerializable(destinationConnection, false);
 	}
 	virtual RM3ActionOnPopConnection QueryActionOnPopConnection(Connection_RM3 *droppedConnection) const {
-		return QueryActionOnPopConnection_Server(droppedConnection);
+		return QueryActionOnPopConnection_Client(droppedConnection);
 	}
 	virtual void DeallocReplica(Connection_RM3 *sourceConnection) {
 	}
