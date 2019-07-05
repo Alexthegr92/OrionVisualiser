@@ -67,6 +67,7 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 		GetOwner()->SetActorRotation(rotAux);
 		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
 		ext = sph.BoxExtent;
+		ext = ext * 0.5;
 		constructionBitstream->WriteVector<float>(ext.X, ext.Z, ext.Y);
 	}
 	
@@ -88,14 +89,17 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 		GetOwner()->SetActorRotation(FQuat(0, 0, 0, 1));
 		vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
 		ext = sph.BoxExtent;
+		ext = ext * 0.5f;
 		constructionBitstream->Write<float>(ext.Y - ext.X);
 		constructionBitstream->Write<float>(ext.X);
 		GetOwner()->SetActorRotation(rotAux);
 	}
 	//if mesh
 	else if (typeMesh == 3) {
+		constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num());
 		for (FVector vec : vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 		{
+			vec = vec / 50.0f;
 			constructionBitstream->WriteVector<float>(vec.X, vec.Z, vec.Y);
 		}
 	}
