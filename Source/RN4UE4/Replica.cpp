@@ -17,12 +17,16 @@ AReplica::AReplica()
 void AReplica::BeginPlay()
 {
 	Super::BeginPlay();
+	currentTime = 0.0f;
 }
 
 // Called every frame
 void AReplica::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	currentTime += DeltaTime;
+	if (limitTime < currentTime)
+		Destroy();
 }
 
 bool AReplica::DeserializeConstruction(BitStream *constructionBitstream, Connection_RM3 *sourceConnection)
@@ -140,6 +144,7 @@ bool AReplica::DeserializeConstruction(BitStream *constructionBitstream, Connect
 void AReplica::Deserialize(DeserializeParameters *deserializeParameters)
 {
 	SampleReplica::Deserialize(deserializeParameters);
+	currentTime = 0.0f;
 	UpdateTransform();
 }
 

@@ -194,6 +194,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "UnknownMaterial")
 		UMaterial* unknownMaterial;
 
+	UPROPERTY(EditDefaultsOnly, Category = "RakNet")
+		float limitTime;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Rank")
 		int rank;
 
@@ -227,5 +230,5 @@ public:
 
 private:
 	AActor* visual = nullptr;
-	
+	float currentTime;
 };
