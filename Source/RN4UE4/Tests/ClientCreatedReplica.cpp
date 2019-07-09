@@ -1,10 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RN4UE4.h"
-#include "PhysXPublic.h"
+
 #include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
+#include "Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h"
+#include "ThirdParty/PhysX3/PhysX_3.4/Include/PxMaterial.h"
 #include "PhysXIncludes.h" 
+#include "PhysXPublic.h"
+#include "PhysicsPublic.h"
 #include "ClientCreatedReplica.h"
 
 
@@ -37,14 +41,22 @@ void UClientCreatedReplica::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	// ...
 
-	if (!m_registered && rakNetManager->getAllServersChecked())
-	{
-		m_registered = true;
-		rakNetManager->Reference(this);
+	if (maxWaitTime < waitTime) {
+		m_waited = true;
+		if (!m_registered && rakNetManager->getAllServersChecked())
+		{
+			m_registered = true;
+			rakNetManager->Reference(this);
+		}
+	}
+	else {
+		waitTime += DeltaTime;
 	}
 }
 
-
+/*Serialize construction send all necesary data to create the PxMaterial and PxRigidDynamic except
+isSleeping, SleepThreshold, StabilizationThreshold, RigidDynamicLockFlags, WakeCounter, 
+SolverIterationCounts, ContactReportThreshold, ConcreteTypeName and MaxDepenetrationVelocity,*/
 void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstream, Connection_RM3 * destinationConnection)
 {
 	// variableDeltaSerializer is a helper class that tracks what variables were sent to what remote system
@@ -107,10 +119,49 @@ void UClientCreatedReplica::SerializeConstruction(BitStream * constructionBitstr
 		constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num());
 		for (FVector vec : vismesh->GetStaticMeshComponent()->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 		{
-			vec = vec / 50.0f;
-			constructionBitstream->WriteVector<float>(vec.X, vec.Z, vec.Y);
+			FVector aux = vismesh->GetTransform().TransformPosition(vec);
+			aux = aux / 50.0f;
+			constructionBitstream->WriteVector<float>(aux.X, aux.Z, aux.Y);
 		}
 	}
+	
+	FVector centerMass = vismesh->GetStaticMeshComponent()->GetCenterOfMass();
+	centerMass = centerMass / 50.0f;
+	constructionBitstream->WriteVector<float>(centerMass.X, centerMass.Z, centerMass.Y);
+	constructionBitstream->Write<float>(vismesh->GetStaticMeshComponent()->GetBodyInstance()->MaxAngularVelocity);
+	std::string name = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getConcreteTypeName();
+	float restitution = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitution();
+	PxCombineMode::Enum restituCombineMode = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitutionCombineMode();
+	int restitutionCombineMode;
+	float dynamicFriction = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
+	float staticFriction = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
+	PxCombineMode::Enum frictionCombineMode = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFrictionCombineMode();
+	int frictionCombineModeInt;
+	int referenceCount = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getReferenceCount();
+	PxMaterialFlags flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
+	if (restituCombineMode == PxCombineMode::eAVERAGE)
+		restitutionCombineMode = 0;
+	else if (restituCombineMode == PxCombineMode::eMIN)
+		restitutionCombineMode = 1;
+	else if (restituCombineMode == PxCombineMode::eMULTIPLY)
+		restitutionCombineMode = 2;
+	else if (restituCombineMode == PxCombineMode::eMAX)
+		restitutionCombineMode = 3;
+	if (frictionCombineMode == PxCombineMode::eAVERAGE)
+		frictionCombineModeInt = 0;
+	else if (frictionCombineMode == PxCombineMode::eMIN)
+		frictionCombineModeInt = 1;
+	else if (frictionCombineMode == PxCombineMode::eMULTIPLY)
+		frictionCombineModeInt = 2;
+	else if (frictionCombineMode == PxCombineMode::eMAX)
+		frictionCombineModeInt = 3;
+	constructionBitstream->Write<std::string>(name);
+	constructionBitstream->Write<float>(restitution);
+	constructionBitstream->Write<int>(restitutionCombineMode);
+	constructionBitstream->Write<float>(dynamicFriction);
+	constructionBitstream->Write<float>(staticFriction);
+	constructionBitstream->Write<int>(frictionCombineModeInt);
+	constructionBitstream->Write<PxMaterialFlags>(flags);
 	SampleReplica::SerializeConstruction(constructionBitstream, destinationConnection);
 	}
 }

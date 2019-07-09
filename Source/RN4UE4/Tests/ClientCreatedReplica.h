@@ -37,9 +37,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UPROPERTY(EditDefaultsOnly, Category = "Type")
 		int typeMesh;
+	UPROPERTY(EditAnywhere, Category = "RakNet")
+		float maxWaitTime;
 
 	void SerializeConstruction(BitStream *constructionBitstream, Connection_RM3 *destinationConnection) override;
+
 	virtual RakString GetName(void) const { return RakString("ClientCreatedReplica"); }
+
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
 		return RM3SR_DO_NOT_SERIALIZE;
@@ -67,5 +71,6 @@ public:
 
 private:
 	bool m_registered;
-	
+	float waitTime;
+	bool m_waited;
 };
