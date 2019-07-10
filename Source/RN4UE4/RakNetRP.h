@@ -113,7 +113,7 @@ private:
 
 	bool initialised;
 	bool	changingLevel;
-
+	float	currentTime;
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
