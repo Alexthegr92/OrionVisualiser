@@ -24,5 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> levelNames;
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		TArray<FName> GetAllMapNames();
 	
 };
