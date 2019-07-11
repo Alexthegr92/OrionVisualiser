@@ -72,9 +72,6 @@ public:
 
 	AReplica* GetObjectFromType(RakString typeName);
 
-	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void PrepareToChangeLevel();
-
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
@@ -92,7 +89,6 @@ public:
 
 	virtual Connection_RM3* AllocConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID) const;
 	virtual void DeallocConnection(Connection_RM3 *connection) const;
-	bool	getChangingLevel();
 
 	void DroppedConnection(unsigned short Port);
 
@@ -114,6 +110,7 @@ private:
 	bool initialised;
 	bool	changingLevel;
 	float	currentTime;
+
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;

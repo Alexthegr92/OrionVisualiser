@@ -42,7 +42,6 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 void ARakNetRP::BeginPlay()
 {
 	Super::BeginPlay();
-	changingLevel = false;
 	auto fp = std::bind(&ARakNetRP::CreateBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("CreateBoundary", fp, 0);
 	auto deleteFunction = std::bind(&ARakNetRP::DeleteBoundarySlot, this, _1, _2);
@@ -246,21 +245,6 @@ AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 	}
 
 	return nullptr;
-}
-
-void ARakNetRP::PrepareToChangeLevel()
-{
-	changingLevel = true;
-	RakNet::BitStream testBs;
-
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-	rakPeer->GetSystemList(addresses, guids);
-
-	for (unsigned int i = 0; i < addresses.Size(); ++i)
-	{
-		rpc.Signal("Reset", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
-	}
 }
 
 void ARakNetRP::CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)
