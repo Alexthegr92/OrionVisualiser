@@ -2,6 +2,7 @@
 
 #include "RN4UE4.h"
 #include "RN4UE4GameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "ChangeLevelsComponent.h"
 
 
@@ -40,10 +41,13 @@ void UChangeLevelsComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		{
 			if (currentTime > instance->timeToChangeLevel)
 			{
-				instance->indexLevel++;
-				if (instance->indexLevel < instance->levelNames.Num())
+				if (instance->indexLevel < instance->levelNames.Num()-1)
 				{
-					UGameplayStatics::OpenLevel(GetWorld(), instance->levelNames[instance->indexLevel]);
+					FLatentActionInfo LatentInfo1;
+					UGameplayStatics::UnloadStreamLevel(this, instance->levelNames[instance->indexLevel], LatentInfo1);
+					instance->indexLevel++;
+					FLatentActionInfo LatentInfo2;
+					UGameplayStatics::LoadStreamLevel(this, instance->levelNames[instance->indexLevel], true, true, LatentInfo2);
 				}
 			}
 		}
