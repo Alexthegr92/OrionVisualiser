@@ -13,7 +13,7 @@
 #include "NetworkIDManager.h"
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
-#include "Rand.h"
+
 
 #include "Replica.h"
 
@@ -108,8 +108,6 @@ public:
 	bool GetInitialised() const { return initialised; }
 
 	bool				 getAllServersChecked();
-	FVector				 getRandomUnitVector();
-	float				 getNumberFromRange(float min, float max);
 
 
 private:
@@ -122,14 +120,9 @@ private:
 	
 	RPC4 rpc;
 
-
 	bool initialised;
-
 	static const int SERVER_PORT = 12345;
-
-	FRandomStream			rand;
 	int						totalServers;
-	int						activeTest;
 	bool					initChecks;
 	bool					resetTime;
 	int						numberServersChecked;

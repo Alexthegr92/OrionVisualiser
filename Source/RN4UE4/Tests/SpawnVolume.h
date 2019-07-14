@@ -30,20 +30,19 @@ public:
 	bool		getActive();
 	void		setActive(bool act);
 	void		reset();
-	void		chooseRandomPointInBox();
+	void		RandomSpawn();
+	FVector		getRandomPointInBox();
+	FVector		getRandomUnitVector();
 	UPROPERTY(EditAnywhere, Category = "SpawnerBox")
 		UBoxComponent* BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Spawner")
-		int				maxObjects;
-	UPROPERTY(EditAnywhere, Category = "Spawner")
 		float			spawnTime;
 private:
 	bool			active;
 	float			currentTime;
-	int				objectsSpawned;
-	
+	FRandomStream			rand;
 	
 	
 };

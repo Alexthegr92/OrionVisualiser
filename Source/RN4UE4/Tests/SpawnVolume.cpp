@@ -2,6 +2,7 @@
 
 #include "RN4UE4.h"
 #include "SpawnVolume.h"
+#include "Rand.h"
 #include "EngineUtils.h"
 #include "../RakNetRP.h"
 
@@ -17,37 +18,24 @@ void ASpawnVolume::BeginPlay()
 {
 	Super::BeginPlay();
 	active = true;
-	objectsSpawned = 0;
+	rand.GenerateNewSeed();
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 // Called every frame
 void ASpawnVolume::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (rakNetManager != nullptr)
+	if (ensure(rakNetManager))
 	{
-		if (active && rakNetManager->getAllServersChecked() && objectsSpawned < maxObjects)
+		if (active && rakNetManager->getAllServersChecked())
 		{
 			currentTime += DeltaTime;
 			if (currentTime >= spawnTime)
 			{
-				chooseRandomPointInBox();
+				RandomSpawn();
 				currentTime = 0.0f;
 			}
-		}
-	}
-	else
-	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
-			}
-			
 		}
 	}
 }
@@ -77,21 +65,30 @@ void ASpawnVolume::setActive(bool act)
 	active = act;
 }
 
-void ASpawnVolume::chooseRandomPointInBox()
+FVector ASpawnVolume::getRandomPointInBox()
 {
-	FVector pos;
-	FVector uniDir;
-	pos.X = rakNetManager->getNumberFromRange(GetActorLocation().X - BoxComponent->GetUnscaledBoxExtent().X, GetActorLocation().X + BoxComponent->GetUnscaledBoxExtent().X);
-	pos.Y = rakNetManager->getNumberFromRange(GetActorLocation().Z - BoxComponent->GetUnscaledBoxExtent().Z, GetActorLocation().Z + BoxComponent->GetUnscaledBoxExtent().Z);
-	pos.Z = rakNetManager->getNumberFromRange(GetActorLocation().Y - BoxComponent->GetUnscaledBoxExtent().Y, GetActorLocation().Y + BoxComponent->GetUnscaledBoxExtent().Y);
+	FVector pos = GetActorLocation();
+	FVector extents = BoxComponent->GetUnscaledBoxExtent();
+	pos.X = rand.RandRange(pos.X - extents.X, pos.X + extents.X);
+	pos.Y = rand.RandRange(pos.Z - extents.Z, pos.Z + extents.Z);
+	pos.Z = rand.RandRange(pos.Y - extents.Y, pos.Y + extents.Y);
 	pos = pos / 50.0f;
-	uniDir = rakNetManager->getRandomUnitVector();
-	rakNetManager->RPrpcSpawn(pos, uniDir);
-	++objectsSpawned;
+	return pos;
+}
+
+FVector ASpawnVolume::getRandomUnitVector()
+{
+	return  rand.GetUnitVector();
 }
 
 void ASpawnVolume::reset()
 {
 	currentTime = 0.0f;
-	objectsSpawned = 0;
+}
+
+void ASpawnVolume::RandomSpawn()
+{
+	FVector pos = getRandomPointInBox();
+	FVector dir = getRandomUnitVector();
+	rakNetManager->RPrpcSpawn(pos, dir);
 }

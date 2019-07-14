@@ -55,7 +55,6 @@ void ARakNetRP::BeginPlay()
 
 	allServersChecked = false;
 	initChecks = false;
-	rand.GenerateNewSeed();
 }
 
 // Called every frame
@@ -378,14 +377,4 @@ void ARakNetRP::ConnectToIP(const FString& address)
 	}
 
 	RPConnect(host, portNumber);
-}
-
-FVector ARakNetRP::getRandomUnitVector()
-{
-	return rand.GetUnitVector();
-}
-
-float ARakNetRP::getNumberFromRange(float min, float max)
-{
-	return rand.RandRange(min, max);
 }
