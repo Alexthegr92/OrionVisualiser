@@ -84,8 +84,6 @@ public:
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
-	void CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet);
-
 	void CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * packet);
@@ -96,9 +94,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
 		void DeleteBoundaryBox(int rank);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
-		void CleanReplicas(int rank);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
 		void CreateBoundaryBox(int rank, FVector pos, FVector size);
