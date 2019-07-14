@@ -11,6 +11,7 @@ ASpawnVolume::ASpawnVolume()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 }
 
 // Called when the game starts or when spawned
@@ -45,27 +46,27 @@ void ASpawnVolume::SetUp()
 
 }
 
-ARakNetRP* ASpawnVolume::getRakNetManager()
+ARakNetRP* ASpawnVolume::GetRakNetManager()
 {
 	return rakNetManager;
 }
 
-void ASpawnVolume::setRakNetManager(ARakNetRP* raknet)
+void ASpawnVolume::SetRakNetManager(ARakNetRP* raknet)
 {
 	rakNetManager = raknet;
 }
 
-bool ASpawnVolume::getActive()
+bool ASpawnVolume::GetActive()
 {
 	return active;
 }
 
-void ASpawnVolume::setActive(bool act)
+void ASpawnVolume::SetActive(bool act)
 {
 	active = act;
 }
 
-FVector ASpawnVolume::getRandomPointInBox()
+FVector ASpawnVolume::GetRandomPointInBox()
 {
 	FVector pos = GetActorLocation();
 	FVector extents = BoxComponent->GetUnscaledBoxExtent();
@@ -76,19 +77,19 @@ FVector ASpawnVolume::getRandomPointInBox()
 	return pos;
 }
 
-FVector ASpawnVolume::getRandomUnitVector()
+FVector ASpawnVolume::GetRandomUnitVector()
 {
 	return  rand.GetUnitVector();
 }
 
-void ASpawnVolume::reset()
+void ASpawnVolume::Reset()
 {
 	currentTime = 0.0f;
 }
 
 void ASpawnVolume::RandomSpawn()
 {
-	FVector pos = getRandomPointInBox();
-	FVector dir = getRandomUnitVector();
+	FVector pos = GetRandomPointInBox();
+	FVector dir = GetRandomUnitVector();
 	rakNetManager->RPrpcSpawn(pos, dir);
 }

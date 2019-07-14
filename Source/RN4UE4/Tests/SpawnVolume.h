@@ -25,16 +25,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void SetUp();
-	ARakNetRP*	getRakNetManager();
-	void		setRakNetManager(ARakNetRP* raknet);
-	bool		getActive();
-	void		setActive(bool act);
-	void		reset();
+	ARakNetRP*	GetRakNetManager();
+	void		SetRakNetManager(ARakNetRP* raknet);
+	bool		GetActive();
+	void		SetActive(bool act);
+	void		Reset();
 	void		RandomSpawn();
-	FVector		getRandomPointInBox();
-	FVector		getRandomUnitVector();
+	FVector		GetRandomPointInBox();
+	FVector		GetRandomUnitVector();
 	UPROPERTY(EditAnywhere, Category = "SpawnerBox")
-		UBoxComponent* BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+		UBoxComponent* BoxComponent;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Spawner")
