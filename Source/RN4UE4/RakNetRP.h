@@ -88,8 +88,6 @@ public:
 
 	void TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * packet);
 
-	void RPCReset();
-
 	void signalCheckServer();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")

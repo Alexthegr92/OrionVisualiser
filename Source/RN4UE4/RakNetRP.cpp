@@ -313,13 +313,6 @@ void ARakNetRP::TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * p
 	numberServersChecked = 0;
 }
 
-void ARakNetRP::RPCReset()
-{
-	totalServers = 0;
-	initChecks = false;
-	allServersChecked = false;
-}
-
 void ARakNetRP::signalCheckServer()
 {
 	RakNet::BitStream testBs;
