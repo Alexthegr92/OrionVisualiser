@@ -46,12 +46,8 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("CreateBoundary", fp, 0);
 	auto deleteFunction = std::bind(&ARakNetRP::DeleteBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("DeleteBoundary", deleteFunction, 0);
-	auto cleanFunction = std::bind(&ARakNetRP::CleanReplicasSlot, this, _1, _2);
-	rpc.RegisterSlot("CleanLeftOvers", cleanFunction, 0);
-	auto checkServerFunction = std::bind(&ARakNetRP::CheckServerSlot, this, _1, _2);
-	rpc.RegisterSlot("InitComplete", checkServerFunction, 0);
-	auto totalServerFunction = std::bind(&ARakNetRP::TotalNumberServersSlot, this, _1, _2);
-	rpc.RegisterSlot("NumberServers", totalServerFunction, 0);
+	auto getExpectedServersFunction = std::bind(&ARakNetRP::GetExpectedServersSlot, this, _1, _2);
+	rpc.RegisterSlot("NumberServers", getExpectedServersFunction, 0);
 
 	allServersChecked = false;
 	initChecks = false;
@@ -121,14 +117,13 @@ void ARakNetRP::Tick(float DeltaTime)
 		if (rakPeer->GetInternalID(UNASSIGNED_SYSTEM_ADDRESS, 0).GetPort() != SERVER_PORT + i)
 			rakPeer->AdvertiseSystem("255.255.255.255", SERVER_PORT + i, 0, 0, 0);
 	}
-	if (numberServersChecked == totalServers)
+
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+	if (totalServers == addresses.Size())
 	{
 		allServersChecked = true;
-	}
-	else if(!initChecks)
-	{
-		signalCheckServer();
-		initChecks = true;
 	}
 }
 
@@ -281,6 +276,7 @@ void ARakNetRP::DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 	DeleteBoundaryBox(rank);
 }
 
+<<<<<<< HEAD
 void ARakNetRP::CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet)
 {
 	int rank;
@@ -289,42 +285,13 @@ void ARakNetRP::CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet
 }
 
 void ARakNetRP::CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet)
+=======
+void ARakNetRP::GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * packet)
+>>>>>>> Raknet checking if all servers are connected changed
 {
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-
-	bool check;
-	bitStream->Read<bool>(check);
-	if (check)
-	{
-		++numberServersChecked;
-	}
-}
-
-void ARakNetRP::TotalNumberServersSlot(RakNet::BitStream * bitStream, Packet * packet)
-{
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-	rakPeer->GetSystemList(addresses, guids);
-
 	int number;
 	bitStream->Read<int>(number);
 	totalServers = number;
-	numberServersChecked = 0;
-}
-
-void ARakNetRP::signalCheckServer()
-{
-	RakNet::BitStream testBs;
-
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-	rakPeer->GetSystemList(addresses, guids);
-
-	for (unsigned int i = 0; i < addresses.Size(); ++i)
-	{
-		rpc.Signal("CheckServer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
-	}
 }
 
 void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
