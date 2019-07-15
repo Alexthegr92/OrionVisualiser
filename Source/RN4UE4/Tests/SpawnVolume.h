@@ -24,7 +24,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void SetUp();
 	bool		GetActive();
 	void		SetActive(bool act);
 	void		Reset();

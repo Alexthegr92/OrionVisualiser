@@ -37,11 +37,6 @@ void ASpawnVolume::Tick(float DeltaTime)
 	}
 }
 
-void ASpawnVolume::SetUp()
-{
-
-}
-
 bool ASpawnVolume::GetActive()
 {
 	return active;
