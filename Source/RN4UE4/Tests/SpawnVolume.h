@@ -25,8 +25,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void SetUp();
-	ARakNetRP*	GetRakNetManager();
-	void		SetRakNetManager(ARakNetRP* raknet);
 	bool		GetActive();
 	void		SetActive(bool act);
 	void		Reset();

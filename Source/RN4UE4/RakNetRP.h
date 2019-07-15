@@ -75,16 +75,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
 
-	UPROPERTY(EditAnywhere, Category = "Need total reset")
-		bool		reset;
-
 	AReplica* GetObjectFromType(RakString typeName);
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
-
-	void CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * packet);
 
@@ -119,7 +114,5 @@ private:
 	bool initialised;
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
-	bool					initChecks;
-	bool					resetTime;
 	bool					allServersChecked;
 };

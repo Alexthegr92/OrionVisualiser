@@ -6,15 +6,12 @@
 #include "EngineUtils.h"
 #include "../RakNetRP.h"
 
-// Sets default values
 ASpawnVolume::ASpawnVolume()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 }
 
-// Called when the game starts or when spawned
 void ASpawnVolume::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,7 +20,6 @@ void ASpawnVolume::BeginPlay()
 	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
-// Called every frame
 void ASpawnVolume::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -44,16 +40,6 @@ void ASpawnVolume::Tick(float DeltaTime)
 void ASpawnVolume::SetUp()
 {
 
-}
-
-ARakNetRP* ASpawnVolume::GetRakNetManager()
-{
-	return rakNetManager;
-}
-
-void ASpawnVolume::SetRakNetManager(ARakNetRP* raknet)
-{
-	rakNetManager = raknet;
 }
 
 bool ASpawnVolume::GetActive()
