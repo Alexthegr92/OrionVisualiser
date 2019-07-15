@@ -50,7 +50,6 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("NumberServers", getExpectedServersFunction, 0);
 
 	allServersChecked = false;
-	initChecks = false;
 }
 
 // Called every frame
