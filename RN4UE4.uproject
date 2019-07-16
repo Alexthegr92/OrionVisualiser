@@ -22,11 +22,5 @@
       "Name": "Replicas",
       "Enabled": true
     }
-  ],
-  "PreBuildSteps": {
-    "Win64": [
-      "xcopy $(ProjectDir)\\PhysX-3.4\\PhysX_3.4\\Samples\\Replicas\\Source $(ProjectDir)\\Plugins\\Replicas\\Source\\Replicas\\Source /e /i /y",
-      "xcopy $(ProjectDir)\\PhysX-3.4\\PhysX_3.4\\Samples\\Replicas\\Include $(ProjectDir)\\Plugins\\Replicas\\Source\\Replicas\\Public /e /i /y"
-    ]
-  }
+  ]
 }
