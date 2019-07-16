@@ -275,18 +275,7 @@ void ARakNetRP::DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 	DeleteBoundaryBox(rank);
 }
 
-<<<<<<< HEAD
-void ARakNetRP::CleanReplicasSlot(RakNet::BitStream * bitStream, Packet * packet)
-{
-	int rank;
-	bitStream->Read<int>(rank);
-	CleanReplicas(rank);
-}
-
-void ARakNetRP::CheckServerSlot(RakNet::BitStream * bitStream, Packet * packet)
-=======
 void ARakNetRP::GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * packet)
->>>>>>> Raknet checking if all servers are connected changed
 {
 	int number;
 	bitStream->Read<int>(number);
@@ -296,11 +285,6 @@ void ARakNetRP::GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * p
 void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
 {
 }
-
-void ARakNetRP::CleanReplicas_Implementation(int rank)
-{
-}
-
 
 void ARakNetRP::CreateBoundaryBox_Implementation(int rank, FVector pos, FVector size)
 {
