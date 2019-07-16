@@ -182,12 +182,12 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 	}
 }
 
-
 void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 {
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;
 	rakPeer->GetSystemList(addresses, guids);
+
 	const char* signalString = TCHAR_TO_ANSI(*sharedIdentifier);
 
 	for (unsigned int i = 0; i < addresses.Size(); ++i)
