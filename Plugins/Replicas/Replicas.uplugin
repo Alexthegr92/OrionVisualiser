@@ -1,34 +1,34 @@
 {
-  "FileVersion": 3,
-  "Version": 1,
-  "VersionName": "1.0",
-  "FriendlyName": "Replicas",
-  "Description": "Replicas",
-  "Category": "Other",
-  "CreatedBy": "Alex",
-  "CreatedByURL": "",
-  "DocsURL": "",
-  "MarketplaceURL": "",
-  "SupportURL": "",
-  "CanContainContent": true,
-  "IsBetaVersion": false,
-  "Installed": false,
-  "Modules": [
-    {
-      "Name": "Replicas",
-      "Type": "RunTime",
-      "LoadingPhase": "Default"
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "RakNet",
-      "Enabled": true
-    }
-  ],
-  "PreBuildSteps": {
-    "Win64": [
-      "xcopy $(ProjectDir)\\PhysX-3.4\\PhysX_3.4\\Samples\\Replicas\\Source $(ProjectDir)\\Plugins\\Replicas\\Source\\Replicas\\Source /e /i /y"
-    ]
-  }
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Replicas",
+	"Description": "Replicas",
+	"Category": "Other",
+	"CreatedBy": "Alex",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Replicas",
+			"Type": "RunTime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "RakNet",
+			"Enabled": true
+		}
+	],
+	"PreBuildSteps": {
+		"Win64": [
+			"xcopy $(ProjectDir)\\PhysX-3.4\\PhysX_3.4\\Samples\\Replicas\\Source $(ProjectDir)\\Plugins\\Replicas\\Source\\Replicas\\Source /e /i /y"
+		]
+	}
 }
