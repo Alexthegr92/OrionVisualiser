@@ -17,10 +17,14 @@ ABoundaryBox::ABoundaryBox()
 void ABoundaryBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (!sent)
+	{
+		SetBoundary();
+		sent = true;
+	}
 }
 
-void ABoundaryBox::setBoundary()
+void ABoundaryBox::SetBoundary()
 {
 	// Box trigger for self
 	FVector pos = GetActorLocation();

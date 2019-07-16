@@ -20,9 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RakNet")
-		UBoxComponent* BoxComponent; 
-	void setBoundary();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -32,6 +30,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		int       rank;
-	
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "RakNet")
+		UBoxComponent* BoxComponent;
+
+	void SetBoundary();
+private:
+	bool	sent;
 };
