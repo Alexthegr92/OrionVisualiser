@@ -97,5 +97,4 @@ public:
 
 private:
 	AActor* visual = nullptr;
-	
 };

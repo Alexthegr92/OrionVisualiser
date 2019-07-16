@@ -14,7 +14,6 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 
-
 #include "Replica.h"
 
 //#include <stdio.h>
@@ -67,10 +66,10 @@ public:
 		void RPrpcSpawn(FVector pos, FVector dir);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-	void RPrpcSignalAllServers(const FString& sharedIdentifier);
+		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-	void RPrpcSpawnType(FVector pos, FVector dir, FQuat rot, FVector scale, int meshType);
+		void RPrpcSpawnType(FVector pos, FVector dir, FQuat rot, FVector scale, int meshType);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
