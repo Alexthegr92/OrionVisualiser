@@ -222,6 +222,23 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
+void ARakNetRP::RPrpcSignalBoundaryBox(const FVector pos, const FVector boxExtent, int rank)
+{
+	RakNet::BitStream testBs;
+	testBs.WriteVector<float>(pos.X, pos.Y, pos.Z);
+	testBs.WriteVector<float>(boxExtent.X, boxExtent.Y, boxExtent.Z);
+	testBs.Write<int>(rank);
+
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("CreateBoundaryVisualizer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
 AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 {
 	if (typeName == "ReplicaRigidDynamic") 

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RN4UE4.h"
+#include "RakNetRP.h"
 #include "BoundaryBox.h"
 
 
@@ -25,24 +26,7 @@ void ABoundaryBox::setBoundary()
 	FVector pos = GetActorLocation();
 	FVector extents = BoxComponent->GetUnscaledBoxExtent();
 	extents = extents / 2.0f;
-
-	//PxRigidStatic* rankZero = helloWorld->createBoundaryTriggerBox(posZero, halfExtents);
-
-	/*helloWorld->createBoundaryTriggerForSelf(rankZero);
-	helloWorld->setCellPos(posZero);
-	helloWorld->createBoundaryTriggerForRank(rankOne, 1);
-	PxRigidStatic* rankTwo = helloWorld->createBoundaryTriggerPlane(posTwo, planeNormal);
-	helloWorld->createBoundaryTriggerForRank(rankTwo, 2);
-	helloWorld->addAuraExchange(1, 1);
-	helloWorld->addAuraExchange(2, 2);
-
-	if (multiAuraSend)
-	{
-		helloWorld->addAuraExchange(1, 2);
-		helloWorld->addAuraExchange(2, 1);
-	}*/
-
-
+	rakNetManager->RPrpcSignalBoundaryBox(FVector(pos.X, pos.Z, pos.Y), FVector(extents.X, extents.Z, extents.Y), rank);
 }
 
 // Called every frame

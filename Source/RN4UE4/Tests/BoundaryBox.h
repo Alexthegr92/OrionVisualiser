@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BoundaryBox.generated.h"
 
+class ARakNetRP;
 UCLASS()
 class RN4UE4_API ABoundaryBox : public AActor
 {
