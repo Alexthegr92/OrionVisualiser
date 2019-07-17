@@ -58,4 +58,5 @@ protected:
 
 private:
 	bool registered;
+	int typeMesh;
 };
