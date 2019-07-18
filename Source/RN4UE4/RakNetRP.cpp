@@ -196,26 +196,6 @@ void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 	}
 }
 
-void ARakNetRP::RPrpcSpawnType(FVector pos, FVector dir, FQuat rot, FVector scale, int meshType)
-{
-	RakNet::BitStream testBs;
-	testBs.WriteVector<float>(pos.X, pos.Z, pos.Y);
-	testBs.WriteVector<float>(dir.X, dir.Y, dir.Z);
-	testBs.WriteVector<float>(rot.X, rot.Y, rot.Z);
-	testBs.Write<float>(rot.W);
-	testBs.WriteVector<float>(scale.X, scale.Y, scale.Z);
-	testBs.Write<int>(meshType);
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-	rakPeer->GetSystemList(addresses, guids);
-
-	for (unsigned int i = 0; i < addresses.Size(); ++i)
-	{
-		rpc.Signal("SpawnWithType", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
-
-	}
-}
-
 AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 {
 	if (typeName == "ReplicaRigidDynamic") 
