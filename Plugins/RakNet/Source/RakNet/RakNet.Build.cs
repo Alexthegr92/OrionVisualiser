@@ -8,6 +8,12 @@ public class RakNet : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
+		PrivateDefinitions.AddRange(new string[]
+		{
+			"_CRT_SECURE_NO_WARNINGS",
+			"_WINSOCK_DEPRECATED_NO_WARNINGS",
+		});
+		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"RakNet/Public"
