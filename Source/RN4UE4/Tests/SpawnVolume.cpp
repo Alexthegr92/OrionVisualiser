@@ -50,11 +50,11 @@ void ASpawnVolume::SetActive(bool act)
 FVector ASpawnVolume::GetRandomPointInBox()
 {
 	FVector pos = GetActorLocation();
-	FVector extents = BoxComponent->GetScaledBoxExtent();
+	FVector extents = BoxComponent->GetUnscaledBoxExtent();
 	pos.X = rand.RandRange(0 - extents.X, 0 + extents.X);
 	pos.Y = rand.RandRange(0 - extents.Y, 0 + extents.Y);
 	pos.Z = rand.RandRange(0 - extents.Z, 0 + extents.Z);
-	FVector aux = GetActorTransform().TransformPosition(pos);
+	FVector aux = BoxComponent->GetComponentTransform().TransformPosition(pos);
 	pos.X = aux.X;
 	pos.Y = aux.Z;
 	pos.Z = aux.Y;
