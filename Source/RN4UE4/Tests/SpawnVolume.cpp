@@ -37,7 +37,7 @@ void ASpawnVolume::Tick(float DeltaTime)
 	}
 }
 
-bool ASpawnVolume::GetActive()
+bool ASpawnVolume::GetActive() const
 {
 	return active;
 }
@@ -47,22 +47,19 @@ void ASpawnVolume::SetActive(bool act)
 	active = act;
 }
 
-FVector ASpawnVolume::GetRandomPointInBox()
+FVector ASpawnVolume::GetRandomPointInBox() const
 {
-	FVector pos = GetActorLocation();
 	FVector extents = BoxComponent->GetUnscaledBoxExtent();
-	pos.X = rand.RandRange(0 - extents.X, 0 + extents.X);
-	pos.Y = rand.RandRange(0 - extents.Y, 0 + extents.Y);
-	pos.Z = rand.RandRange(0 - extents.Z, 0 + extents.Z);
-	FVector aux = BoxComponent->GetComponentTransform().TransformPosition(pos);
-	pos.X = aux.X;
-	pos.Y = aux.Z;
-	pos.Z = aux.Y;
-	pos = pos / 50.0f;
-	return pos;
+	FVector randomPointInBox = FVector(
+		rand.RandRange(-extents.X, extents.X),
+		rand.RandRange(-extents.Y, extents.Y),
+		rand.RandRange(-extents.Z, extents.Z)
+	);
+
+	return BoxComponent->GetComponentTransform().TransformPosition(randomPointInBox);
 }
 
-FVector ASpawnVolume::GetRandomUnitVector()
+FVector ASpawnVolume::GetRandomUnitVector() const
 {
 	return  rand.GetUnitVector();
 }
@@ -75,6 +72,14 @@ void ASpawnVolume::Reset()
 void ASpawnVolume::RandomSpawn()
 {
 	FVector pos = GetRandomPointInBox();
+
+	// Convert to Samples space
+	pos = pos / 50.0f;	
+	float tempY = pos.Y;
+	pos.Y = pos.Z;
+	pos.Z = tempY;
+
+	// Random direction. N.B. Does not get converted to Samples Space, but doesn't need to be
 	FVector dir = GetRandomUnitVector();
 	rakNetManager->RPrpcSpawn(pos, dir);
 }

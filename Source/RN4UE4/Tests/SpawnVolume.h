@@ -24,12 +24,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	bool		GetActive();
+	bool		GetActive() const;
 	void		SetActive(bool act);
 	void		Reset();
 	void		RandomSpawn();
-	FVector		GetRandomPointInBox();
-	FVector		GetRandomUnitVector();
+	FVector		GetRandomPointInBox() const;
+	FVector		GetRandomUnitVector() const;
 	UPROPERTY(EditAnywhere, Category = "SpawnerBox")
 		UBoxComponent* BoxComponent;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
