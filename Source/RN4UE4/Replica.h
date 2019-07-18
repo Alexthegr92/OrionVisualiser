@@ -65,7 +65,6 @@ public:
 		UMaterial* unknownMaterial;
 
 	virtual RakString GetName(void) const { return RakString("ReplicaRigidDynamic"); }
-
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
 		return RM3SR_DO_NOT_SERIALIZE;

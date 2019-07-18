@@ -302,7 +302,7 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 	delete connection;
 }
 
-bool ARakNetRP::getAllServersChecked()
+bool ARakNetRP::GetAllServersChecked() const
 {
 	return allServersChecked;
 }

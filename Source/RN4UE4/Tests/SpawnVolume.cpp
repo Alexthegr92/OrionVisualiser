@@ -25,7 +25,7 @@ void ASpawnVolume::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (ensure(rakNetManager))
 	{
-		if (active && rakNetManager->getAllServersChecked())
+		if (active && rakNetManager->GetAllServersChecked())
 		{
 			currentTime += DeltaTime;
 			if (currentTime >= spawnTime)

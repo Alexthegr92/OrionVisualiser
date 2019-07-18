@@ -94,10 +94,9 @@ public:
 	virtual Connection_RM3* AllocConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID) const;
 	virtual void DeallocConnection(Connection_RM3 *connection) const;
 
-
 	bool GetInitialised() const { return initialised; }
 
-	bool				 getAllServersChecked();
+	bool GetAllServersChecked() const;
 
 
 private:
@@ -111,6 +110,7 @@ private:
 	RPC4 rpc;
 
 	bool initialised;
+
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
