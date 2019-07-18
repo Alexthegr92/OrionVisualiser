@@ -16,7 +16,7 @@
 	"Modules": [
 		{
 			"Name": "RakNet",
-			"Type": "Developer",
+			"Type": "RunTime",
 			"LoadingPhase": "Default"
 		}
 	]
