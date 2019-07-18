@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RakNetRP.h"
-#include "RN4UE4GameInstance.h"
 #include <functional>
 #include <string>
 #include "ReplicaBase.h"
@@ -42,6 +41,7 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 void ARakNetRP::BeginPlay()
 {
 	Super::BeginPlay();
+
 	auto fp = std::bind(&ARakNetRP::CreateBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("CreateBoundary", fp, 0);
 	auto deleteFunction = std::bind(&ARakNetRP::DeleteBoundarySlot, this, _1, _2);
