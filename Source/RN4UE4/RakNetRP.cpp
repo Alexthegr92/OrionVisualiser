@@ -46,6 +46,10 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("CreateBoundary", fp, 0);
 	auto deleteFunction = std::bind(&ARakNetRP::DeleteBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("DeleteBoundary", deleteFunction, 0);
+	auto getExpectedServersFunction = std::bind(&ARakNetRP::GetExpectedServersSlot, this, _1, _2);
+	rpc.RegisterSlot("NumberServers", getExpectedServersFunction, 0);
+
+	allServersChecked = false;
 }
 
 // Called every frame
@@ -111,6 +115,18 @@ void ARakNetRP::Tick(float DeltaTime)
 	{
 		if (rakPeer->GetInternalID(UNASSIGNED_SYSTEM_ADDRESS, 0).GetPort() != SERVER_PORT + i)
 			rakPeer->AdvertiseSystem("255.255.255.255", SERVER_PORT + i, 0, 0, 0);
+	}
+
+	// TODO: Handle servers disconnecting
+	if (!allServersChecked)
+	{
+		DataStructures::List<RakNet::SystemAddress> addresses;
+		DataStructures::List<RakNet::RakNetGUID> guids;
+		rakPeer->GetSystemList(addresses, guids);
+		if (totalServers == addresses.Size())
+		{
+			allServersChecked = true;
+		}
 	}
 }
 
@@ -243,6 +259,13 @@ void ARakNetRP::DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 	DeleteBoundaryBox(rank);
 }
 
+void ARakNetRP::GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * packet)
+{
+	int number;
+	bitStream->Read<int>(number);
+	totalServers = number;
+}
+
 void ARakNetRP::DeleteBoundaryBox_Implementation(int rank)
 {
 }
@@ -261,6 +284,11 @@ Connection_RM3* ARakNetRP::AllocConnection(const SystemAddress &systemAddress, R
 
 void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 	delete connection;
+}
+
+bool ARakNetRP::GetAllServersChecked() const
+{
+	return allServersChecked;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)

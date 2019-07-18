@@ -13,7 +13,6 @@
 #include "NetworkIDManager.h"
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
-#include "Rand.h"
 
 #include "Replica.h"
 
@@ -78,6 +77,8 @@ public:
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
+	void GetExpectedServersSlot(RakNet::BitStream * bitStream, Packet * packet);
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
 		void DeleteBoundaryBox(int rank);
 
@@ -92,6 +93,9 @@ public:
 
 	bool GetInitialised() const { return initialised; }
 
+	bool GetAllServersChecked() const;
+
+
 private:
 
 	void ConnectToIP(const FString& address);
@@ -105,4 +109,6 @@ private:
 	bool initialised;
 
 	static const int SERVER_PORT = 12345;
+	int						totalServers;
+	bool					allServersChecked;
 };
