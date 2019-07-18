@@ -23,16 +23,16 @@ void ASpawnVolume::BeginPlay()
 void ASpawnVolume::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (ensure(rakNetManager))
+
+	if (!active) return;
+
+	if (ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
 	{
-		if (active && rakNetManager->GetAllServersChecked())
+		currentTime += DeltaTime;
+		if (currentTime >= spawnTime)
 		{
-			currentTime += DeltaTime;
-			if (currentTime >= spawnTime)
-			{
-				RandomSpawn();
-				currentTime = 0.0f;
-			}
+			RandomSpawn();
+			currentTime = 0.0f;
 		}
 	}
 }

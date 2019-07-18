@@ -117,12 +117,16 @@ void ARakNetRP::Tick(float DeltaTime)
 			rakPeer->AdvertiseSystem("255.255.255.255", SERVER_PORT + i, 0, 0, 0);
 	}
 
-	DataStructures::List<RakNet::SystemAddress> addresses;
-	DataStructures::List<RakNet::RakNetGUID> guids;
-	rakPeer->GetSystemList(addresses, guids);
-	if (totalServers == addresses.Size())
+	// TODO: Handle servers disconnecting
+	if (!allServersChecked)
 	{
-		allServersChecked = true;
+		DataStructures::List<RakNet::SystemAddress> addresses;
+		DataStructures::List<RakNet::RakNetGUID> guids;
+		rakPeer->GetSystemList(addresses, guids);
+		if (totalServers == addresses.Size())
+		{
+			allServersChecked = true;
+		}
 	}
 }
 
