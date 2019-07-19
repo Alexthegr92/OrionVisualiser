@@ -8,6 +8,12 @@ public class RakNet : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
+		PrivateDefinitions.AddRange(new string[]
+		{
+			"_CRT_SECURE_NO_WARNINGS",
+			"_WINSOCK_DEPRECATED_NO_WARNINGS",
+		});
+		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"RakNet/Public"
@@ -37,7 +43,7 @@ public class RakNet : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				// ... add private dependencies that you statically link with here ...	
+				"Engine"
 			}
 			);
 		

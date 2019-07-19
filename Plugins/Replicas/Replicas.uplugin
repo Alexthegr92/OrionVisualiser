@@ -28,7 +28,7 @@
 	],
 	"PreBuildSteps": {
 		"Win64": [
-			"xcopy $(ProjectDir)\\PhysX-3.4\\PhysX_3.4\\Samples\\Replicas\\Source $(ProjectDir)\\Plugins\\Replicas\\Source\\Replicas\\Source /e /i /y"
+			"if not exist $(ProjectDir)/Plugins/Replicas/Source/Replicas/Source/*.cpp echo Can't find Replica sources - did you run generate_symlinks.bat? && exit /b 1"
 		]
 	}
 }
