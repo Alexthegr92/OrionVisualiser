@@ -130,24 +130,6 @@ void ARakNetRP::Tick(float DeltaTime)
 			allServersChecked = true;
 		}
 	}
-
-	URN4UE4GameInstance * instance = dynamic_cast<URN4UE4GameInstance*>(GetWorld()->GetGameInstance());
-	if (instance)
-	{
-		if (instance->timeToChangeLevel > 0)
-		{
-			if (currentTime > instance->timeToChangeLevel)
-			{
-				instance->indexLevel++;
-				if (instance->indexLevel < instance->levelNames.Num())
-				{
-					UGameplayStatics::OpenLevel(GetWorld(), instance->levelNames[instance->indexLevel]);
-				}
-			}
-		}
-		if(instance->indexLevel >= instance->levelNames.Num())
-		currentTime += DeltaTime;
-	}
 	
 }
 
@@ -316,11 +298,6 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 bool ARakNetRP::GetAllServersChecked() const
 {
 	return allServersChecked;
-}
-
-bool ARakNetRP::getChangingLevel()
-{
-	return changingLevel;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)

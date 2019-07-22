@@ -96,6 +96,11 @@ void AReplica::OnPoppedConnection(Connection_RM3 * droppedConnection)
 	Destroy();
 }
 
+bool AReplica::IsSpawned()
+{
+	return spawned;
+}
+
 void AReplica::Deserialize(DeserializeParameters *deserializeParameters)
 {
 	ReplicaRigidDynamic::Deserialize(deserializeParameters);
