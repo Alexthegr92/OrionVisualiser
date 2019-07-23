@@ -24,6 +24,33 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 
+	void OnConstruction(const RigidDynamicConstructionData& data);
+
+	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
+		TSubclassOf<AStaticMeshActor> sphereBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
+		TSubclassOf<AStaticMeshActor> boxBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
+		TSubclassOf<AStaticMeshActor> capsuleBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Server0Material")
+		UMaterial* server0Material;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Server1Material")
+		UMaterial* server1Material;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Server2Material")
+		UMaterial* server2Material;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Server3Material")
+		UMaterial* server3Material;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UnknownMaterial")
+		UMaterial* unknownMaterial;
+
+
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
@@ -33,7 +60,7 @@ public:
 		return QueryConstruction_ClientConstruction(destinationConnection, false);
 	}
 	virtual bool QueryRemoteConstruction(Connection_RM3 *sourceConnection) {
-		return false;
+		return QueryRemoteConstruction_ClientConstruction(sourceConnection, false);
 	}
 	virtual RM3QuerySerializationResult QuerySerialization(Connection_RM3 *destinationConnection) {
 		return QuerySerialization_ServerSerializable(destinationConnection, false);
@@ -47,8 +74,15 @@ public:
 
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
+
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
+
+	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
+
 	void UpdateTransform();
+
+	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
+	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

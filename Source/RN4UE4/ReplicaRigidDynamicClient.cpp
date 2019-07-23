@@ -25,6 +25,70 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 	}
 }
 
+void UReplicaRigidDynamicClient::OnConstruction(const RigidDynamicConstructionData & data)
+{
+	FActorSpawnParameters Parameters = FActorSpawnParameters();
+	FTransform SpawnTransform = FTransform();
+	AStaticMeshActor* shape = nullptr;
+
+	physx::PxGeometryType::Enum geomType = static_cast<physx::PxGeometryType::Enum>(data.geom);
+
+	switch (geomType)
+	{
+	case physx::PxGeometryType::eSPHERE:
+	{
+		if (sphereBP == nullptr) break;
+
+		shape = sphereBP->GetDefaultObject<AStaticMeshActor>();
+	}
+	break;
+	case physx::PxGeometryType::ePLANE:
+		break;
+	case physx::PxGeometryType::eCAPSULE:
+	{
+		if (capsuleBP == nullptr) break;
+
+		shape = capsuleBP->GetDefaultObject<AStaticMeshActor>();
+	}
+	break;
+	case physx::PxGeometryType::eBOX:
+	{
+		if (boxBP == nullptr) break;
+
+		shape = boxBP->GetDefaultObject<AStaticMeshActor>();
+	}
+	break;
+	case physx::PxGeometryType::eCONVEXMESH:
+		break;
+	case physx::PxGeometryType::eTRIANGLEMESH:
+		break;
+	case physx::PxGeometryType::eHEIGHTFIELD:
+		break;
+	case physx::PxGeometryType::eGEOMETRY_COUNT:
+		break;
+	case physx::PxGeometryType::eINVALID:
+		break;
+	default:
+		break;
+	}
+
+	if (shape != nullptr)
+	{
+		Parameters.Template = shape;
+		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+	}
+
+	if (visual != nullptr)
+	{
+		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
+	}
+
+	pos = data.pos;
+	rot = data.rot;
+
+	UpdateTransform();
+}
+
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 {
 	FTransform actorTransform = GetOwner()->GetActorTransform();
@@ -87,4 +151,52 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 	FTransform transform = FTransform(FRotator(newRot), newPos, scale);
 	transform *= FTransform(conversionMatrix);
 	GetOwner()->SetActorTransform(transform, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection)
+{
+	visual->Destroy();
+	return true;
+}
+
+void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
+{
+	TArray<UStaticMeshComponent*> components;
+	if (visual == nullptr)
+	{
+		UE_LOG(RakNet_Replica, Error, TEXT("Replica::SetMaterial() visual is null, material not set"));
+		return;
+	}
+
+	visual->GetComponents<UStaticMeshComponent>(components);
+	for (int32 i = 0; i < components.Num(); i++)
+	{
+		UStaticMeshComponent* StaticMeshComponent = components[i];
+		StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+	}
+}
+
+void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection)
+{
+	unsigned short port = sourceConnection->GetSystemAddress().GetPort();
+	int rank = port - 12345;
+
+	switch (rank)
+	{
+	case 0:
+		SetMaterial(0, server0Material);
+		break;
+	case 1:
+		SetMaterial(0, server1Material);
+		break;
+	case 2:
+		SetMaterial(0, server2Material);
+		break;
+	case 3:
+		SetMaterial(0, server3Material);
+		break;
+	default:
+		SetMaterial(0, unknownMaterial);
+		break;
+	}
 }

@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include "ReplicaBase.h"
+#include "ReplicaRigidDynamicClient.h"
 
 using namespace std::placeholders;
 

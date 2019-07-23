@@ -15,7 +15,6 @@
 
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
-#include "ReplicaRigidDynamic.h"
 #include "Replica.generated.h"
 
 
@@ -23,8 +22,10 @@ DECLARE_LOG_CATEGORY_EXTERN(RakNet_Replica, Log, All);
 
 using namespace RakNet;
 
+class UReplicaRigidDynamicClient;
+
 UCLASS()
-class RN4UE4_API AReplica : public AActor, public ReplicaRigidDynamic
+class RN4UE4_API AReplica : public AActor
 {
 	GENERATED_BODY()
 
@@ -101,5 +102,6 @@ public:
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 
 private:
-	AActor* visual = nullptr;
+	UStaticMeshComponent* visual = nullptr;
+	UReplicaRigidDynamicClient* replicaRigidDynamic = nullptr;
 };
