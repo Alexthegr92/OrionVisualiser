@@ -2,7 +2,7 @@
 
 #include "Replica.h"
 #include "ReplicaRigidDynamicClient.h"
-#include "PhysXIncludes.h" 
+
 
 DEFINE_LOG_CATEGORY(RakNet_Replica);
 
@@ -14,6 +14,7 @@ AReplica::AReplica()
 	PrimaryActorTick.bCanEverTick = true;
 	replicaRigidDynamic = CreateDefaultSubobject<UReplicaRigidDynamicClient>(TEXT("ClientRigidDyamic"));
 	replicaRigidDynamic->SetSpawned(true);
+	AddOwnedComponent(replicaRigidDynamic);
 }
 
 // Called when the game starts or when spawned
@@ -178,8 +179,63 @@ void AReplica::PostDeserializeConstruction(RakNet::BitStream *constructionBitstr
 		SetMaterial(0, unknownMaterial);
 		break;
 	}
+}
 
 void AReplica::SetVisual()
 {
 
+}
+
+void AReplica::SetVisual(physx::PxGeometryType::Enum geomType)
+{
+	FActorSpawnParameters Parameters = FActorSpawnParameters();
+	FTransform SpawnTransform = FTransform();
+	AStaticMeshActor* shape = nullptr;
+
+	switch (geomType)
+	{
+	case physx::PxGeometryType::eSPHERE:
+	{
+		if (sphereBP == nullptr) break;
+			shape = sphereBP->GetDefaultObject<AStaticMeshActor>();
+			break;
+	}
+	case physx::PxGeometryType::ePLANE:
+		break;
+	case physx::PxGeometryType::eCAPSULE:
+	{
+		if (capsuleBP == nullptr) break;
+		shape = capsuleBP->GetDefaultObject<AStaticMeshActor>();
+		break;
+	}
+	case physx::PxGeometryType::eBOX:
+	{
+		if (boxBP == nullptr) break;
+		shape = boxBP->GetDefaultObject<AStaticMeshActor>();
+		break;
+	}	
+	case physx::PxGeometryType::eCONVEXMESH:
+		break;
+	case physx::PxGeometryType::eTRIANGLEMESH:
+		break;
+	case physx::PxGeometryType::eHEIGHTFIELD:
+		break;
+	case physx::PxGeometryType::eGEOMETRY_COUNT:
+		break;
+	case physx::PxGeometryType::eINVALID:
+		break;
+	default:
+		break;
+	}
+
+	if (shape != nullptr)
+	{
+		Parameters.Template = shape;
+		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+	}
+
+	if (visual != nullptr)
+	{
+		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
+	}
 }

@@ -26,15 +26,6 @@ public:
 
 	void OnConstruction(const RigidDynamicConstructionData& data);
 
-	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
-		TSubclassOf<AStaticMeshActor> sphereBP;
-
-	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
-		TSubclassOf<AStaticMeshActor> boxBP;
-
-	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
-		TSubclassOf<AStaticMeshActor> capsuleBP;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Server0Material")
 		UMaterial* server0Material;
 
@@ -49,7 +40,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UnknownMaterial")
 		UMaterial* unknownMaterial;
-
 
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)

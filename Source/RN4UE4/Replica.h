@@ -12,6 +12,7 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 #include "Rand.h"
+#include "PhysXIncludes.h" 
 
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
@@ -102,8 +103,18 @@ public:
 
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 
-	void SetVisual();
+	void SetVisual(physx::PxGeometryType::Enum geomType);
+
+	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
+		TSubclassOf<UStaticMeshComponent> sphereBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
+		TSubclassOf<UStaticMeshComponent> boxBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
+		TSubclassOf<UStaticMeshComponent> capsuleBP;
+
 private:
-	UStaticMeshComponent* visual = nullptr;
+	AActor* visual = nullptr;
 	UReplicaRigidDynamicClient* replicaRigidDynamic = nullptr;
 };

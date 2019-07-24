@@ -1,4 +1,6 @@
 #include "ReplicaRigidDynamicClient.h"
+#include "Replica.h"
+#include "PhysXIncludes.h" 
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -9,8 +11,6 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
-
 	registered = false;
 }
 
@@ -18,7 +18,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
+	if (!registered && rakNetManager!=nullptr && rakNetManager->GetInitialised() && !spawned)
 	{
 		rakNetManager->Reference(this);
 		registered = true;
@@ -27,61 +27,10 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 
 void UReplicaRigidDynamicClient::OnConstruction(const RigidDynamicConstructionData & data)
 {
-	FActorSpawnParameters Parameters = FActorSpawnParameters();
-	FTransform SpawnTransform = FTransform();
-	AStaticMeshActor* shape = nullptr;
-
 	physx::PxGeometryType::Enum geomType = static_cast<physx::PxGeometryType::Enum>(data.geom);
-
-	switch (geomType)
-	{
-	case physx::PxGeometryType::eSPHERE:
-	{
-		if (sphereBP == nullptr) break;
-
-		shape = sphereBP->GetDefaultObject<AStaticMeshActor>();
-	}
-	break;
-	case physx::PxGeometryType::ePLANE:
-		break;
-	case physx::PxGeometryType::eCAPSULE:
-	{
-		if (capsuleBP == nullptr) break;
-
-		shape = capsuleBP->GetDefaultObject<AStaticMeshActor>();
-	}
-	break;
-	case physx::PxGeometryType::eBOX:
-	{
-		if (boxBP == nullptr) break;
-
-		shape = boxBP->GetDefaultObject<AStaticMeshActor>();
-	}
-	break;
-	case physx::PxGeometryType::eCONVEXMESH:
-		break;
-	case physx::PxGeometryType::eTRIANGLEMESH:
-		break;
-	case physx::PxGeometryType::eHEIGHTFIELD:
-		break;
-	case physx::PxGeometryType::eGEOMETRY_COUNT:
-		break;
-	case physx::PxGeometryType::eINVALID:
-		break;
-	default:
-		break;
-	}
-
-	if (shape != nullptr)
-	{
-		Parameters.Template = shape;
-		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
-	}
-
-	if (visual != nullptr)
-	{
-		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
-	}
+	AReplica* rep = dynamic_cast<AReplica*>(GetOwner());
+	if(rep)
+		rep->SetVisual(geomType);
 
 	pos = data.pos;
 	rot = data.rot;
