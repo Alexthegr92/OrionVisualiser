@@ -29,6 +29,10 @@ class RN4UE4_API AReplica : public AActor, public ReplicaRigidDynamic
 	GENERATED_BODY()
 
 public:
+	// FIXME: This suppresses warnings about hiding inherited functions; we un-hide them here
+	using AActor::OnConstruction;
+	using AActor::Serialize;
+
 	// Sets default values for this actor's properties
 	AReplica();
 

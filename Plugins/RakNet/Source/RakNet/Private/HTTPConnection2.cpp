@@ -8,14 +8,9 @@
  *
  */
 
-#if _RAKNET_SUPPORT_HTTPConnection2==1 && _RAKNET_SUPPORT_TCPInterface==1
 #include "HTTPConnection2.h"
-#endif
-
 #include "RakNetPrivatePCH.h"
 
-
-#include "NativeFeatureIncludes.h"
 #if _RAKNET_SUPPORT_HTTPConnection2==1 && _RAKNET_SUPPORT_TCPInterface==1
 
 #include "HTTPConnection2.h"
