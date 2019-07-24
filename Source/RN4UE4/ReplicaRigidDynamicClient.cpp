@@ -116,14 +116,17 @@ void UReplicaRigidDynamicClient::SetSpawned(bool spa)
 void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
 {
 	TArray<UStaticMeshComponent*> components;
-
-	GetOwner()->GetComponents<UStaticMeshComponent>(components);
-	for (int32 i = 0; i < components.Num(); i++)
-	{
-		UStaticMeshComponent* StaticMeshComponent = components[i];
-		if (StaticMeshComponent)
+	
+	AReplica* rep = dynamic_cast<AReplica*>(GetOwner());
+	if (rep) {
+		rep->visual->GetComponents<UStaticMeshComponent>(components);
+		for (int32 i = 0; i < components.Num(); i++)
 		{
-			StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+			UStaticMeshComponent* StaticMeshComponent = components[i];
+			if (StaticMeshComponent)
+			{
+				StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+			}
 		}
 	}
 }

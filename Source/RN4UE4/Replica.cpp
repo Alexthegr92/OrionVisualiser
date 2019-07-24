@@ -17,8 +17,6 @@ AReplica::AReplica()
 	replicaRigidDynamic = CreateDefaultSubobject<UReplicaRigidDynamicClient>(TEXT("ClientRigidDyamic"));
 	replicaRigidDynamic->SetSpawned(true);
 	AddOwnedComponent(replicaRigidDynamic);
-	visual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
-	visual->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -50,21 +48,24 @@ void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 	{
 	case physx::PxGeometryType::eSPHERE:
 	{
-		visual->SetStaticMesh(sphereBP);
-		visual->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+		if (sphereBP == nullptr) break;
+
+		shape = Cast<AStaticMeshActor>(sphereBP->GetDefaultObject());
 	}
 		break;
 	case physx::PxGeometryType::ePLANE:
 		break;
 	case physx::PxGeometryType::eCAPSULE:
 	{
-		visual->SetStaticMesh(capsuleBP);
+		if (capsuleBP == nullptr) break;
+
+		shape = Cast<AStaticMeshActor>(capsuleBP->GetDefaultObject());
 	}
 		break;
 	case physx::PxGeometryType::eBOX:
 	{
-		visual->SetStaticMesh(boxBP);
-		visual->SetRelativeScale3D(FVector(0.3f, 0.3f, 1.0f));
+		if (boxBP == nullptr) break;
+		shape = Cast<AStaticMeshActor>(boxBP->GetDefaultObject());
 	}
 		break;
 	case physx::PxGeometryType::eCONVEXMESH:
@@ -226,5 +227,16 @@ void AReplica::SetVisual(physx::PxGeometryType::Enum geomType)
 		break;
 	default:
 		break;
+	}
+
+	if (shape != nullptr)
+	{
+		Parameters.Template = shape;
+		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+	}
+
+	if (visual != nullptr)
+	{
+		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
 	}
 }
