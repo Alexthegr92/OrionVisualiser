@@ -74,4 +74,4 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Source files copied from Replicas library
-/Plugins/Replicas/Source/Replicas/Source/
+/Plugins/Replicas/Source/Replicas/Source
