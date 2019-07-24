@@ -81,6 +81,7 @@ public:
 
 	void UpdateTransform();
 
+	void SetSpawned(bool spa);
 	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 	// Called every frame
@@ -92,4 +93,5 @@ protected:
 
 private:
 	bool registered;
+	bool spawned = false;
 };

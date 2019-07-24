@@ -18,7 +18,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
 	{
 		rakNetManager->Reference(this);
 		registered = true;
@@ -155,24 +155,27 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 
 bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection)
 {
-	visual->Destroy();
+	GetOwner()->Destroy();
 	return true;
+}
+
+void UReplicaRigidDynamicClient::SetSpawned(bool spa)
+{
+	spawned = spa;
 }
 
 void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
 {
 	TArray<UStaticMeshComponent*> components;
-	if (visual == nullptr)
-	{
-		UE_LOG(RakNet_Replica, Error, TEXT("Replica::SetMaterial() visual is null, material not set"));
-		return;
-	}
 
-	visual->GetComponents<UStaticMeshComponent>(components);
+	GetOwner()->GetComponents<UStaticMeshComponent>(components);
 	for (int32 i = 0; i < components.Num(); i++)
 	{
 		UStaticMeshComponent* StaticMeshComponent = components[i];
-		StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+		if (StaticMeshComponent)
+		{
+			StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+		}
 	}
 }
 

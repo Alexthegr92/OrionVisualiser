@@ -37,6 +37,7 @@ using namespace RakNet;
 
 class ReplicaManager3Sample;
 
+class UReplicaRigidDynamicClient;
 UCLASS()
 class RN4UE4_API ARakNetRP : public AActor, public ReplicaManager3
 {
@@ -70,7 +71,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
 
-	AReplica* GetObjectFromType(RakString typeName);
+	UReplicaRigidDynamicClient* GetObjectFromType(RakString typeName);
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 

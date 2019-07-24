@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Replica.h"
+#include "ReplicaRigidDynamicClient.h"
 #include "PhysXIncludes.h" 
 
 DEFINE_LOG_CATEGORY(RakNet_Replica);
@@ -11,12 +12,19 @@ AReplica::AReplica()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	replicaRigidDynamic = CreateDefaultSubobject<UReplicaRigidDynamicClient>(TEXT("ClientRigidDyamic"));
+	replicaRigidDynamic->SetSpawned(true);
 }
 
 // Called when the game starts or when spawned
 void AReplica::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+UReplicaRigidDynamicClient * AReplica::GetReplicaRigidDynamic()
+{
+	return replicaRigidDynamic;
 }
 
 // Called every frame
@@ -170,4 +178,8 @@ void AReplica::PostDeserializeConstruction(RakNet::BitStream *constructionBitstr
 		SetMaterial(0, unknownMaterial);
 		break;
 	}
+
+void AReplica::SetVisual()
+{
+
 }

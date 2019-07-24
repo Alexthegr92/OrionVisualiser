@@ -40,6 +40,7 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UReplicaRigidDynamicClient* GetReplicaRigidDynamic();
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -101,6 +102,7 @@ public:
 
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 
+	void SetVisual();
 private:
 	UStaticMeshComponent* visual = nullptr;
 	UReplicaRigidDynamicClient* replicaRigidDynamic = nullptr;

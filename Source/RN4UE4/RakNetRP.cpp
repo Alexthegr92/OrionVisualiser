@@ -209,7 +209,7 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
+UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 {
 	if (typeName == "ReplicaRigidDynamic") 
 	{
@@ -223,7 +223,10 @@ AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 		FActorSpawnParameters Parameters;
 		AReplica* replica = objectToSpawn->GetDefaultObject<AReplica>();
 		Parameters.Template = replica;
-		return (AReplica*)GetWorld()->SpawnActor(replica->GetClass(), new FTransform(), Parameters);
+		(AReplica*)GetWorld()->SpawnActor(replica->GetClass(), new FTransform(), Parameters);
+		UReplicaRigidDynamicClient* replicaClient = replica->GetReplicaRigidDynamic();
+		replicaClient->rakNetManager = this;
+		return replicaClient;
 	}
 
 	return nullptr;
