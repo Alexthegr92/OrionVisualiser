@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "RN4UE4.h"
 #include "RakNet.h"
 #include "RakNetTypes.h"
 #include "MessageIdentifiers.h"
@@ -14,6 +13,7 @@
 #include "GetTime.h"
 #include "Rand.h"
 
+#include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "ReplicaRigidDynamic.h"
 #include "Replica.generated.h"

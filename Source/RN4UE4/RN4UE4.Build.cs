@@ -6,9 +6,9 @@ public class RN4UE4 : ModuleRules
 {
 	public RN4UE4(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RakNet", "Replicas", "PhysX", "APEX" });
+		// Enable IWYU mode
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		MinFilesUsingPrecompiledHeaderOverride = 1;
-		bFasterWithoutUnity = false;
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RakNet", "Replicas", "PhysX", "APEX" });
 	}
 }

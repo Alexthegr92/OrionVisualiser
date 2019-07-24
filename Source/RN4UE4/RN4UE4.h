@@ -2,6 +2,6 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(RN4UE4, Log, All);

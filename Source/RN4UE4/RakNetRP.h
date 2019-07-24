@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "RN4UE4.h"
 #include "RakNet.h"
 #include "RakNetTypes.h"
 #include "MessageIdentifiers.h"
