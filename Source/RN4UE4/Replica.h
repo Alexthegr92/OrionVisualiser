@@ -106,15 +106,19 @@ public:
 	void SetVisual(physx::PxGeometryType::Enum geomType);
 
 	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
-		TSubclassOf<UStaticMeshComponent> sphereBP;
+		UStaticMesh* sphereBP;
 
 	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
-		TSubclassOf<UStaticMeshComponent> boxBP;
+		UStaticMesh* boxBP;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
-		TSubclassOf<UStaticMeshComponent> capsuleBP;
+		UStaticMesh* capsuleBP;
 
-private:
-	AActor* visual = nullptr;
-	UReplicaRigidDynamicClient* replicaRigidDynamic = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "Root")
+		USceneComponent* RootSceneComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+		UStaticMeshComponent* visual;
+	UPROPERTY(EditDefaultsOnly, Category = "ReplicaRigidDynamic")
+		UReplicaRigidDynamicClient* replicaRigidDynamic;
+	
 };

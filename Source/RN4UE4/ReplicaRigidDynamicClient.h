@@ -26,19 +26,19 @@ public:
 
 	void OnConstruction(const RigidDynamicConstructionData& data);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Server0Material")
+	UPROPERTY(EditAnywhere, Category = "Server0Material")
 		UMaterial* server0Material;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Server1Material")
+	UPROPERTY(EditAnywhere, Category = "Server1Material")
 		UMaterial* server1Material;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Server2Material")
+	UPROPERTY(EditAnywhere, Category = "Server2Material")
 		UMaterial* server2Material;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Server3Material")
+	UPROPERTY(EditAnywhere, Category = "Server3Material")
 		UMaterial* server3Material;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UnknownMaterial")
+	UPROPERTY(EditAnywhere, Category = "UnknownMaterial")
 		UMaterial* unknownMaterial;
 
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }

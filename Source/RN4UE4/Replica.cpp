@@ -12,9 +12,13 @@ AReplica::AReplica()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+	RootComponent = RootSceneComponent;
 	replicaRigidDynamic = CreateDefaultSubobject<UReplicaRigidDynamicClient>(TEXT("ClientRigidDyamic"));
 	replicaRigidDynamic->SetSpawned(true);
 	AddOwnedComponent(replicaRigidDynamic);
+	visual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
+	visual->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -46,25 +50,21 @@ void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 	{
 	case physx::PxGeometryType::eSPHERE:
 	{
-		if (sphereBP == nullptr) break;
-
-		shape = sphereBP->GetDefaultObject<AStaticMeshActor>();
+		visual->SetStaticMesh(sphereBP);
+		visual->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
 	}
 		break;
 	case physx::PxGeometryType::ePLANE:
 		break;
 	case physx::PxGeometryType::eCAPSULE:
 	{
-		if (capsuleBP == nullptr) break;
-
-		shape = capsuleBP->GetDefaultObject<AStaticMeshActor>();
+		visual->SetStaticMesh(capsuleBP);
 	}
 		break;
 	case physx::PxGeometryType::eBOX:
 	{
-		if (boxBP == nullptr) break;
-
-		shape = boxBP->GetDefaultObject<AStaticMeshActor>();
+		visual->SetStaticMesh(boxBP);
+		visual->SetRelativeScale3D(FVector(0.3f, 0.3f, 1.0f));
 	}
 		break;
 	case physx::PxGeometryType::eCONVEXMESH:
@@ -226,16 +226,5 @@ void AReplica::SetVisual(physx::PxGeometryType::Enum geomType)
 		break;
 	default:
 		break;
-	}
-
-	if (shape != nullptr)
-	{
-		Parameters.Template = shape;
-		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
-	}
-
-	if (visual != nullptr)
-	{
-		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
 	}
 }
