@@ -68,7 +68,7 @@ public:
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalBoundaryBox(const FVector pos, const FVector boxExtent, int rank);
+		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;

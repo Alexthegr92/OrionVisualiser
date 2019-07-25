@@ -17,21 +17,15 @@ ABoundaryBox::ABoundaryBox()
 void ABoundaryBox::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!sent)
-	{
-		SetBoundary();
-		sent = true;
-	}
 }
-
+/*
 void ABoundaryBox::SetBoundary()
 {
 	// Box trigger for self
 	FVector pos = GetActorLocation();
-	FVector extents = BoxComponent->GetUnscaledBoxExtent();
-	extents = extents / 2.0f;
-	rakNetManager->RPrpcSignalBoundaryBox(FVector(pos.X, pos.Z, pos.Y), FVector(extents.X, extents.Z, extents.Y), rank);
-}
+	FVector size = GetActorScale3D();
+	rakNetManager->RPrpcSignalBoundaryBox(FVector(pos.X, pos.Z, pos.Y), FVector(size.X, size.Z, size.Y), rank);
+}*/
 
 // Called every frame
 void ABoundaryBox::Tick(float DeltaTime)

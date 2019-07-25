@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BoundaryManager.generated.h"
 
+class ABoundaryBox;
+class ARakNetRP;
 UCLASS()
 class RN4UE4_API ABoundaryManager : public AActor
 {
@@ -23,6 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SignalBOundariesToServer();
+	void SignalBoundariesToServer();
+
+	UPROPERTY(EditAnywhere, Category = "Raknet")
+		ARakNetRP*		rakNetManager;
+	UPROPERTY(EditAnywhere, Category = "Raknet")
+		TArray<ABoundaryBox*> boxes;
+
+private:
+	bool boundariesSent = false;
 	
 };

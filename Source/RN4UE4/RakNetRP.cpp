@@ -222,12 +222,14 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-void ARakNetRP::RPrpcSignalBoundaryBox(const FVector pos, const FVector boxExtent, int rank)
+void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size)
 {
 	RakNet::BitStream testBs;
-	testBs.WriteVector<float>(pos.X, pos.Y, pos.Z);
-	testBs.WriteVector<float>(boxExtent.X, boxExtent.Y, boxExtent.Z);
-	testBs.Write<int>(rank);
+	int numberBoxes = pos.Num();
+	for (int i = 0; i < numberBoxes; i++) {
+		testBs.WriteVector<float>(pos[i].X, pos[i].Z, pos[i].Y);
+		testBs.WriteVector<float>(size[i].X, size[i].Z, size[i].Y);
+	}
 
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;

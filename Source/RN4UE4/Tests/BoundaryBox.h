@@ -26,15 +26,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "Raknet")
-		ARakNetRP*        rakNetManager;
-
-	UPROPERTY(EditAnywhere, Category = "Raknet")
 		int       rank;
 
 	UPROPERTY(EditDefaultsOnly, Category = "RakNet")
 		UBoxComponent* BoxComponent;
-
-	void SetBoundary();
 private:
 	bool	sent;
 };
