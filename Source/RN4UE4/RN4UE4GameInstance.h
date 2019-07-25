@@ -17,9 +17,6 @@ class RN4UE4_API URN4UE4GameInstance : public UGameInstance
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
-		float timeToChangeLevel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		int indexLevel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")

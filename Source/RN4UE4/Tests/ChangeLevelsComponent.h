@@ -7,6 +7,7 @@
 #include "ChangeLevelsComponent.generated.h"
 
 
+class ARakNetRP;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RN4UE4_API UChangeLevelsComponent : public UActorComponent
 {
@@ -24,6 +25,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		float timeToChangeLevel;
+
 private:
 	float	currentTime;
+	ARakNetRP * rakNetManager;
 };

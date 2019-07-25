@@ -91,9 +91,6 @@ public:
 
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
 
-	UFUNCTION(BlueprintCallable, Category = "RakNet")
-		bool	IsSpawned();
-
 	virtual void Deserialize(DeserializeParameters *deserializeParameters);
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
 
@@ -105,5 +102,4 @@ public:
 
 private:
 	AActor* visual = nullptr;
-	bool	spawned = true;
 };
