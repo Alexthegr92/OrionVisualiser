@@ -79,6 +79,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	data.rot.Y = actorTransform.GetRotation().Y;
 	data.rot.Z = actorTransform.GetRotation().Z;
 	data.rot.W = actorTransform.GetRotation().W;
+	data.numVertex = 0;
 	TArray<UPrimitiveComponent*> comps;
 	GetOwner()->GetComponents(comps);
 	for (auto Iter = comps.CreateConstIterator(); Iter; ++Iter)
@@ -86,61 +87,19 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		UStaticMeshComponent* vismesh = Cast<UStaticMeshComponent>(*Iter);
 			if (vismesh)
 			{
-				data.sca.X = GetOwner()->GetActorScale().X;
-				data.sca.Y = GetOwner()->GetActorScale().Z;
-				data.sca.Z = GetOwner()->GetActorScale().Y;
-				data.forwardVector.X = GetOwner()->GetActorForwardVector().X;
-				data.forwardVector.Y = GetOwner()->GetActorForwardVector().Y;
-				data.forwardVector.Z = GetOwner()->GetActorForwardVector().Z;
+				data.scale.X = GetOwner()->GetActorScale().X;
+				data.scale.Y = GetOwner()->GetActorScale().Z;
+				data.scale.Z = GetOwner()->GetActorScale().Y;
 				data.mass = vismesh->GetMass();
 				data.inertia.X = vismesh->GetInertiaTensor().X;
-				data.inertia.Y = vismesh->GetInertiaTensor().Y;
-				data.inertia.Z = vismesh->GetInertiaTensor().Z;
+				data.inertia.Y = vismesh->GetInertiaTensor().Z;
+				data.inertia.Z = vismesh->GetInertiaTensor().Y;
 				data.angularDamping = vismesh->GetAngularDamping();
 				data.linearDamping = vismesh->GetLinearDamping();
 				data.gravityEnabled = vismesh->IsGravityEnabled();
-				//if box
-				if (typeMesh == 3) {
-					FRotator rotAux = GetOwner()->GetActorRotation();
-					FVector ext;
-					FBoxSphereBounds sph;
-					FTransform tr;
-					GetOwner()->SetActorRotation(FQuat(0, 0, 0, 1));
-					sph = vismesh->CalcBounds(tr);
-					data.extents.X = sph.BoxExtent.X;
-					data.extents.Y = sph.BoxExtent.Z;
-					data.extents.Z = sph.BoxExtent.Y;
-					GetOwner()->SetActorRotation(rotAux);
-				}
 
-				//if sphere
-				else if (typeMesh == 0) {
-					float radius;
-					FBoxSphereBounds sph;
-					FTransform tr;
-					vismesh->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
-					radius = sph.SphereRadius;
-					data.extents.X = radius;
-					data.extents.Y = 0.0f;
-					data.extents.Z = 0.0f;
-				}
-				//if capsule
-				else if (typeMesh == 2) {
-					FRotator rotAux = GetOwner()->GetActorRotation();
-					FVector ext;
-					FBoxSphereBounds sph;
-					FTransform tr;
-					GetOwner()->SetActorRotation(FQuat(0, 0, 0, 1));
-					vismesh->GetBodySetup()->AggGeom.CalcBoxSphereBounds(sph, tr);
-					ext = sph.BoxExtent;
-					ext = ext * 0.5;
-					data.extents.X = ext.X;
-					data.extents.Y = ext.Y - ext.X;
-					data.extents.Z = 0.0f;
-					GetOwner()->SetActorRotation(rotAux);
-				}
 				//if mesh
-				else if (typeMesh == 4) {
+				if (typeMesh == 4) {
 					data.numVertex = vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
 					for (FVector vec : vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 					{
@@ -165,7 +124,6 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				data.dynamicFriction = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
 				data.staticFriction = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
 				PxCombineMode::Enum frictionCombineMode = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFrictionCombineMode();
-				data.referenceCount = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getReferenceCount();
 				//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
 				if (restituCombineMode == PxCombineMode::eAVERAGE)
 					data.restitutionCombineMode = 0;
