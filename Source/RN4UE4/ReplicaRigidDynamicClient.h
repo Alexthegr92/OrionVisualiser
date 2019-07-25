@@ -15,6 +15,9 @@ class RN4UE4_API UReplicaRigidDynamicClient : public UActorComponent, public Rep
 	GENERATED_BODY()
 
 public:	
+	// FIXME: This suppresses warnings about hiding an inherited function; we un-hide it here
+	using UActorComponent::Serialize;
+
 	// Sets default values for this component's properties
 	UReplicaRigidDynamicClient();
 

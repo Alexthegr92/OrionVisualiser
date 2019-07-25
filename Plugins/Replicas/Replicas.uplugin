@@ -29,6 +29,12 @@
 	"PreBuildSteps": {
 		"Win64": [
 			"if not exist $(ProjectDir)/Plugins/Replicas/Source/Replicas/Source/*.cpp echo Can't find Replica sources - did you run generate_symlinks.bat? && exit /b 1"
+		],
+		"Linux": [
+			"if ! ls $(ProjectDir)/Plugins/Replicas/Source/Replicas/Source/*.cpp >/dev/null 2>&1; then",
+			"	echo \"Can't find Replica sources - did you run generate_symlinks.sh?\"",
+			"	exit 1",
+			"fi"
 		]
 	}
 }

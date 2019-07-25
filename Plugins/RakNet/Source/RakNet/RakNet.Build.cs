@@ -6,21 +6,15 @@ public class RakNet : ModuleRules
 {
 	public RakNet(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+		// Enable IWYU mode and specify custom PCH
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PrivatePCHHeaderFile = "Private/RakNetPrivatePCH.h";
+
 		PrivateDefinitions.AddRange(new string[]
 		{
 			"_CRT_SECURE_NO_WARNINGS",
 			"_WINSOCK_DEPRECATED_NO_WARNINGS",
 		});
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				"RakNet/Public"
-				// ... add public include paths required here ...
-			}
-			);
-				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
@@ -43,7 +37,7 @@ public class RakNet : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Engine"
+				// ... add other private dependencies that you statically link with here ...
 			}
 			);
 		

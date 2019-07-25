@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "RN4UE4.h"
 #include "RakNet.h"
 #include "RakNetTypes.h"
 #include "MessageIdentifiers.h"
@@ -14,6 +13,7 @@
 #include "GetTime.h"
 #include "Rand.h"
 
+#include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "ReplicaRigidDynamic.h"
 #include "Replica.generated.h"
@@ -29,6 +29,10 @@ class RN4UE4_API AReplica : public AActor, public ReplicaRigidDynamic
 	GENERATED_BODY()
 
 public:
+	// FIXME: This suppresses warnings about hiding inherited functions; we un-hide them here
+	using AActor::OnConstruction;
+	using AActor::Serialize;
+
 	// Sets default values for this actor's properties
 	AReplica();
 
