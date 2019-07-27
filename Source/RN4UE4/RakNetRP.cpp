@@ -221,10 +221,12 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 
 		// spawn the object 
 		FActorSpawnParameters Parameters;
-		AReplica* replica = objectToSpawn->GetDefaultObject<AReplica>();
-		Parameters.Template = replica;
-		AReplica* newReplica = (AReplica*)GetWorld()->SpawnActor(replica->GetClass(), new FTransform(), Parameters);
-		UReplicaRigidDynamicClient* replicaClient = newReplica->GetReplicaRigidDynamic();
+		AActor* newReplica = (AActor*)GetWorld()->SpawnActor(AActor::StaticClass(), new FTransform(), Parameters);
+		USceneComponent * RootSceneComponent = NewObject<USceneComponent>(newReplica,TEXT("RootScene"));
+		newReplica->SetRootComponent(RootSceneComponent);
+		UReplicaRigidDynamicClient* replicaClient = NewObject<UReplicaRigidDynamicClient>(newReplica);
+		replicaClient->SetSpawned(true);
+		replicaClient->RegisterComponentWithWorld(GetWorld());
 		replicaClient->rakNetManager = this;
 		return replicaClient;
 	}

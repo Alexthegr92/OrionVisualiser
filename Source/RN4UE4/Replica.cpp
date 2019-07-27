@@ -12,11 +12,12 @@ AReplica::AReplica()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+/*	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootSceneComponent;
 	replicaRigidDynamic = CreateDefaultSubobject<UReplicaRigidDynamicClient>(TEXT("ClientRigidDyamic"));
+	NewObject<UReplicaRigidDynamicClient>(this);
 	replicaRigidDynamic->SetSpawned(true);
-	AddOwnedComponent(replicaRigidDynamic);
+	AddOwnedComponent(replicaRigidDynamic);*/
 }
 
 // Called when the game starts or when spawned
@@ -189,7 +190,7 @@ void AReplica::SetVisual()
 
 void AReplica::SetVisual(physx::PxGeometryType::Enum geomType)
 {
-	FActorSpawnParameters Parameters = FActorSpawnParameters();
+/*	FActorSpawnParameters Parameters = FActorSpawnParameters();
 	FTransform SpawnTransform = FTransform();
 	AStaticMeshActor* shape = nullptr;
 
@@ -238,5 +239,5 @@ void AReplica::SetVisual(physx::PxGeometryType::Enum geomType)
 	if (visual != nullptr)
 	{
 		visual->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
-	}
+	}*/
 }

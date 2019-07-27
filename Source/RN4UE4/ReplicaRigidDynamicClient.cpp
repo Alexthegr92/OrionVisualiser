@@ -5,6 +5,40 @@
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FClassFinder<AStaticMeshActor> SphereBlueprint(TEXT("/Game/Blueprints/Sphere"));
+	if (SphereBlueprint.Succeeded()) {
+		sphereBP = SphereBlueprint.Class;
+	}
+	static ConstructorHelpers::FClassFinder<AStaticMeshActor> BoxBlueprint(TEXT("/Game/Blueprints/Box"));
+	if (BoxBlueprint.Succeeded()) {
+		boxBP = BoxBlueprint.Class;
+	}
+	static ConstructorHelpers::FClassFinder<AStaticMeshActor> CapsuleBlueprint(TEXT("/Game/Blueprints/Capsule"));
+	if (CapsuleBlueprint.Succeeded()) {
+		capsuleBP = CapsuleBlueprint.Class;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder0(TEXT("Material'/Game/Materials/Server0'"));
+	if (MatFinder0.Succeeded())
+	{
+		server0Material = MatFinder0.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder1(TEXT("Material'/Game/Materials/Server1'"));
+	if (MatFinder1.Succeeded())
+	{
+		server1Material = MatFinder1.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder2(TEXT("Material'/Game/Materials/Server2'"));
+	if (MatFinder2.Succeeded())
+	{
+		server2Material = MatFinder2.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder3(TEXT("Material'/Game/Materials/Server3'"));
+	if (MatFinder3.Succeeded())
+	{
+		server3Material = MatFinder3.Object;
+	}
 }
 
 void UReplicaRigidDynamicClient::BeginPlay()
@@ -28,9 +62,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 void UReplicaRigidDynamicClient::OnConstruction(const RigidDynamicConstructionData & data)
 {
 	physx::PxGeometryType::Enum geomType = static_cast<physx::PxGeometryType::Enum>(data.geom);
-	AReplica* rep = dynamic_cast<AReplica*>(GetOwner());
-	if(rep)
-		rep->SetVisual(geomType);
+	SetVisual(geomType);
 
 	pos = data.pos;
 	rot = data.rot;
@@ -116,10 +148,7 @@ void UReplicaRigidDynamicClient::SetSpawned(bool spa)
 void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
 {
 	TArray<UStaticMeshComponent*> components;
-	
-	AReplica* rep = dynamic_cast<AReplica*>(GetOwner());
-	if (rep) {
-		rep->visual->GetComponents<UStaticMeshComponent>(components);
+		visual->GetComponents<UStaticMeshComponent>(components);
 		for (int32 i = 0; i < components.Num(); i++)
 		{
 			UStaticMeshComponent* StaticMeshComponent = components[i];
@@ -128,7 +157,6 @@ void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterf
 				StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
 			}
 		}
-	}
 }
 
 void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection)
@@ -155,3 +183,62 @@ void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *
 		break;
 	}
 }
+
+
+void UReplicaRigidDynamicClient::SetVisual(physx::PxGeometryType::Enum geomType)
+{
+	FActorSpawnParameters Parameters = FActorSpawnParameters();
+	FTransform SpawnTransform = FTransform();
+	AStaticMeshActor* shape = nullptr;
+
+	switch (geomType)
+	{
+	case physx::PxGeometryType::eSPHERE:
+	{
+		if (sphereBP == nullptr) break;
+
+		shape = Cast<AStaticMeshActor>(sphereBP->GetDefaultObject());
+	}
+	break;
+	case physx::PxGeometryType::ePLANE:
+		break;
+	case physx::PxGeometryType::eCAPSULE:
+	{
+		if (capsuleBP == nullptr) break;
+
+		shape = Cast<AStaticMeshActor>(capsuleBP->GetDefaultObject());
+	}
+	break;
+	case physx::PxGeometryType::eBOX:
+	{
+		if (boxBP == nullptr) break;
+		shape = Cast<AStaticMeshActor>(boxBP->GetDefaultObject());
+	}
+	break;
+	case physx::PxGeometryType::eCONVEXMESH:
+		break;
+	case physx::PxGeometryType::eTRIANGLEMESH:
+		break;
+	case physx::PxGeometryType::eHEIGHTFIELD:
+		break;
+	case physx::PxGeometryType::eGEOMETRY_COUNT:
+		break;
+	case physx::PxGeometryType::eINVALID:
+		break;
+	default:
+		break;
+	}
+	AActor * ac = GetOwner();
+	if (shape != nullptr)
+	{
+		Parameters.Template = shape;
+		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+	}
+
+	if (visual != nullptr)
+	{
+		
+		visual->AttachToActor(ac, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
+	}
+}
+

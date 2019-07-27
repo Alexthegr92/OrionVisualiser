@@ -41,6 +41,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UnknownMaterial")
 		UMaterial* unknownMaterial;
 
+	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
+		TSubclassOf<AStaticMeshActor> sphereBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
+		TSubclassOf<AStaticMeshActor> boxBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
+		TSubclassOf<AStaticMeshActor> capsuleBP;
+
+	UPROPERTY(EditAnywhere, Category = "VisualRepresentation")
+		AActor* visual = nullptr;
+
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
@@ -70,7 +82,7 @@ public:
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
 
 	void UpdateTransform();
-
+		void SetVisual(physx::PxGeometryType::Enum geomType);
 	void SetSpawned(bool spa);
 	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
