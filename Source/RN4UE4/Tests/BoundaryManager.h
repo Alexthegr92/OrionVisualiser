@@ -31,6 +31,8 @@ public:
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		TArray<ABoundaryBox*> boxes;
+	UPROPERTY(EditAnywhere, Category = "Raknet")
+		bool multiAuras;
 
 private:
 	bool boundariesSent = false;

@@ -68,12 +68,14 @@ public:
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size);
+		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size,bool multiAuras);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
 
 	AReplica* GetObjectFromType(RakString typeName);
+
+	void CustomCreatedBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
@@ -106,7 +108,9 @@ public:
 
 	bool GetAllServersChecked() const;
 
+	bool IsCustomBoundariesCreated() const;
 
+	void SetCustomBoundariesCreated(bool boundariesCreated);
 private:
 
 	void ConnectToIP(const FString& address);
@@ -120,7 +124,7 @@ private:
 	RPC4 rpc;
 
 	bool initialised;
-
+	bool customBoundariesCreated = true;
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;

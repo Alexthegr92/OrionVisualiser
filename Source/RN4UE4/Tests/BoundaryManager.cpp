@@ -26,8 +26,10 @@ void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if(rakNetManager != nullptr)
-		if(!boundariesSent && rakNetManager->GetAllServersChecked())
+		if (!boundariesSent && rakNetManager->GetAllServersChecked()) {
+			rakNetManager->SetCustomBoundariesCreated(false);
 			SignalBoundariesToServer();
+		}
 	else
 	{
 		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -55,13 +57,15 @@ void ABoundaryManager::SignalBoundariesToServer()
 			ABoundaryBox *box = *ActorItr;
 			if (box)
 			{
-				pos.Add(box->GetActorLocation() / 50.0f);
-				size.Add(box->GetActorScale3D());
+				FVector position = box->GetActorLocation() / 50.0f;
+				FVector sizeBox = box->GetActorScale3D();
+				pos.Add(FVector(position.X,position.Z,position.Y));
+				size.Add(FVector(sizeBox.X, sizeBox.Z, sizeBox.Y));
 			}
 		}
 
 	}
-	rakNetManager->RPrpcSignalBoundaryBox(pos, size);
+	rakNetManager->RPrpcSignalBoundaryBox(pos, size, multiAuras);
 	boundariesSent = true;
 }
 

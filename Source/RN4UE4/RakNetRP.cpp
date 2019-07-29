@@ -54,6 +54,8 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("DeleteBoundary", deleteFunction, 0);
 	auto getExpectedServersFunction = std::bind(&ARakNetRP::GetExpectedServersSlot, this, _1, _2);
 	rpc.RegisterSlot("NumberServers", getExpectedServersFunction, 0);
+	auto getCustomBoundariesCreatedFunction = std::bind(&ARakNetRP::CustomCreatedBoundarySlot, this, _1, _2);
+	rpc.RegisterSlot("CustomBoundariesCreated", getCustomBoundariesCreatedFunction, 0);
 
 	allServersChecked = false;
 }
@@ -222,7 +224,7 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size)
+void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, bool multiAuras)
 {
 	RakNet::BitStream testBs;
 	int numberBoxes = pos.Num();
@@ -230,7 +232,7 @@ void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<F
 		testBs.WriteVector<float>(pos[i].X, pos[i].Z, pos[i].Y);
 		testBs.WriteVector<float>(size[i].X, size[i].Z, size[i].Y);
 	}
-
+	testBs.Write<bool>(multiAuras);
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;
 	rakPeer->GetSystemList(addresses, guids);
@@ -259,6 +261,11 @@ AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 	}
 
 	return nullptr;
+}
+
+void ARakNetRP::CustomCreatedBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)
+{
+	customBoundariesCreated = true;
 }
 
 void ARakNetRP::CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)
@@ -330,6 +337,16 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 bool ARakNetRP::GetAllServersChecked() const
 {
 	return allServersChecked;
+}
+
+bool ARakNetRP::IsCustomBoundariesCreated() const
+{
+	return customBoundariesCreated;
+}
+
+void ARakNetRP::SetCustomBoundariesCreated(bool boundariesCreated)
+{
+	customBoundariesCreated = boundariesCreated;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)
