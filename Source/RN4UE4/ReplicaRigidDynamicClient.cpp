@@ -80,13 +80,13 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				data.linearDamping = vismesh->GetLinearDamping();
 				data.gravityEnabled = vismesh->IsGravityEnabled();
 
-				if (vismesh->GetBodySetup()->AggGeom.BoxElems.Num()>0) {
+				if (vismesh->GetBodySetup()->AggGeom.BoxElems.Num() > 0) {
 					data.geom = 3;
 				}
-				else if (vismesh->GetBodySetup()->AggGeom.SphylElems.Num()) {
+				else if (vismesh->GetBodySetup()->AggGeom.SphylElems.Num() > 0) {
 					data.geom = 2;
 				}
-				else if (vismesh->GetBodySetup()->AggGeom.SphereElems.Num()) {
+				else if (vismesh->GetBodySetup()->AggGeom.SphereElems.Num() > 0) {
 					data.geom = 1;
 				}
 				//if mesh
