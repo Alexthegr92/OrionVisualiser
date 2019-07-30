@@ -17,7 +17,7 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 
 	registered = false;
 }
@@ -25,29 +25,11 @@ void UReplicaRigidDynamicClient::BeginPlay()
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (rakNetManager != nullptr)
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
-		if (!registered && rakNetManager!=nullptr && rakNetManager->GetInitialised())
-		{
-			rakNetManager->Reference(this);
-			registered = true;
-		}
+		rakNetManager->Reference(this);
+		registered = true;
 	}
-	else
-	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
-			}
-
-		}
-	}
-
 }
 
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
@@ -143,6 +125,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				else if (frictionCombineMode == PxCombineMode::eMAX)
 					data.frictionCombineModeInt = 3;
 				//	constructionBitstream->Write<PxMaterialFlags>(flags);
+				vismesh->SetSimulatePhysics(false);
 			}
 	}
 	return data;
