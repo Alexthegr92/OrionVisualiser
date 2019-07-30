@@ -51,7 +51,6 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	actorTransform.ScaleTranslation(1 / 50.0f);*/
 
 	RigidDynamicConstructionData data;
-	data.geom = typeMesh;
 	FVector position = GetOwner()->GetActorLocation();
 	FQuat rot = GetOwner()->GetActorRotation().Quaternion();
 	position = position / 50.0f;
@@ -81,8 +80,18 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				data.linearDamping = vismesh->GetLinearDamping();
 				data.gravityEnabled = vismesh->IsGravityEnabled();
 
+				if (vismesh->GetBodySetup()->AggGeom.BoxElems.Num()>0) {
+					data.geom = 3;
+				}
+				else if (vismesh->GetBodySetup()->AggGeom.SphylElems.Num()) {
+					data.geom = 2;
+				}
+				else if (vismesh->GetBodySetup()->AggGeom.SphereElems.Num()) {
+					data.geom = 1;
+				}
 				//if mesh
-				if (typeMesh == 4) {
+				else if (vismesh->GetBodySetup()->AggGeom.ConvexElems.Num() > 0) {
+					data.geom = 4;
 					data.numVertex = vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
 					for (FVector vec : vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 					{
