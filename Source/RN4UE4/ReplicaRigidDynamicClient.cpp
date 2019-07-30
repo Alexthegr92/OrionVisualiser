@@ -55,7 +55,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	FTransform actorTransform = GetOwner()->GetActorTransform();
 
 	// Conversion matrix from PhysX to Unreal
-	float	matrixElements[16] = {
+/*	float	matrixElements[16] = {
 		1,  0, 0, 0,
 		0,  0, 1, 0,
 		0,  1, 0, 0,
@@ -66,19 +66,20 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	memcpy(conversionMatrix.M, matrixElements, 16 * sizeof(float));
 
 	actorTransform *= FTransform(conversionMatrix.Inverse());
-	actorTransform.ScaleTranslation(1 / 50.0f);
+	actorTransform.ScaleTranslation(1 / 50.0f);*/
 
 	RigidDynamicConstructionData data;
 	data.geom = typeMesh;
-	FVector position = actorTransform.GetLocation();
+	FVector position = GetOwner()->GetActorLocation();
+	FQuat rot = GetOwner()->GetActorRotation().Quaternion();
 	position = position / 50.0f;
 	data.pos.X = position.X;
 	data.pos.Y = position.Z;
 	data.pos.Z = position.Y;
-	data.rot.X = actorTransform.GetRotation().X;
-	data.rot.Y = actorTransform.GetRotation().Y;
-	data.rot.Z = actorTransform.GetRotation().Z;
-	data.rot.W = actorTransform.GetRotation().W;
+	data.rot.X = rot.X;
+	data.rot.Y = rot.Z;
+	data.rot.Z = rot.Y;
+	data.rot.W = rot.W;
 	data.numVertex = 0;
 	TArray<UPrimitiveComponent*> comps;
 	GetOwner()->GetComponents(comps);
