@@ -42,7 +42,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
-	void OnConstruction(const RigidDynamicConstructionData& data);
+	bool OnConstruction(const RigidDynamicConstructionData& data);
 
 	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
 		TSubclassOf<AStaticMeshActor> sphereBP;

@@ -25,7 +25,7 @@ void AReplica::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
+bool AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 {
 	FActorSpawnParameters Parameters = FActorSpawnParameters();
 	FTransform SpawnTransform = FTransform();
@@ -87,6 +87,7 @@ void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 	rot = data.rot;
 
 	UpdateTransform();
+	return true;
 }
 
 void AReplica::OnPoppedConnection(Connection_RM3 * droppedConnection)

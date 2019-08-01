@@ -51,6 +51,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	actorTransform.ScaleTranslation(1 / 50.0f);*/
 
 	RigidDynamicConstructionData data;
+	data.clientCreated = true;
 	FVector position = GetOwner()->GetActorLocation();
 	FQuat rot = GetOwner()->GetActorRotation().Quaternion();
 	position = position / 50.0f;
