@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/SceneComponent.h"
 #include "ReplicaRigidDynamic.h"
 #include "RakNetRP.h"
 #include "ReplicaRigidDynamicClient.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RN4UE4_API UReplicaRigidDynamicClient : public UActorComponent, public ReplicaRigidDynamic
+class RN4UE4_API UReplicaRigidDynamicClient : public USceneComponent, public ReplicaRigidDynamic
 {
 	GENERATED_BODY()
 
@@ -57,5 +57,21 @@ protected:
 
 private:
 	bool registered;
-
+	float mass = 0;
+	FVector inertia;
+	bool isGravity;
+	float angularDamping;
+	float linearDamping;
+	FVector centerMass;
+	float MaxAngularVelocity;
+	std::string typeName;
+	float restitution;
+	int restitutionCombineMode;
+	float staticFriction;
+	float dynamicFriction;
+	int frictionCombineModeInt;
+	bool physicsCopied = false;
+	UStaticMeshComponent* orionMesh = nullptr;
+	FTransform relativePos;
+	bool attached = false;
 };
