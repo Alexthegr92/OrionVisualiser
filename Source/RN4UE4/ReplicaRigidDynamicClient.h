@@ -44,6 +44,7 @@ public:
 		GetOwner()->Destroy();
 	}
 
+	void ReadPhysicValues();
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;

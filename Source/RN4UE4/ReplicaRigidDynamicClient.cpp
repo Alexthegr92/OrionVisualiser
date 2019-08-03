@@ -18,7 +18,7 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 
 	registered = false;
 }
@@ -27,6 +27,17 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	ReadPhysicValues();
+
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	{
+		rakNetManager->Reference(this);
+		registered = true;
+	}
+}
+
+void UReplicaRigidDynamicClient::ReadPhysicValues()
+{
 	if (!physicsCopied) {
 		TArray<UPrimitiveComponent*> comps;
 		GetOwner()->GetComponents(comps);
@@ -38,7 +49,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 				if (vismesh->GetStaticMesh() != nullptr) {
 					orionMesh = vismesh;
 					relativePos = orionMesh->GetRelativeTransform();
-					if(GetNumChildrenComponents()==0)
+					if (GetNumChildrenComponents() == 0)
 						relativePos.SetToRelativeTransform(GetOwner()->GetActorTransform());
 					FPhysScene* PhysScene = GetWorld()->GetPhysicsScene();
 					PxScene* SyncScene = PhysScene->GetPhysXScene(PST_Sync);
@@ -46,13 +57,12 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 					PxRigidDynamic * rigid = vismesh->GetBodyInstance()->GetPxRigidDynamic_AssumesLocked();
 					if (rigid != nullptr) {
 						mass = rigid->getMass() / 50.0f;
-						rigid->getMassSpaceInertiaTensor();
-						inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().z, rigid->getMassSpaceInertiaTensor().y);
+						inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().y, rigid->getMassSpaceInertiaTensor().z);
 						inertia = inertia / 50.0f;
 						angularDamping = rigid->getAngularDamping();
 						linearDamping = rigid->getLinearDamping();
 						isGravity = vismesh->IsGravityEnabled();
-						centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.z, rigid->getCMassLocalPose().p.y);
+						centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
 						centerMass = centerMass / 50.0f;
 						MaxAngularVelocity = rigid->getMaxAngularVelocity();
 						typeName = rigid->getConcreteTypeName();
@@ -86,29 +96,6 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 			}
 		}
 		physicsCopied = true;
-	}
-
-	if (rakNetManager != nullptr)
-	{
-		if (!registered && rakNetManager != nullptr && rakNetManager->GetInitialised())
-		{
-			rakNetManager->Reference(this);
-			registered = true;
-		}
-	}
-	else
-	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
-			}
-
-		}
 	}
 }
 
