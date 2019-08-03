@@ -65,7 +65,7 @@ void UReplicaRigidDynamicClient::ReadPhysicValues()
 						linearDamping = rigid->getLinearDamping();
 						isGravity = vismesh->IsGravityEnabled();
 						centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
-						centerMass = centerMass / 50.0f;
+						
 						centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
 						MaxAngularVelocity = rigid->getMaxAngularVelocity();
 						MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
@@ -177,7 +177,10 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 					data.numVertex = vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
 					for (FVector vec : vismesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 					{
-						FVector aux = vec;
+						FVector aux;
+						aux.X = vec.X - centerMass.X;
+						aux.Y = vec.Y - centerMass.Y;
+						aux.Z = vec.Z - centerMass.Z;
 						aux = aux / 50.0f;
 						Vec3 ver;
 						ver.X = aux.X;
@@ -186,7 +189,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 						data.vertexData.push_back(ver);
 					}
 				}
-
+				centerMass = centerMass / 50.0f;
 				data.centerMass.X = centerMass.X;
 				data.centerMass.Y = centerMass.Z;
 				data.centerMass.Z = centerMass.Y;
