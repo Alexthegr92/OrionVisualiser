@@ -60,11 +60,15 @@ private:
 	bool registered;
 	float mass = 0;
 	FVector inertia;
+	FVector inertiaInv;
 	bool isGravity;
 	float angularDamping;
 	float linearDamping;
 	FVector centerMass;
+	FVector centerMassScale;
+	FQuat centerMassRot;
 	float MaxAngularVelocity;
+	float MaxDepenetrationVelocity;
 	std::string typeName;
 	float restitution;
 	int restitutionCombineMode;

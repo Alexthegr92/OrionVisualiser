@@ -56,15 +56,19 @@ void UReplicaRigidDynamicClient::ReadPhysicValues()
 					SCENE_LOCK_READ(SyncScene);
 					PxRigidDynamic * rigid = vismesh->GetBodyInstance()->GetPxRigidDynamic_AssumesLocked();
 					if (rigid != nullptr) {
-						mass = rigid->getMass() / 50.0f;
+						mass = rigid->getMass();
 						inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().y, rigid->getMassSpaceInertiaTensor().z);
-						inertia = inertia / 50.0f;
+						inertia = inertia;
+						inertiaInv = FVector(rigid->getMassSpaceInvInertiaTensor().x, rigid->getMassSpaceInvInertiaTensor().y, rigid->getMassSpaceInvInertiaTensor().z);
+						inertiaInv = inertiaInv / 50.0f;
 						angularDamping = rigid->getAngularDamping();
 						linearDamping = rigid->getLinearDamping();
 						isGravity = vismesh->IsGravityEnabled();
 						centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
 						centerMass = centerMass / 50.0f;
+						centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
 						MaxAngularVelocity = rigid->getMaxAngularVelocity();
+						MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
 						typeName = rigid->getConcreteTypeName();
 						restitution = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitution();
 						PxCombineMode::Enum restituCombineMode = vismesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitutionCombineMode();
@@ -145,6 +149,9 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				data.inertia.X = inertia.X;
 				data.inertia.Y = inertia.Z;
 				data.inertia.Z = inertia.Y;
+				data.inertiaInv.X = inertiaInv.X;
+				data.inertiaInv.Z = inertiaInv.Z;
+				data.inertiaInv.Y = inertiaInv.Y;
 				data.angularDamping = angularDamping;
 				data.linearDamping = linearDamping;
 				data.gravityEnabled = isGravity;
@@ -183,7 +190,12 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 				data.centerMass.X = centerMass.X;
 				data.centerMass.Y = centerMass.Z;
 				data.centerMass.Z = centerMass.Y;
+				data.centerMassRot.X = centerMassRot.X;
+				data.centerMassRot.Y = centerMassRot.Z;
+				data.centerMassRot.Z = centerMassRot.Y;
+				data.centerMassRot.W = centerMassRot.W;
 				data.MaxAngularVelocity = MaxAngularVelocity;
+				data.MaxDepenetrationVelocity = MaxDepenetrationVelocity;
 				data.typeName = typeName;
 				data.restitution = restitution;
 				data.dynamicFriction = dynamicFriction;
