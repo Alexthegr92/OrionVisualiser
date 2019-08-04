@@ -44,6 +44,7 @@ public:
 		GetOwner()->Destroy();
 	}
 
+	void GetNearestStaticMesh();
 	void ReadPhysicValues();
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
