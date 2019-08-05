@@ -52,6 +52,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
 	{
 		rakNetManager->Reference(this);
