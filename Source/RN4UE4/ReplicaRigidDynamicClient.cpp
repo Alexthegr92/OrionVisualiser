@@ -52,7 +52,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!registered && rakNetManager!=nullptr && rakNetManager->GetInitialised() && !spawned)
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
 	{
 		rakNetManager->Reference(this);
 		registered = true;
