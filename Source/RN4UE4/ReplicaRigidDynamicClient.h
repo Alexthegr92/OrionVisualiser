@@ -45,7 +45,7 @@ public:
 	}
 
 	void GetNearestStaticMesh();
-	void ReadPhysicValues();
+	void ReadPhysicValues(RigidDynamicConstructionData& data);
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
@@ -59,24 +59,6 @@ protected:
 
 private:
 	bool registered;
-	float mass = 0;
-	FVector inertia;
-	FVector inertiaInv;
-	bool isGravity;
-	float angularDamping;
-	float linearDamping;
-	FVector centerMass;
-	FVector centerMassScale;
-	FQuat centerMassRot;
-	float MaxAngularVelocity;
-	float MaxDepenetrationVelocity;
-	std::string typeName;
-	float restitution;
-	int restitutionCombineMode;
-	float staticFriction;
-	float dynamicFriction;
-	int frictionCombineModeInt;
-	bool physicsCopied = false;
 	UStaticMeshComponent* orionMesh = nullptr;
 	FTransform relativePos;
 	bool attached = false;

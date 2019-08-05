@@ -32,6 +32,7 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 
 	initialised = false;
 	totalServers = -1;
@@ -56,7 +57,12 @@ void ARakNetRP::BeginPlay()
 void ARakNetRP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//pause game if unpause
+	if (!paused && !allServersChecked)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		paused = true;
+	}
 	if (rakPeer == nullptr)	{	return;	}
 
 	for (p = rakPeer->Receive(); p; rakPeer->DeallocatePacket(p), p = rakPeer->Receive())
@@ -128,6 +134,12 @@ void ARakNetRP::Tick(float DeltaTime)
 		if (totalServers == addresses.Size())
 		{
 			allServersChecked = true;
+			//unapuse game
+			if (paused)
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), false);
+				paused = false;
+			}
 		}
 	}
 }

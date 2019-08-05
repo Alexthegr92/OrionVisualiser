@@ -26,66 +26,72 @@ void UReplicaRigidDynamicClient::BeginPlay()
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!physicsCopied) {
-		GetNearestStaticMesh();
-		ReadPhysicValues();
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	{
+		rakNetManager->Reference(this);
+		registered = true;
 	}
-
-		if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
-		{
-			rakNetManager->Reference(this);
-			registered = true;
-		}
 }
 
-void UReplicaRigidDynamicClient::ReadPhysicValues()
+void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& data)
 {
 	FPhysScene* PhysScene = GetWorld()->GetPhysicsScene();
 	PxScene* SyncScene = PhysScene->GetPhysXScene(PST_Sync);
 	SCENE_LOCK_READ(SyncScene);
 	PxRigidDynamic * rigid = orionMesh->GetBodyInstance()->GetPxRigidDynamic_AssumesLocked();
 	if (rigid != nullptr) {
-		mass = rigid->getMass();
-		inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().y, rigid->getMassSpaceInertiaTensor().z);
+		data.mass = rigid->getMass();
+		FVector inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().y, rigid->getMassSpaceInertiaTensor().z);
 		inertia = inertia;
-		inertiaInv = FVector(rigid->getMassSpaceInvInertiaTensor().x, rigid->getMassSpaceInvInertiaTensor().y, rigid->getMassSpaceInvInertiaTensor().z);
+		FVector inertiaInv = FVector(rigid->getMassSpaceInvInertiaTensor().x, rigid->getMassSpaceInvInertiaTensor().y, rigid->getMassSpaceInvInertiaTensor().z);
 		inertiaInv = inertiaInv / 50.0f;
-		angularDamping = rigid->getAngularDamping();
-		linearDamping = rigid->getLinearDamping();
-		isGravity = orionMesh->IsGravityEnabled();
-		centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
-		centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
-		MaxAngularVelocity = rigid->getMaxAngularVelocity();
-		MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
-		typeName = rigid->getConcreteTypeName();
-		restitution = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitution();
+		data.inertia.X = inertia.X;
+		data.inertia.Y = inertia.Z;
+		data.inertia.Z = inertia.Y;
+		data.inertiaInv.X = inertiaInv.X;
+		data.inertiaInv.Z = inertiaInv.Z;
+		data.inertiaInv.Y = inertiaInv.Y;
+		data.angularDamping = rigid->getAngularDamping();
+		data.linearDamping = rigid->getLinearDamping();
+		data.gravityEnabled = orionMesh->IsGravityEnabled();
+		FVector centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
+		data.centerMass.X = centerMass.X;
+		data.centerMass.Y = centerMass.Z;
+		data.centerMass.Z = centerMass.Y;
+		FQuat centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
+		data.centerMassRot.X = centerMassRot.X;
+		data.centerMassRot.Y = centerMassRot.Z;
+		data.centerMassRot.Z = centerMassRot.Y;
+		data.centerMassRot.W = centerMassRot.W;
+		data.MaxAngularVelocity = rigid->getMaxAngularVelocity();
+		data.MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
+		data.typeName = rigid->getConcreteTypeName();
+		data.restitution = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitution();
 		PxCombineMode::Enum restituCombineMode = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitutionCombineMode();
-		dynamicFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
-		staticFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
+		data.dynamicFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
+		data.staticFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
 		PxCombineMode::Enum frictionCombineMode = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFrictionCombineMode();
 		//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
 		if (restituCombineMode == PxCombineMode::eAVERAGE)
-			restitutionCombineMode = 0;
+			data.restitutionCombineMode = 0;
 		else if (restituCombineMode == PxCombineMode::eMIN)
-			restitutionCombineMode = 1;
+			data.restitutionCombineMode = 1;
 		else if (restituCombineMode == PxCombineMode::eMULTIPLY)
-			restitutionCombineMode = 2;
+			data.restitutionCombineMode = 2;
 		else if (restituCombineMode == PxCombineMode::eMAX)
-			restitutionCombineMode = 3;
+			data.restitutionCombineMode = 3;
 		if (frictionCombineMode == PxCombineMode::eAVERAGE)
-			frictionCombineModeInt = 0;
+			data.frictionCombineModeInt = 0;
 		else if (frictionCombineMode == PxCombineMode::eMIN)
-			frictionCombineModeInt = 1;
+			data.frictionCombineModeInt = 1;
 		else if (frictionCombineMode == PxCombineMode::eMULTIPLY)
-			frictionCombineModeInt = 2;
+			data.frictionCombineModeInt = 2;
 		else if (frictionCombineMode == PxCombineMode::eMAX)
-			frictionCombineModeInt = 3;
+			data.frictionCombineModeInt = 3;
 		//	constructionBitstream->Write<PxMaterialFlags>(flags);
 	}
 	SCENE_UNLOCK_READ(SyncScene);
 	orionMesh->SetSimulatePhysics(false);
-	physicsCopied = true;
 }
 
 void UReplicaRigidDynamicClient::GetNearestStaticMesh()
@@ -134,23 +140,11 @@ void UReplicaRigidDynamicClient::GetNearestStaticMesh()
 
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 {
-	FTransform actorTransform = GetOwner()->GetActorTransform();
-
-	// Conversion matrix from PhysX to Unreal
-/*	float	matrixElements[16] = {
-		1,  0, 0, 0,
-		0,  0, 1, 0,
-		0,  1, 0, 0,
-		0,  0, 0, 1
-	};
-
-	FMatrix conversionMatrix = FMatrix();
-	memcpy(conversionMatrix.M, matrixElements, 16 * sizeof(float));
-
-	actorTransform *= FTransform(conversionMatrix.Inverse());
-	actorTransform.ScaleTranslation(1 / 50.0f);*/
-
 	RigidDynamicConstructionData data;
+
+	GetNearestStaticMesh();
+	ReadPhysicValues(data);
+
 	data.clientCreated = true;
 	FVector position = GetComponentLocation();
 	FQuat rot = GetComponentQuat();
@@ -166,16 +160,6 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	data.scale.X = GetOwner()->GetActorScale().X;
 	data.scale.Y = GetOwner()->GetActorScale().Z;
 	data.scale.Z = GetOwner()->GetActorScale().Y;
-	data.mass = mass;
-	data.inertia.X = inertia.X;
-	data.inertia.Y = inertia.Z;
-	data.inertia.Z = inertia.Y;
-	data.inertiaInv.X = inertiaInv.X;
-	data.inertiaInv.Z = inertiaInv.Z;
-	data.inertiaInv.Y = inertiaInv.Y;
-	data.angularDamping = angularDamping;
-	data.linearDamping = linearDamping;
-	data.gravityEnabled = isGravity;
 
 	if (orionMesh->GetBodySetup()->AggGeom.BoxElems.Num() > 0) {
 		data.geom = 3;
@@ -199,9 +183,9 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 		{
 			FVector aux;
-			aux.X = vec.X - centerMass.X;
-			aux.Y = vec.Y - centerMass.Y;
-			aux.Z = vec.Z - centerMass.Z;
+			aux.X = vec.X - data.centerMass.X;
+			aux.Y = vec.Y - data.centerMass.Z;
+			aux.Z = vec.Z - data.centerMass.Y;
 			aux = aux / 50.0f;
 			Vec3 ver;
 			ver.X = aux.X;
@@ -210,25 +194,12 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 			data.vertexData.push_back(ver);
 		}
 	}
-	centerMass = centerMass / 50.0f;
-	data.centerMass.X = centerMass.X;
-	data.centerMass.Y = centerMass.Z;
-	data.centerMass.Z = centerMass.Y;
-	data.centerMassRot.X = centerMassRot.X;
-	data.centerMassRot.Y = centerMassRot.Z;
-	data.centerMassRot.Z = centerMassRot.Y;
-	data.centerMassRot.W = centerMassRot.W;
-	data.MaxAngularVelocity = MaxAngularVelocity;
-	data.MaxDepenetrationVelocity = MaxDepenetrationVelocity;
-	data.typeName = typeName;
-	data.restitution = restitution;
-	data.dynamicFriction = dynamicFriction;
-	data.staticFriction = staticFriction;
+	data.centerMass.X = data.centerMass.X / 50.0f;
+	data.centerMass.Y = data.centerMass.Y / 50.0f;
+	data.centerMass.Z = data.centerMass.Z / 50.0f;
+
 	//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
-	data.restitutionCombineMode = restitutionCombineMode;
-	data.frictionCombineModeInt = frictionCombineModeInt;
 	//	constructionBitstream->Write<PxMaterialFlags>(flags);
-	//vismesh->SetSimulatePhysics(false);
 	return data;
 }
 
