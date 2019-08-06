@@ -19,13 +19,17 @@ void UReplicaRigidDynamicClient::BeginPlay()
 	Super::BeginPlay();
 
 	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
-
+	FRotator newRot = GetOwner()->GetActorRotation();
+	newRot.Add(0.0f, -180.0f, 0.0f);
+	newRot.Add(0.0f, 0.0f, 90.0f);
+	GetOwner()->SetActorRotation(newRot, ETeleportType::TeleportPhysics);
 	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);

@@ -220,6 +220,30 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
+void ARakNetRP::RPrpcSignalStaticMesh(FVector pos, FQuat rot, int numberMeshes, TArray<FNestedArray> vertices)
+{
+	RakNet::BitStream testBs;
+	testBs.WriteVector<float>(pos.X/50.0f, pos.Z / 50.0f, pos.Y / 50.0f);
+	testBs.WriteVector<float>(rot.X, rot.Z, rot.Y);
+	testBs.Write<float>(rot.W);
+	testBs.Write<int>(numberMeshes);
+	for (int i = 0; i < numberMeshes; i++) {
+		testBs.Write<int>(vertices[i].Vectors.Num());
+		for (int j = 0; j < vertices[i].Vectors.Num(); j++) {
+			testBs.WriteVector<float>(vertices[i].Vectors[j].X, vertices[i].Vectors[j].Y, vertices[i].Vectors[j].Z);
+		}
+	}
+
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("ReplicaRigidBodyStatic", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
 AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 {
 	if (typeName == "ReplicaRigidDynamic") 
