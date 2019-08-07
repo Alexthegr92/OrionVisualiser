@@ -28,18 +28,17 @@ void ABoundaryManager::BeginPlay()
 void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-		if (createCustomBoundariesBoxes)
-		{
-			if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
-				if (CheckServersNumber())
-				{
-					rakNetManager->SetCustomBoundariesCreated(false);
-					SignalBoundariesToServer();
-					boundariesSent = true;
-				}
+	if (createCustomBoundariesBoxes)
+	{
+		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
+			if (CheckServersNumber())
+			{
+				rakNetManager->SetCustomBoundariesCreated(false);
+				SignalBoundariesToServer();
+				boundariesSent = true;
 			}
 		}
+	}
 }
 
 void ABoundaryManager::SignalBoundariesToServer()
@@ -62,7 +61,7 @@ void ABoundaryManager::SignalBoundariesToServer()
 					UBoxComponent* box = Cast<UBoxComponent>(*Iter);
 					if (box)
 					{
-						sizeBox = box->GetScaledBoxExtent() / 2.0f / 50.0f;
+						sizeBox = box->GetScaledBoxExtent() / 50.0f;
 					}
 				}
 				FVector position = box->GetActorLocation() / 50.0f;

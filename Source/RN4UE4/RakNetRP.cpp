@@ -229,8 +229,8 @@ void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<F
 	RakNet::BitStream testBs;
 	testBs.Write<int>(pos.Num());
 	for (int i = 0; i < pos.Num(); i++) {
-		testBs.WriteVector<float>(pos[i].X, pos[i].Z, pos[i].Y);
-		testBs.WriteVector<float>(size[i].X, size[i].Z, size[i].Y);
+		testBs.WriteVector<float>(pos[i].X, pos[i].Y, pos[i].Z);
+		testBs.WriteVector<float>(size[i].X, size[i].Y, size[i].Z);
 		testBs.Write<int>(ranks[i]);
 	}
 	testBs.Write<bool>(multiAuras);
