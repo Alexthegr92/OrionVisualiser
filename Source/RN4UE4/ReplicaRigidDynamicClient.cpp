@@ -55,7 +55,7 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 	SCENE_LOCK_READ(SyncScene);
 	PxRigidDynamic * rigid = orionMesh->GetBodyInstance()->GetPxRigidDynamic_AssumesLocked();
 	if (rigid != nullptr) {
-		data.mass = rigid->getMass();
+		data.mass = rigid->getMass()/50.0f;
 		data.angularDamping = rigid->getAngularDamping();
 		data.linearDamping = rigid->getLinearDamping();
 		data.gravityEnabled = orionMesh->IsGravityEnabled();
