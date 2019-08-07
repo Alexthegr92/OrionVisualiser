@@ -27,6 +27,8 @@ public:
 
 	void SignalBoundariesToServer();
 
+	bool CheckServersNumber();
+
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")

@@ -351,6 +351,11 @@ void ARakNetRP::SetCustomBoundariesCreated(bool boundariesCreated)
 	customBoundariesCreated = boundariesCreated;
 }
 
+int ARakNetRP::getNumberServers()
+{
+	return totalServers;
+}
+
 void ARakNetRP::ConnectToIP(const FString& address)
 {
 	FString host;

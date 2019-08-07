@@ -111,6 +111,8 @@ public:
 	bool IsCustomBoundariesCreated() const;
 
 	void SetCustomBoundariesCreated(bool boundariesCreated);
+
+	int getNumberServers();
 private:
 
 	void ConnectToIP(const FString& address);

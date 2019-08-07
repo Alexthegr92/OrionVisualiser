@@ -4,6 +4,7 @@
 #include "RN4UE4.h"
 #include "EngineUtils.h"
 #include "BoundaryBox.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "../RakNetRP.h"
 
 
@@ -20,6 +21,7 @@ void ABoundaryManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 // Called every frame
@@ -29,25 +31,12 @@ void ABoundaryManager::Tick(float DeltaTime)
 	
 		if (createCustomBoundariesBoxes)
 		{
-			if (rakNetManager != nullptr) {
-				if (!boundariesSent && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
+			if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
+				if (CheckServersNumber())
+				{
 					rakNetManager->SetCustomBoundariesCreated(false);
 					SignalBoundariesToServer();
 					boundariesSent = true;
-				}
-			}
-			else
-			{
-				for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-				{
-					// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-					if (*ActorItr != nullptr)
-					{
-						ARakNetRP *rak = *ActorItr;
-						rakNetManager = rak;
-						break;
-					}
-
 				}
 			}
 		}
@@ -85,5 +74,12 @@ void ABoundaryManager::SignalBoundariesToServer()
 
 	}
 	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks, multiAuras, errorTolerance);
+}
+
+bool ABoundaryManager::CheckServersNumber()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), FoundActors);
+	return rakNetManager->getNumberServers() == FoundActors.Num();
 }
 
