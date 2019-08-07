@@ -25,23 +25,28 @@ void ABoundaryManager::BeginPlay()
 void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(rakNetManager != nullptr)
-		if (!boundariesSent && rakNetManager->GetAllServersChecked()) {
-			rakNetManager->SetCustomBoundariesCreated(false);
-			SignalBoundariesToServer();
-		}
-	else
+	if (createCustomBoundariesBoxes)
 	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
+		if (rakNetManager != nullptr) {
+			if (rakNetManager->GetAllServersChecked()) {
+				rakNetManager->SetCustomBoundariesCreated(false);
+				SignalBoundariesToServer();
+				boundariesSent = true;
 			}
+		}
+		else
+		{
+			for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+			{
+				// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+				if (*ActorItr != nullptr)
+				{
+					ARakNetRP *rak = *ActorItr;
+					rakNetManager = rak;
+					break;
+				}
 
+			}
 		}
 	}
 }
@@ -50,6 +55,7 @@ void ABoundaryManager::SignalBoundariesToServer()
 {
 	TArray<FVector> pos;
 	TArray<FVector> size;
+	TArray<int> ranks;
 	for (TActorIterator<ABoundaryBox> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		if (*ActorItr != nullptr)
@@ -57,15 +63,25 @@ void ABoundaryManager::SignalBoundariesToServer()
 			ABoundaryBox *box = *ActorItr;
 			if (box)
 			{
+				FVector sizeBox;
+				TArray<UPrimitiveComponent*> comps;
+				box->GetComponents(comps);
+				for (auto Iter = comps.CreateConstIterator(); Iter; ++Iter)
+				{
+					UBoxComponent* box = Cast<UBoxComponent>(*Iter);
+					if (box)
+					{
+						sizeBox = box->GetScaledBoxExtent() / 2.0f / 50.0f;
+					}
+				}
 				FVector position = box->GetActorLocation() / 50.0f;
-				FVector sizeBox = box->GetActorScale3D();
 				pos.Add(FVector(position.X,position.Z,position.Y));
 				size.Add(FVector(sizeBox.X, sizeBox.Z, sizeBox.Y));
+				ranks.Add(box->rank);
 			}
 		}
 
 	}
-	rakNetManager->RPrpcSignalBoundaryBox(pos, size, multiAuras);
-	boundariesSent = true;
+	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks, multiAuras, errorTolerance);
 }
 
