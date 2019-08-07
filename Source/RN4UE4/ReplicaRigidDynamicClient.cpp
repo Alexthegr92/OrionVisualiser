@@ -18,22 +18,33 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
-	FRotator newRot = GetOwner()->GetActorRotation();
-	newRot.Add(0.0f, -180.0f, 0.0f);
-	newRot.Add(0.0f, 0.0f, 90.0f);
-	GetOwner()->SetActorRotation(newRot, ETeleportType::TeleportPhysics);
+	//	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	if (rakNetManager != nullptr) {
+		if (!registered && rakNetManager != nullptr && rakNetManager->GetInitialised())
+		{
+			rakNetManager->Reference(this);
+			registered = true;
+		}
+	}
+	else
 	{
-		rakNetManager->Reference(this);
-		registered = true;
+		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+			if (*ActorItr != nullptr)
+			{
+				ARakNetRP *rak = *ActorItr;
+				rakNetManager = rak;
+				break;
+			}
+
+		}
 	}
 }
 
@@ -45,27 +56,17 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 	PxRigidDynamic * rigid = orionMesh->GetBodyInstance()->GetPxRigidDynamic_AssumesLocked();
 	if (rigid != nullptr) {
 		data.mass = rigid->getMass();
-		FVector inertia = FVector(rigid->getMassSpaceInertiaTensor().x, rigid->getMassSpaceInertiaTensor().y, rigid->getMassSpaceInertiaTensor().z);
-		inertia = inertia;
-		FVector inertiaInv = FVector(rigid->getMassSpaceInvInertiaTensor().x, rigid->getMassSpaceInvInertiaTensor().y, rigid->getMassSpaceInvInertiaTensor().z);
-		inertiaInv = inertiaInv / 50.0f;
-		data.inertia.X = inertia.X;
-		data.inertia.Y = inertia.Z;
-		data.inertia.Z = inertia.Y;
-		data.inertiaInv.X = inertiaInv.X;
-		data.inertiaInv.Z = inertiaInv.Z;
-		data.inertiaInv.Y = inertiaInv.Y;
 		data.angularDamping = rigid->getAngularDamping();
 		data.linearDamping = rigid->getLinearDamping();
 		data.gravityEnabled = orionMesh->IsGravityEnabled();
 		FVector centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
 		data.centerMass.X = centerMass.X;
-		data.centerMass.Y = centerMass.Z;
-		data.centerMass.Z = centerMass.Y;
+		data.centerMass.Y = centerMass.Y;
+		data.centerMass.Z = centerMass.Z;
 		FQuat centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
 		data.centerMassRot.X = centerMassRot.X;
-		data.centerMassRot.Y = centerMassRot.Z;
-		data.centerMassRot.Z = centerMassRot.Y;
+		data.centerMassRot.Y = centerMassRot.Y;
+		data.centerMassRot.Z = centerMassRot.Z;
 		data.centerMassRot.W = centerMassRot.W;
 		data.MaxAngularVelocity = rigid->getMaxAngularVelocity();
 		data.MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
@@ -145,31 +146,47 @@ void UReplicaRigidDynamicClient::GetNearestStaticMesh()
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 {
 	RigidDynamicConstructionData data;
+	FTransform actorTransform = GetOwner()->GetActorTransform();
+
+	// Conversion matrix from PhysX to Unreal
+	float    matrixElements[16] = {
+		1,  0, 0, 0,
+		0,  0, 1, 0,
+		0,  1, 0, 0,
+		0,  0, 0, 1
+	};
+
+	FMatrix conversionMatrix = FMatrix();
+	memcpy(conversionMatrix.M, matrixElements, 16 * sizeof(float));
+	actorTransform.SetScale3D(FVector(-actorTransform.GetScale3D().X, actorTransform.GetScale3D().Y, actorTransform.GetScale3D().Z));
+	actorTransform *= FTransform(conversionMatrix.Inverse());
+	actorTransform.ScaleTranslation(1 / 50.0f);
 
 	GetNearestStaticMesh();
 	ReadPhysicValues(data);
 
+	FTransform centerMassTransform = FTransform(FQuat(data.centerMassRot.X, data.centerMassRot.Y, data.centerMassRot.Z, data.centerMassRot.W), FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z), FVector(-1.0f, 1.0f, 1.0f));
+	centerMassTransform *= FTransform(conversionMatrix.Inverse());
+	centerMassTransform.ScaleTranslation(1 / 50.0f);
+
 	data.clientCreated = true;
-	FVector position = GetComponentLocation();
-	FQuat rot = GetComponentQuat();
-	position = position / 50.0f;
-	data.pos.X = position.X;
-	data.pos.Y = position.Z;
-	data.pos.Z = position.Y;
-	data.rot.X = rot.X;
-	data.rot.Y = rot.Z;
-	data.rot.Z = rot.Y;
-	data.rot.W = rot.W;
+	data.pos.X = actorTransform.GetLocation().X;
+	data.pos.Y = actorTransform.GetLocation().Y;
+	data.pos.Z = actorTransform.GetLocation().Z;
+	data.rot.X = actorTransform.GetRotation().X;
+	data.rot.Y = actorTransform.GetRotation().Y;
+	data.rot.Z = actorTransform.GetRotation().Z;
+	data.rot.W = actorTransform.GetRotation().W;
+	data.scale.X = actorTransform.GetScale3D().X;
+	data.scale.Y = actorTransform.GetScale3D().Y;
+	data.scale.Z = actorTransform.GetScale3D().Z;
 	data.numVertex = 0;
-	data.scale.X = GetOwner()->GetActorScale().X;
-	data.scale.Y = GetOwner()->GetActorScale().Z;
-	data.scale.Z = GetOwner()->GetActorScale().Y;
 
 	if (orionMesh->GetBodySetup()->AggGeom.BoxElems.Num() > 0) {
 		data.geom = 3;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].X / 2.0f / 50.0f * data.scale.X;
-		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Z / 2.0f / 50.0f * data.scale.Y;
-		data.scale.Z = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Y / 2.0f / 50.0f * data.scale.Z;
+		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Z / 2.0f / 50.0f * data.scale.Z;
+		data.scale.Z = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Y / 2.0f / 50.0f * data.scale.Y;
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphylElems.Num() > 0) {
 		data.geom = 2;
@@ -188,8 +205,8 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		{
 			FVector aux;
 			aux.X = vec.X - data.centerMass.X;
-			aux.Y = vec.Y - data.centerMass.Z;
-			aux.Z = vec.Z - data.centerMass.Y;
+			aux.Y = vec.Y - data.centerMass.Y;
+			aux.Z = vec.Z - data.centerMass.Z;
 			aux = aux / 50.0f;
 			Vec3 ver;
 			ver.X = aux.X;
@@ -198,9 +215,13 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 			data.vertexData.push_back(ver);
 		}
 	}
-	data.centerMass.X = data.centerMass.X / 50.0f;
-	data.centerMass.Y = data.centerMass.Y / 50.0f;
-	data.centerMass.Z = data.centerMass.Z / 50.0f;
+	data.centerMass.X = centerMassTransform.GetLocation().X / 50.0f;
+	data.centerMass.Y = centerMassTransform.GetLocation().Y / 50.0f;
+	data.centerMass.Z = centerMassTransform.GetLocation().Z / 50.0f;
+	data.centerMassRot.X = centerMassTransform.GetRotation().X;
+	data.centerMassRot.Y = centerMassTransform.GetRotation().Y;
+	data.centerMassRot.Z = centerMassTransform.GetRotation().Z;
+	data.centerMassRot.W = centerMassTransform.GetRotation().W;
 
 	//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
 	//	constructionBitstream->Write<PxMaterialFlags>(flags);
