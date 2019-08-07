@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include "ReplicaBase.h"
+#include "Engine.h"
 
 using namespace std::placeholders;
 
@@ -78,9 +79,11 @@ void ARakNetRP::Tick(float DeltaTime)
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_DISCONNECTION_NOTIFICATION\n"));
+			DroppedConnection(p->systemAddress.GetPort());
 			break;
 		case ID_CONNECTION_LOST:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_CONNECTION_LOST\n"));
+			DroppedConnection(p->systemAddress.GetPort());
 			break;
 		case ID_ADVERTISE_SYSTEM:
 			// The first conditional is needed because ID_ADVERTISE_SYSTEM may be from a system we are connected to, but replying on a different address.
@@ -117,7 +120,7 @@ void ARakNetRP::Tick(float DeltaTime)
 	}
 
 	// TODO: Handle servers disconnecting
-	if (!allServersChecked)
+	if (!allServersChecked && initialised)
 	{
 		DataStructures::List<RakNet::SystemAddress> addresses;
 		DataStructures::List<RakNet::RakNetGUID> guids;
@@ -197,6 +200,12 @@ void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 	{
 		rpc.Signal(signalString, nullptr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
 	}
+}
+
+void ARakNetRP::DroppedConnection(unsigned short Port)
+{
+	int rank = Port - 12345;
+	DeleteBoundaryBox(rank);
 }
 
 AReplica* ARakNetRP::GetObjectFromType(RakString typeName)

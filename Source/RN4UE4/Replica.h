@@ -12,7 +12,7 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 #include "Rand.h"
-
+#include "Materials/Material.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "ReplicaRigidDynamic.h"
@@ -88,6 +88,8 @@ public:
 	virtual void DeallocReplica(Connection_RM3 *sourceConnection) {
 		Destroy();
 	}
+
+	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
 
 	virtual void Deserialize(DeserializeParameters *deserializeParameters);
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);

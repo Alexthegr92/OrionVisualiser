@@ -47,6 +47,7 @@ public:
 
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
+	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
 	void UpdateTransform();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

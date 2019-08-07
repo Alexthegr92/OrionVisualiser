@@ -89,6 +89,13 @@ void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 	UpdateTransform();
 }
 
+void AReplica::OnPoppedConnection(Connection_RM3 * droppedConnection)
+{
+	ReplicaBase::OnPoppedConnection(droppedConnection);
+	visual->Destroy();
+	Destroy();
+}
+
 void AReplica::Deserialize(DeserializeParameters *deserializeParameters)
 {
 	ReplicaRigidDynamic::Deserialize(deserializeParameters);
