@@ -126,6 +126,6 @@ private:
 	bool initialised;
 	bool customBoundariesCreated = true;
 	static const int SERVER_PORT = 12345;
-	int						totalServers;
+	int						totalServers = -1;
 	bool					allServersChecked;
 };

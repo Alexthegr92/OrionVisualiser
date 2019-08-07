@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BoundaryManager.h"
 #include "RN4UE4.h"
+#include "EngineUtils.h"
 #include "BoundaryBox.h"
 #include "../RakNetRP.h"
-#include "BoundaryManager.h"
 
 
 // Sets default values
@@ -25,30 +26,31 @@ void ABoundaryManager::BeginPlay()
 void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (createCustomBoundariesBoxes)
-	{
-		if (rakNetManager != nullptr) {
-			if (rakNetManager->GetAllServersChecked()) {
-				rakNetManager->SetCustomBoundariesCreated(false);
-				SignalBoundariesToServer();
-				boundariesSent = true;
-			}
-		}
-		else
+	
+		if (createCustomBoundariesBoxes)
 		{
-			for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-			{
-				// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-				if (*ActorItr != nullptr)
-				{
-					ARakNetRP *rak = *ActorItr;
-					rakNetManager = rak;
-					break;
+			if (rakNetManager != nullptr) {
+				if (!boundariesSent && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
+					rakNetManager->SetCustomBoundariesCreated(false);
+					SignalBoundariesToServer();
+					boundariesSent = true;
 				}
+			}
+			else
+			{
+				for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+				{
+					// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+					if (*ActorItr != nullptr)
+					{
+						ARakNetRP *rak = *ActorItr;
+						rakNetManager = rak;
+						break;
+					}
 
+				}
 			}
 		}
-	}
 }
 
 void ABoundaryManager::SignalBoundariesToServer()

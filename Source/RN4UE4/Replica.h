@@ -12,7 +12,7 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 #include "Rand.h"
-
+#include "Materials/Material.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "ReplicaRigidDynamic.h"

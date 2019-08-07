@@ -136,7 +136,7 @@ void ARakNetRP::Tick(float DeltaTime)
 	}
 
 	// TODO: Handle servers disconnecting
-	if (!allServersChecked)
+	if (!allServersChecked && initialised)
 	{
 		DataStructures::List<RakNet::SystemAddress> addresses;
 		DataStructures::List<RakNet::RakNetGUID> guids;
@@ -227,8 +227,8 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 void ARakNetRP::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks, bool multiAuras, float errorTolerance)
 {
 	RakNet::BitStream testBs;
-	int numberBoxes = pos.Num();
-	for (int i = 0; i < numberBoxes; i++) {
+	testBs.Write<int>(pos.Num());
+	for (int i = 0; i < pos.Num(); i++) {
 		testBs.WriteVector<float>(pos[i].X, pos[i].Z, pos[i].Y);
 		testBs.WriteVector<float>(size[i].X, size[i].Z, size[i].Y);
 		testBs.Write<int>(ranks[i]);
