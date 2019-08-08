@@ -12,6 +12,8 @@ class RN4UE4_API UCreateMaterial : public UActorComponent
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* StaticMesh;
 
 public:	
 	// Sets default values for this component's properties
