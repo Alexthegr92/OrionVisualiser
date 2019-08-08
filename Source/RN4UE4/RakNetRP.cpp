@@ -5,6 +5,7 @@
 #include <string>
 #include "ReplicaBase.h"
 
+
 using namespace std::placeholders;
 
 DEFINE_LOG_CATEGORY(RakNet_RakNetRP);
@@ -249,6 +250,12 @@ void ARakNetRP::CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 	default:
 		break;
 	}
+}
+
+void ARakNetRP::CreateServerMaterial(RakNet::BitStream * bitStream, Packet * packet) {
+	int rank;
+	bitStream->Read<int>(rank);
+
 }
 
 void ARakNetRP::DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)

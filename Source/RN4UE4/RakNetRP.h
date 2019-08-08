@@ -70,9 +70,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
 
+	UPROPERTY(EditDefaultsOnly, Category = "MaterialRan1")
+		UMaterial* Material1Ran;
+
 	AReplica* GetObjectFromType(RakString typeName);
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
+
+	void CreateServerMaterial(RakNet::BitStream * bitStream, Packet * packet);
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
@@ -86,6 +91,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "RakNet|RakNetRP")
 		void CreateBoundaryPlane(int rank, FVector pos, FVector normal);
+
+	UMaterialInterface* Material;
 
 	virtual Connection_RM3* AllocConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID) const;
 	virtual void DeallocConnection(Connection_RM3 *connection) const;
