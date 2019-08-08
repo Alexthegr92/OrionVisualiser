@@ -52,8 +52,8 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 		data.centerMassRot.Y = centerMassRot.Y;
 		data.centerMassRot.Z = centerMassRot.Z;
 		data.centerMassRot.W = centerMassRot.W;
-		data.MaxAngularVelocity = rigid->getMaxAngularVelocity();
-		data.MaxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
+		data.maxAngularVelocity = rigid->getMaxAngularVelocity();
+		data.maxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
 		data.typeName = rigid->getConcreteTypeName();
 		data.minCCDAdvanceCoefficient = rigid->getMinCCDAdvanceCoefficient();
 		data.isSleeping = rigid->isSleeping();
