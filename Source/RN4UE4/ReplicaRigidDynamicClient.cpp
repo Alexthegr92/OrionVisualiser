@@ -232,8 +232,6 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	data.centerMassRot.Z = centerMassTransform.GetRotation().Z;
 	data.centerMassRot.W = centerMassTransform.GetRotation().W;
 
-	//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
-	//	constructionBitstream->Write<PxMaterialFlags>(flags);
 	return data;
 }
 
