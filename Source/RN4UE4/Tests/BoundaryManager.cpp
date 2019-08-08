@@ -77,8 +77,8 @@ void ABoundaryManager::SignalBoundariesToServer()
 
 bool ABoundaryManager::CheckServersNumber()
 {
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), FoundActors);
-	return rakNetManager->getNumberServers() == FoundActors.Num();
+	TArray<AActor*> foundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), foundActors);
+	return rakNetManager->getNumberServers() == foundActors.Num();
 }
 

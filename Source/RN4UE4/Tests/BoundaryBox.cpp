@@ -19,14 +19,6 @@ void ABoundaryBox::BeginPlay()
 {
 	Super::BeginPlay();
 }
-/*
-void ABoundaryBox::SetBoundary()
-{
-	// Box trigger for self
-	FVector pos = GetActorLocation();
-	FVector size = GetActorScale3D();
-	rakNetManager->RPrpcSignalBoundaryBox(FVector(pos.X, pos.Z, pos.Y), FVector(size.X, size.Z, size.Y), rank);
-}*/
 
 // Called every frame
 void ABoundaryBox::Tick(float DeltaTime)
