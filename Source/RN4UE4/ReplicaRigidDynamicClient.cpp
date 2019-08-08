@@ -199,7 +199,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphylElems.Num() > 0) {
 		data.geom = 2;
-		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Length / 2.0f / 50.0f * data.scale.Y;
+		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Length / 2.0f / 50.0f * data.scale.Z;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Radius / 50.0f * data.scale.X;
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphereElems.Num() > 0) {
