@@ -18,33 +18,17 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (rakNetManager != nullptr) {
-		if (!registered && rakNetManager != nullptr && rakNetManager->GetInitialised())
-		{
-			rakNetManager->Reference(this);
-			registered = true;
-		}
-	}
-	else
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
-			}
-
-		}
+		rakNetManager->Reference(this);
+		registered = true;
 	}
 }
 
