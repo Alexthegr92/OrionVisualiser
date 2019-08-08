@@ -10,8 +10,7 @@ UCLASS()
 class RN4UE4_API ARandomColor : public AActor
 {
 	GENERATED_BODY()
-	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* StaticMesh;
+
 public:	
 	// Sets default values for this actor's properties
 	ARandomColor();
