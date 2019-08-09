@@ -45,7 +45,8 @@ public:
 		GetOwner()->Destroy();
 	}
 
-	void GetNearestStaticMesh();
+	UStaticMeshComponent* GetNearestStaticMesh();
+	void CenterToMesh(RigidDynamicConstructionData& data);
 	void ReadPhysicValues(RigidDynamicConstructionData& data);
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
@@ -62,5 +63,6 @@ private:
 	bool registered;
 	UStaticMeshComponent* orionMesh = nullptr;
 	FTransform relativePos;
+	FVector centerMass;
 	bool attached = false;
 };
