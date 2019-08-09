@@ -35,6 +35,7 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 	PrimaryActorTick.bCanEverTick = true;
 
 	initialised = false;
+	totalServers = -1;
 }
 
 // Called when the game starts or when spawned
@@ -120,7 +121,7 @@ void ARakNetRP::Tick(float DeltaTime)
 	}
 
 	// TODO: Handle servers disconnecting
-	if (!allServersChecked && initialised)
+	if (!allServersChecked)
 	{
 		DataStructures::List<RakNet::SystemAddress> addresses;
 		DataStructures::List<RakNet::RakNetGUID> guids;
