@@ -13,6 +13,5 @@ TArray<FName> URN4UE4GameInstance::GetAllMapNames() {
 	{
 		Names.Add(FPackageName::GetShortFName(GetWorld()->StreamingLevels[i]->GetWorldAssetPackageFName()));
 	}
-	levelNames = Names;
 	return Names;
 }
