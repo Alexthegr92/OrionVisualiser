@@ -44,6 +44,9 @@ public:
 
 	void OnConstruction(const RigidDynamicConstructionData& data);
 
+	UPROPERTY(VisibleAnywhere)
+		UStaticMeshComponent* StaticMesh;
+
 	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
 		TSubclassOf<AStaticMeshActor> sphereBP;
 

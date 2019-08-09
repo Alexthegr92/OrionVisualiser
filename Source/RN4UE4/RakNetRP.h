@@ -52,6 +52,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		FLinearColor RandomFloorColor;
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void GenrateColor();
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void SetColor(int rank);
+
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPStartup();
 
@@ -93,6 +102,17 @@ public:
 	bool GetInitialised() const { return initialised; }
 
 	bool GetAllServersChecked() const;
+	
+	UPROPERTY(VisibleAnywhere)
+		float R[32];
+	UPROPERTY(VisibleAnywhere)
+	    float G[32];
+	UPROPERTY(VisibleAnywhere)
+	    float B[32];
+	UPROPERTY(VisibleAnywhere)
+	    float A[32];
+	
+	
 
 
 private:
@@ -110,4 +130,5 @@ private:
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
+
 };

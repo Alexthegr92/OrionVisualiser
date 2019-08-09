@@ -144,20 +144,67 @@ void AReplica::PostDeserializeConstruction(RakNet::BitStream *constructionBitstr
 {
 	unsigned short port = sourceConnection->GetSystemAddress().GetPort();
 	int rank = port - 12345;
-
+	FLinearColor RandomColor;
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMesh"));
+	UMaterialInstanceDynamic* DynamicMatInstance = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
 	switch (rank)
 	{
 	case 0:
-		SetMaterial(0, server0Material);
+
+		/*RandomColor.R = R[rank + 1];
+		RandomColor.G = G[rank + 1];
+		RandomColor.B = B[rank + 1];
+		RandomColor.A = A[rank + 1];*/
+
+
+		/*RandomColor.R = FMath::RandRange(0, 1);
+		RandomColor.G = FMath::RandRange(0, 1);
+		RandomColor.B = FMath::RandRange(0, 1);
+		RandomColor.A = FMath::RandRange(0, 1);
+		DynamicMatInstance->SetVectorParameterValue(FName("ColorGenR"), RandomColor);*/
+
+
+		SetMaterial(0, server0Material);            //try
 		break;
 	case 1:
-		SetMaterial(0, server1Material);
+		/*RandomColor.R = R[rank + 1];
+		RandomColor.G = G[rank + 1];
+		RandomColor.B = B[rank + 1];
+		RandomColor.A = A[rank + 1];*/
+
+
+		RandomColor.R = FMath::RandRange(0, 1);
+		RandomColor.G = FMath::RandRange(0, 1);
+		RandomColor.B = FMath::RandRange(0, 1);
+		RandomColor.A = FMath::RandRange(0, 1);
+		DynamicMatInstance->SetVectorParameterValue(FName("ColorGenR"), RandomColor);
+
+
+		//SetMaterial(0, server1Material);
 		break;
 	case 2:
-		SetMaterial(0, server2Material);
+		/*RandomColor.R = R[rank + 1];
+		RandomColor.G = G[rank + 1];
+		RandomColor.B = B[rank + 1];
+		RandomColor.A = A[rank + 1];*/
+		RandomColor.R = FMath::RandRange(0, 1);
+		RandomColor.G = FMath::RandRange(0, 1);
+		RandomColor.B = FMath::RandRange(0, 1);
+		RandomColor.A = FMath::RandRange(0, 1);
+		DynamicMatInstance->SetVectorParameterValue(FName("ColorGenR"), RandomColor);
+		//SetMaterial(0, server2Material);
 		break;
 	case 3:
-		SetMaterial(0, server3Material);
+		/*RandomColor.R = R[rank + 1];
+		RandomColor.G = G[rank + 1];
+		RandomColor.B = B[rank + 1];
+		RandomColor.A = A[rank + 1];*/
+		RandomColor.R = FMath::RandRange(0, 1);
+		RandomColor.G = FMath::RandRange(0, 1);
+		RandomColor.B = FMath::RandRange(0, 1);
+		RandomColor.A = FMath::RandRange(0, 1);
+		DynamicMatInstance->SetVectorParameterValue(FName("ColorGenR"), RandomColor);
+		//SetMaterial(0, server3Material);
 		break;
 	default:
 		SetMaterial(0, unknownMaterial);

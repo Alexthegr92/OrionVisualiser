@@ -304,3 +304,24 @@ void ARakNetRP::ConnectToIP(const FString& address)
 
 	RPConnect(host, portNumber);
 }
+
+void ARakNetRP::GenrateColor()
+{
+
+	for (int i = 1; i <= totalServers; i++) {         //create all color
+		R[i] = FMath::RandRange(0, 1);
+		G[i] = FMath::RandRange(0, 1);
+		B[i] = FMath::RandRange(0, 1);
+		A[i] = FMath::RandRange(0, 1);
+	}
+}
+
+void ARakNetRP::SetColor(int rank)
+{
+	
+	
+	RandomFloorColor.R = FMath::RandRange(0, 1);      //temp
+	RandomFloorColor.G = FMath::RandRange(0, 1);
+	RandomFloorColor.B = FMath::RandRange(0, 1);
+	RandomFloorColor.A = FMath::RandRange(0, 1);
+}
