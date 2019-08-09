@@ -52,8 +52,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)            //current 4 rank
+		FLinearColor RandomFloorColor1;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-		FLinearColor RandomFloorColor;
+		FLinearColor RandomFloorColor2;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		FLinearColor RandomFloorColor3;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		FLinearColor RandomFloorColor4;
+
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void GenrateColor();
@@ -103,14 +110,7 @@ public:
 
 	bool GetAllServersChecked() const;
 	
-	UPROPERTY(VisibleAnywhere)
-		float R[32];
-	UPROPERTY(VisibleAnywhere)
-	    float G[32];
-	UPROPERTY(VisibleAnywhere)
-	    float B[32];
-	UPROPERTY(VisibleAnywhere)
-	    float A[32];
+
 	
 	
 

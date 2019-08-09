@@ -307,21 +307,30 @@ void ARakNetRP::ConnectToIP(const FString& address)
 
 void ARakNetRP::GenrateColor()
 {
+	RandomFloorColor1.R = FMath::RandRange(0, 1);               //current 4 rank random color
+	RandomFloorColor1.G = FMath::RandRange(0, 1);
+	RandomFloorColor1.B = FMath::RandRange(0, 1);
+	RandomFloorColor1.A = FMath::RandRange(0, 1);
 
-	for (int i = 1; i <= totalServers; i++) {         //create all color
-		R[i] = FMath::RandRange(0, 1);
-		G[i] = FMath::RandRange(0, 1);
-		B[i] = FMath::RandRange(0, 1);
-		A[i] = FMath::RandRange(0, 1);
-	}
+	RandomFloorColor2.R = FMath::RandRange(0, 1);     
+	RandomFloorColor2.G = FMath::RandRange(0, 1);
+	RandomFloorColor2.B = FMath::RandRange(0, 1);
+	RandomFloorColor2.A = FMath::RandRange(0, 1);
+
+	RandomFloorColor3.R = FMath::RandRange(0, 1);    
+	RandomFloorColor3.G = FMath::RandRange(0, 1);
+	RandomFloorColor3.B = FMath::RandRange(0, 1);
+	RandomFloorColor3.A = FMath::RandRange(0, 1);
+
+	RandomFloorColor4.R = FMath::RandRange(0, 1);    
+	RandomFloorColor4.G = FMath::RandRange(0, 1);
+	RandomFloorColor4.B = FMath::RandRange(0, 1);
+	RandomFloorColor4.A = FMath::RandRange(0, 1);
 }
 
 void ARakNetRP::SetColor(int rank)
 {
 	
 	
-	RandomFloorColor.R = FMath::RandRange(0, 1);      //temp
-	RandomFloorColor.G = FMath::RandRange(0, 1);
-	RandomFloorColor.B = FMath::RandRange(0, 1);
-	RandomFloorColor.A = FMath::RandRange(0, 1);
+	
 }
