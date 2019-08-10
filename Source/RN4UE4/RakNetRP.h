@@ -90,6 +90,8 @@ public:
 	virtual Connection_RM3* AllocConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID) const;
 	virtual void DeallocConnection(Connection_RM3 *connection) const;
 
+	void DroppedConnection(unsigned short Port);
+
 	bool GetInitialised() const { return initialised; }
 
 	bool GetAllServersChecked() const;

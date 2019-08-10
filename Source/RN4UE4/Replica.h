@@ -89,6 +89,8 @@ public:
 		Destroy();
 	}
 
+	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
+
 	virtual void Deserialize(DeserializeParameters *deserializeParameters);
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
 

@@ -62,6 +62,12 @@ void UReplicaRigidDynamicClient::Deserialize(DeserializeParameters* deserializeP
 	UpdateTransform();
 }
 
+void UReplicaRigidDynamicClient::OnPoppedConnection(Connection_RM3 * droppedConnection)
+{
+	ReplicaBase::OnPoppedConnection(droppedConnection);
+	GetOwner()->Destroy();
+}
+
 void UReplicaRigidDynamicClient::UpdateTransform()
 {
 	// Conversion matrix from PhysX to Unreal

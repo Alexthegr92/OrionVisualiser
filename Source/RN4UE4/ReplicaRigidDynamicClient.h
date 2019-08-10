@@ -39,7 +39,7 @@ public:
 		return QuerySerialization_ServerSerializable(destinationConnection, false);
 	}
 	virtual RM3ActionOnPopConnection QueryActionOnPopConnection(Connection_RM3 *droppedConnection) const {
-		return QueryActionOnPopConnection_Server(droppedConnection);
+		return QueryActionOnPopConnection_Client(droppedConnection);
 	}
 	virtual void DeallocReplica(Connection_RM3 *sourceConnection) {
 		GetOwner()->Destroy();
@@ -47,6 +47,7 @@ public:
 
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
+	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
 	void UpdateTransform();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
