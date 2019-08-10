@@ -39,7 +39,7 @@ public:
 		return QuerySerialization_ServerSerializable(destinationConnection, false);
 	}
 	virtual RM3ActionOnPopConnection QueryActionOnPopConnection(Connection_RM3 *droppedConnection) const {
-		return QueryActionOnPopConnection_Server(droppedConnection);
+		return QueryActionOnPopConnection_Client(droppedConnection);
 	}
 	virtual void DeallocReplica(Connection_RM3 *sourceConnection) {
 		GetOwner()->Destroy();
