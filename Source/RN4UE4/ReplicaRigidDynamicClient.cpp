@@ -10,7 +10,6 @@
 #include "PhysXPublic.h"
 #include "PhysicsPublic.h"
 
-
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
 	PrimaryComponentTick.bCanEverTick = true;
