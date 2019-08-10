@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "RN4UE4.h"
 #include "ReplicaRigidBodyStatic.h"
+#include "RN4UE4.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h"

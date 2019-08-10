@@ -4,6 +4,8 @@
 #include <functional>
 #include <string>
 #include "ReplicaBase.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine.h"
 
 using namespace std::placeholders;
 

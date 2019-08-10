@@ -1,13 +1,15 @@
+#include "ReplicaRigidDynamicClient.h"
 #include "RN4UE4.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h"
+#include "Runtime/Engine/Classes/PhysicalMaterials/PhysicalMaterial.h"
 #include "ThirdParty/PhysX3/PhysX_3.4/Include/PxRigidDynamic.h"
 #include "ThirdParty/PhysX3/PhysX_3.4/Include/PxMaterial.h"
 #include "PhysXIncludes.h" 
 #include "PhysXPublic.h"
 #include "PhysicsPublic.h"
-#include "ReplicaRigidDynamicClient.h"
+
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -18,33 +20,17 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (rakNetManager != nullptr)
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
-		if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
-		{
-			rakNetManager->Reference(this);
-			registered = true;
-		}
-	}
-	else
-	{
-		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			if (*ActorItr != nullptr)
-			{
-				ARakNetRP *rak = *ActorItr;
-				rakNetManager = rak;
-				break;
-			}
-		}
+		rakNetManager->Reference(this);
+		registered = true;
 	}
 }
 
@@ -155,9 +141,7 @@ void UReplicaRigidDynamicClient::FindNearestStaticMesh()
 		if (vismesh != nullptr && vismesh->GetStaticMesh() != nullptr && orionMesh != vismesh)
 		{
 			orionMesh = vismesh;
-			relativePos = orionMesh->GetComponentTransform();
-			relativePos.SetToRelativeTransform(GetComponentTransform());
-			distance = FVector::Distance(GetComponentTransform().GetLocation(), orionMesh->GetRelativeTransform().GetLocation());
+			distance = FVector::Distance(GetComponentTransform().GetLocation(), orionMesh->GetComponentTransform().GetLocation());
 			TArray<UPrimitiveComponent*> comps2;
 			GetOwner()->GetComponents(comps2);
 			for (auto Iter2 = comps2.CreateConstIterator(); Iter2; ++Iter2)
@@ -169,8 +153,6 @@ void UReplicaRigidDynamicClient::FindNearestStaticMesh()
 					if (distance2 < distance)
 					{
 						orionMesh = vismesh2;
-						relativePos = orionMesh->GetRelativeTransform();
-						relativePos.SetToRelativeTransform(GetComponentTransform());
 						distance = distance2;
 					}
 				}
