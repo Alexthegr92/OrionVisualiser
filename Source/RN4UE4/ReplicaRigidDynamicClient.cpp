@@ -18,18 +18,33 @@ void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	//ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	if (rakNetManager != nullptr)
 	{
-		rakNetManager->Reference(this);
-		registered = true;
+		if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+		{
+			rakNetManager->Reference(this);
+			registered = true;
+		}
+	}
+	else
+	{
+		for (TActorIterator<ARakNetRP> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+			if (*ActorItr != nullptr)
+			{
+				ARakNetRP *rak = *ActorItr;
+				rakNetManager = rak;
+				break;
+			}
+		}
 	}
 }
 
@@ -140,7 +155,7 @@ void UReplicaRigidDynamicClient::FindNearestStaticMesh()
 		if (vismesh != nullptr && vismesh->GetStaticMesh() != nullptr && orionMesh != vismesh)
 		{
 			orionMesh = vismesh;
-			relativePos = orionMesh->GetRelativeTransform();
+			relativePos = orionMesh->GetComponentTransform();
 			relativePos.SetToRelativeTransform(GetComponentTransform());
 			distance = FVector::Distance(GetComponentTransform().GetLocation(), orionMesh->GetRelativeTransform().GetLocation());
 			TArray<UPrimitiveComponent*> comps2;
@@ -202,7 +217,8 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	actorTransform *= FTransform(conversionMatrix.Inverse());
 	actorTransform.ScaleTranslation(1 / 50.0f);
 
-	FTransform centerMassTransform = FTransform(FQuat(data.centerMassRot.X, data.centerMassRot.Y, data.centerMassRot.Z, data.centerMassRot.W), FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z), FVector(-1.0f, 1.0f, 1.0f));
+	FTransform centerMassTransform = FTransform(FQuat(data.centerMassRot.X, data.centerMassRot.Y, data.centerMassRot.Z, data.centerMassRot.W),
+		FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z), FVector(-1.0f, 1.0f, 1.0f));
 	centerMassTransform *= FTransform(conversionMatrix.Inverse());
 	centerMassTransform.ScaleTranslation(1 / 50.0f);
 
@@ -233,8 +249,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		data.numVertex = orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
 		for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 		{
-			FVector aux;
-			aux = vec - FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z);
+			FVector aux = vec - FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z);
 			aux = aux / 50.0f;
 			Vec3 ver;
 			ver = Vec3(aux.X, aux.Z, aux.Y);
@@ -278,18 +293,9 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 	memcpy(conversionMatrix.M, matrixElements, 16 * sizeof(float));
 	FQuat	newRotQuat = FQuat(rot.X, rot.Y, rot.Z, rot.W);
 	FVector newPos = FVector(pos.X, pos.Y, pos.Z) * 50.0f;
-	FVector scale = FVector(-1, 1, 1);
-	FRotator newRot = FRotator(newRotQuat);// X will get negated, so set scale to -1, so final result is 1
+	FVector scale = FVector(-1, 1, 1);// X will get negated, so set scale to -1, so final result is 1
+	FRotator newRot = FRotator(newRotQuat);
 	FTransform transform = FTransform(newRot, newPos, scale);
 	transform *= FTransform(conversionMatrix);
-	if (!attached)
-	{
-		DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		AttachToComponent(orionMesh->GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
-		orionMesh->GetOwner()->SetRootComponent(this);
-		orionMesh->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
-		orionMesh->SetRelativeTransform(relativePos, false, nullptr, ETeleportType::TeleportPhysics);
-		attached = true;
-	}
-	SetWorldTransform(transform, false, nullptr, ETeleportType::TeleportPhysics);
+	orionMesh->SetWorldTransform(relativePos * transform, false, nullptr, ETeleportType::TeleportPhysics);
 }
