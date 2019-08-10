@@ -1,6 +1,5 @@
 #include "ReplicaRigidDynamicClient.h"
-#include "Replica.h"
-#include "PhysXIncludes.h" 
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -149,15 +148,15 @@ void UReplicaRigidDynamicClient::SetSpawned(bool spa)
 void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
 {
 	TArray<UStaticMeshComponent*> components;
-		visual->GetComponents<UStaticMeshComponent>(components);
-		for (int32 i = 0; i < components.Num(); i++)
+	visual->GetComponents<UStaticMeshComponent>(components);
+	for (int32 i = 0; i < components.Num(); i++)
+	{
+		UStaticMeshComponent* StaticMeshComponent = components[i];
+		if (StaticMeshComponent)
 		{
-			UStaticMeshComponent* StaticMeshComponent = components[i];
-			if (StaticMeshComponent)
-			{
-				StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
-			}
+			StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
 		}
+	}
 }
 
 void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection)

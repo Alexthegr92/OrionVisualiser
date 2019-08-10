@@ -3,6 +3,8 @@
 #include "RakNetRP.h"
 #include <functional>
 #include <string>
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine.h"
 #include "ReplicaBase.h"
 #include "ReplicaRigidDynamicClient.h"
 
@@ -213,12 +215,6 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 {
 	if (typeName == "ReplicaRigidDynamic") 
 	{
-		if (objectToSpawn == nullptr)
-		{
-			UE_LOG(RakNet_RakNetRP, Error, TEXT("ARakNetRP::GetObjectFromType() objectToSpawn is null, no replica object created"));
-			return nullptr;
-		}
-
 		// spawn the object 
 		FActorSpawnParameters Parameters;
 		AActor* newReplica = (AActor*)GetWorld()->SpawnActor(AActor::StaticClass(), new FTransform(), Parameters);

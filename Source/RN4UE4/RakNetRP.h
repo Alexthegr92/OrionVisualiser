@@ -13,8 +13,6 @@
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
 
-#include "Replica.h"
-
 //#include <stdio.h>
 //#include "Kbhit.h"
 //#include <string.h>
@@ -67,9 +65,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
-
-	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
-		TSubclassOf<AReplica> objectToSpawn;
 
 	UReplicaRigidDynamicClient* GetObjectFromType(RakString typeName);
 
