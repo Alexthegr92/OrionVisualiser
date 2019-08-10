@@ -130,7 +130,6 @@ void ARakNetRP::Tick(float DeltaTime)
 			allServersChecked = true;
 		}
 	}
-	
 }
 
 void ARakNetRP::RPStartup()
