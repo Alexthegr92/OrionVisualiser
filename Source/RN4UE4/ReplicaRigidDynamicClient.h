@@ -45,7 +45,7 @@ public:
 		GetOwner()->Destroy();
 	}
 
-	void FindNearestStaticMesh();
+	void GetParentComponent();
 	void CenterToMesh(RigidDynamicConstructionData& data);
 	void ReadPhysicValues(RigidDynamicConstructionData& data);
 	virtual RigidDynamicConstructionData GetConstructionData() override;

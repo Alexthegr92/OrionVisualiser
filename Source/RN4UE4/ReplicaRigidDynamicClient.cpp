@@ -126,36 +126,17 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 	orionMesh->SetSimulatePhysics(false);
 }
 
-void UReplicaRigidDynamicClient::FindNearestStaticMesh()
+void UReplicaRigidDynamicClient::GetParentComponent()
 {
-	float distance;
-	TArray<UPrimitiveComponent*> comps;
-	GetOwner()->GetComponents(comps);
-	for (auto Iter = comps.CreateConstIterator(); Iter; ++Iter)
+	bool isChild;
+	USceneComponent * parentComps = GetAttachParent();
+	UStaticMeshComponent* meshComp = dynamic_cast<UStaticMeshComponent*>(parentComps);
+	if (meshComp)
 	{
-		UStaticMeshComponent* vismesh = Cast<UStaticMeshComponent>(*Iter);
-		if (vismesh != nullptr && vismesh->GetStaticMesh() != nullptr && orionMesh != vismesh)
-		{
-			orionMesh = vismesh;
-			distance = FVector::Distance(GetComponentTransform().GetLocation(), orionMesh->GetComponentTransform().GetLocation());
-			TArray<UPrimitiveComponent*> comps2;
-			GetOwner()->GetComponents(comps2);
-			for (auto Iter2 = comps2.CreateConstIterator(); Iter2; ++Iter2)
-			{
-				UStaticMeshComponent* vismesh2 = Cast<UStaticMeshComponent>(*Iter2);
-				if (vismesh2 != nullptr && orionMesh != vismesh2)
-				{
-					float distance2 = FVector::Distance(GetComponentTransform().GetLocation(), vismesh2->GetRelativeTransform().GetLocation());
-					if (distance2 < distance)
-					{
-						orionMesh = vismesh2;
-						distance = distance2;
-					}
-				}
-			}
-		}
-		break;
+		orionMesh = meshComp;
+		isChild = true;
 	}
+	ensureMsgf(!isChild, TEXT("ReplicaRigidDynamicComponents is not a childcomponent of a static mesh component"));
 }
 
 void UReplicaRigidDynamicClient::CenterToMesh(RigidDynamicConstructionData & data)
@@ -172,7 +153,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 {
 	RigidDynamicConstructionData data;
 
-	FindNearestStaticMesh();
+	GetParentComponent();
 	AttachToComponent(orionMesh, FAttachmentTransformRules::KeepWorldTransform);
 
 	ReadPhysicValues(data);
