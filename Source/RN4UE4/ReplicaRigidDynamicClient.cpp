@@ -27,6 +27,7 @@ void UReplicaRigidDynamicClient::BeginPlay()
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);
