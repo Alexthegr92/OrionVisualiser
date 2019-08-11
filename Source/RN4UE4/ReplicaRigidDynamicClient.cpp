@@ -168,6 +168,7 @@ void UReplicaRigidDynamicClient::CenterToMesh(RigidDynamicConstructionData & dat
 	FRotator relRot = FRotator(0, 0, 0);
 	relRot.Add(0, 180.0f, -90.0f);
 	relativePos.SetRotation(relRot.Quaternion());
+	relativePos.SetScale3D(orionMesh->GetComponentScale());
 }
 
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
@@ -230,7 +231,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		data.numVertex = orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
 		for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
 		{
-			FVector aux = vec - FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z);
+			FVector aux = vec * orionMesh->GetComponentScale() - FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z);
 			aux = aux / 50.0f;
 			Vec3 ver;
 			ver = Vec3(aux.X, aux.Z, aux.Y);
