@@ -192,6 +192,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 
 	FMatrix conversionMatrix = FMatrix();
 	memcpy(conversionMatrix.M, matrixElements, 16 * sizeof(float));
+	
 	actorTransform.SetScale3D(FVector(-actorTransform.GetScale3D().X, actorTransform.GetScale3D().Y, actorTransform.GetScale3D().Z));
 	actorTransform *= FTransform(conversionMatrix.Inverse());
 	actorTransform.ScaleTranslation(1 / 50.0f);
