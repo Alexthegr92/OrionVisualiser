@@ -53,15 +53,8 @@ void UReplicaRigidBodyStatic::GetAllVertices(int &nbMeshes, TArray<FNestedArray>
 				FNestedArray verticesElem;
 				for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[i].VertexData)
 				{
-					FVector aux;
-					aux.X = vec.X;
-					aux.Y = vec.Y;
-					aux.Z = vec.Z;
-					aux = aux / 50.0f;
-					FVector ver;
-					ver.X = aux.X;
-					ver.Y = aux.Z;
-					ver.Z = aux.Y;
+					FVector aux = vec / 50.0f;
+					FVector ver = FVector(aux.X, aux.Z, aux.Y);
 					verticesElem.Vectors.Push(ver);
 				}
 				vertices.Push(verticesElem);

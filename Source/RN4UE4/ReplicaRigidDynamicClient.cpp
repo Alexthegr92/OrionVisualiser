@@ -46,14 +46,9 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 		data.linearDamping = rigid->getLinearDamping();
 		data.gravityEnabled = orionMesh->IsGravityEnabled();
 		FVector centerMass = FVector(rigid->getCMassLocalPose().p.x, rigid->getCMassLocalPose().p.y, rigid->getCMassLocalPose().p.z);
-		data.centerMass.X = centerMass.X;
-		data.centerMass.Y = centerMass.Y;
-		data.centerMass.Z = centerMass.Z;
+		data.centerMass = Vec3(centerMass.X, centerMass.Y, centerMass.Z);
 		FQuat centerMassRot = FQuat(rigid->getCMassLocalPose().q.x, rigid->getCMassLocalPose().q.y, rigid->getCMassLocalPose().q.z, rigid->getCMassLocalPose().q.w);
-		data.centerMassRot.X = centerMassRot.X;
-		data.centerMassRot.Y = centerMassRot.Y;
-		data.centerMassRot.Z = centerMassRot.Z;
-		data.centerMassRot.W = centerMassRot.W;
+		data.centerMassRot = Quat(centerMassRot.X, centerMassRot.Y, centerMassRot.Z, centerMassRot.W);
 		data.maxAngularVelocity = rigid->getMaxAngularVelocity();
 		data.maxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
 		data.typeName = rigid->getConcreteTypeName();
