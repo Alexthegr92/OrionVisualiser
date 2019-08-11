@@ -20,6 +20,7 @@ void UReplicaRigidDynamicClient::BeginPlay()
 	Super::BeginPlay();
 
 	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	
 	registered = false;
 }
 
