@@ -17,6 +17,8 @@ class RN4UE4_API URN4UE4GameInstance : public UGameInstance
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Levels")
-		TArray<FName> GetAllMapNames();
-	
+		TArray<FName> GetAllMapNames() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		FString RemoveMapPrefix(FString mapName) const;
 };
