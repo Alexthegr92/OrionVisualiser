@@ -86,7 +86,8 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 		data.dynamicFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
 		data.staticFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
 		PxCombineMode::Enum frictionCombineMode = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFrictionCombineMode();
-		//PxFlags<PxMaterialFlag::Enum, PxU16> flags = vismesh->GetStaticMeshComponent()->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags();
+		data.isDisableFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags().isSet(physx::PxMaterialFlag::eDISABLE_FRICTION);
+		data.isDisableStrongFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags().isSet(physx::PxMaterialFlag::eDISABLE_STRONG_FRICTION);
 		switch (restituCombineMode)
 		{
 		case PxCombineMode::eAVERAGE:
