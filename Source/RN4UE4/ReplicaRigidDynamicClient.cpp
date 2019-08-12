@@ -135,8 +135,18 @@ void UReplicaRigidDynamicClient::GetParentComponent()
 	{
 		orionMesh = meshComp;
 		isChild = true;
+		TArray<USceneComponent*> meshChildrenComps;
+		orionMesh->GetChildrenComponents(false, meshChildrenComps);
+		for (auto Iter = meshChildrenComps.CreateConstIterator(); Iter; ++Iter)
+		{
+			UReplicaRigidDynamicClient* replicaClientComp = Cast<UReplicaRigidDynamicClient>(*Iter);
+			if (replicaClientComp != nullptr)
+			{
+					ensureMsgf(replicaClientComp == this, TEXT("There can only be one ReplicaRigidDynamicComponent for each Static Mesh Component"));
+			}
+		}
 	}
-	ensureMsgf(!isChild, TEXT("ReplicaRigidDynamicComponents is not a childcomponent of a static mesh component"));
+	ensureMsgf(isChild, TEXT("ReplicaRigidDynamicComponents is not a childcomponent of a static mesh component"));
 }
 
 void UReplicaRigidDynamicClient::CenterToMesh(RigidDynamicConstructionData & data)
