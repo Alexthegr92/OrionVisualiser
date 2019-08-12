@@ -89,7 +89,6 @@ void AReplica::OnConstruction(const RigidDynamicConstructionData& data)
 	UpdateTransform();
 }
 
-<<<<<<< HEAD
 void AReplica::OnPoppedConnection(Connection_RM3 * droppedConnection)
 {
 	ReplicaBase::OnPoppedConnection(droppedConnection);
@@ -97,13 +96,6 @@ void AReplica::OnPoppedConnection(Connection_RM3 * droppedConnection)
 	Destroy();
 }
 
-bool AReplica::IsSpawned()
-{
-	return spawned;
-}
-
-=======
->>>>>>> Moved timed change level to a component for levelchanger
 void AReplica::Deserialize(DeserializeParameters *deserializeParameters)
 {
 	ReplicaRigidDynamic::Deserialize(deserializeParameters);
