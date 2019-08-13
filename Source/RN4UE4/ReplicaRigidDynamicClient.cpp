@@ -194,7 +194,6 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	centerMassTransform *= FTransform(conversionMatrix.Inverse());
 	centerMassTransform.ScaleTranslation(1 / 50.0f);
 
-	data.clientCreated = true;
 	data.pos = Vec3(actorTransform.GetLocation().X, actorTransform.GetLocation().Y, actorTransform.GetLocation().Z);
 	data.rot = Quat(actorTransform.GetRotation().X, actorTransform.GetRotation().Y, actorTransform.GetRotation().Z, actorTransform.GetRotation().W);
 	data.scale = Vec3(actorTransform.GetScale3D().X, actorTransform.GetScale3D().Y, actorTransform.GetScale3D().Z);
