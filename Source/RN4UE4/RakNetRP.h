@@ -68,7 +68,7 @@ public:
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks,float errorTolerance);
+		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 	void SetCustomBoundariesCreated(bool boundariesCreated);

@@ -71,7 +71,7 @@ void ABoundaryManager::SignalBoundariesToServer()
 		}
 
 	}
-	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks, errorTolerance);
+	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks);
 }
 
 bool ABoundaryManager::CheckServersNumber()

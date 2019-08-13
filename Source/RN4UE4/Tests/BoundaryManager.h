@@ -34,10 +34,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
-		bool multiAuras;
-	UPROPERTY(EditAnywhere, Category = "Raknet")
-		float errorTolerance;
-	UPROPERTY(EditAnywhere, Category = "Raknet")
 		bool createCustomBoundariesBoxes;
 
 private:
