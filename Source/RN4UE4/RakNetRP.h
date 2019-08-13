@@ -68,7 +68,10 @@ public:
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks,bool multiAuras,float errorTolerance);
+		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks,float errorTolerance);
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+	void SetCustomBoundariesCreated(bool boundariesCreated);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
@@ -110,8 +113,6 @@ public:
 
 	bool IsCustomBoundariesCreated() const;
 
-	void SetCustomBoundariesCreated(bool boundariesCreated);
-
 	int getNumberServers();
 private:
 
@@ -128,6 +129,6 @@ private:
 	bool initialised;
 	bool customBoundariesCreated = true;
 	static const int SERVER_PORT = 12345;
-	int						totalServers = -1;
+	int						totalServers;
 	bool					allServersChecked;
 };

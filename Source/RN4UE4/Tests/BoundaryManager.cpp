@@ -30,13 +30,11 @@ void ABoundaryManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (createCustomBoundariesBoxes)
 	{
-		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetInitialised() && rakNetManager->GetAllServersChecked()) {
-			if (CheckServersNumber())
-			{
-				rakNetManager->SetCustomBoundariesCreated(false);
-				SignalBoundariesToServer();
-				boundariesSent = true;
-			}
+		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetAllServersChecked()) {
+			ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
+			rakNetManager->SetCustomBoundariesCreated(false);
+			SignalBoundariesToServer();
+			boundariesSent = true;
 		}
 	}
 }
@@ -72,7 +70,7 @@ void ABoundaryManager::SignalBoundariesToServer()
 		}
 
 	}
-	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks, multiAuras, errorTolerance);
+	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks, errorTolerance);
 }
 
 bool ABoundaryManager::CheckServersNumber()
