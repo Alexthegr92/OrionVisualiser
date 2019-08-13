@@ -2,6 +2,8 @@
 
 #include "Replica.h"
 #include "PhysXIncludes.h" 
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 DEFINE_LOG_CATEGORY(RakNet_Replica);
 

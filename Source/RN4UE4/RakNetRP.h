@@ -65,8 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void GenrateColor();
 
-	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void SetColor(int rank);
+	//UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+	//	void SetColor(int rank);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPStartup();

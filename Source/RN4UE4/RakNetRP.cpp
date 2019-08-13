@@ -4,6 +4,8 @@
 #include <functional>
 #include <string>
 #include "ReplicaBase.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "Engine.h"
 
 using namespace std::placeholders;
 
@@ -328,9 +330,9 @@ void ARakNetRP::GenrateColor()
 	RandomFloorColor4.A = FMath::RandRange(0, 1);
 }
 
-void ARakNetRP::SetColor(int rank)
-{
-	
-	
-	
-}
+//void ARakNetRP::SetColor(int rank)
+//{
+//	
+//	
+//	
+//}
