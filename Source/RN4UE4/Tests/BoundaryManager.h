@@ -29,6 +29,8 @@ public:
 
 	bool CheckServersNumber();
 
+	bool CheckBoxesHaveDifferentRanks();
+
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")

@@ -32,6 +32,7 @@ void ABoundaryManager::Tick(float DeltaTime)
 	{
 		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetAllServersChecked()) {
 			ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
+			ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
 			rakNetManager->SetCustomBoundariesCreated(false);
 			SignalBoundariesToServer();
 			boundariesSent = true;
@@ -78,5 +79,29 @@ bool ABoundaryManager::CheckServersNumber()
 	TArray<AActor*> foundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), foundActors);
 	return rakNetManager->getNumberServers() == foundActors.Num();
+}
+
+bool ABoundaryManager::CheckBoxesHaveDifferentRanks()
+{
+	for (TActorIterator<ABoundaryBox> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		ABoundaryBox *box = *ActorItr;
+		if (box)
+		{
+			for (TActorIterator<ABoundaryBox> ActorItr2(GetWorld()); ActorItr2; ++ActorItr2)
+			{
+				ABoundaryBox *box2 = *ActorItr2;
+				if (box2)
+				{
+					if (box != box2)
+					{
+						if (box->rank == box2->rank)
+							return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
 }
 
