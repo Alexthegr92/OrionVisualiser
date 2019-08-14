@@ -13,6 +13,7 @@
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	clientCreated = false;
 }
 
 void UReplicaRigidDynamicClient::BeginPlay()
@@ -126,6 +127,11 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 	orionMesh->SetSimulatePhysics(false);
 }
 
+bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream * destructionBitstream, Connection_RM3 * sourceConnection)
+{
+	return true;
+}
+
 void UReplicaRigidDynamicClient::GetParentComponent()
 {
 	bool isChild;
@@ -162,6 +168,7 @@ void UReplicaRigidDynamicClient::CenterToMesh(RigidDynamicConstructionData & dat
 RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 {
 	RigidDynamicConstructionData data;
+	clientCreated = true;
 
 	GetParentComponent();
 	AttachToComponent(orionMesh, FAttachmentTransformRules::KeepWorldTransform);

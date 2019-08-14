@@ -42,9 +42,11 @@ public:
 		return QueryActionOnPopConnection_Client(droppedConnection);
 	}
 	virtual void DeallocReplica(Connection_RM3 *sourceConnection) {
-		GetOwner()->Destroy();
+		orionMesh->DestroyComponent();
+		DestroyComponent();
 	}
 
+	bool DeserializeDestruction(BitStream* destructionBitstream, Connection_RM3* sourceConnection) override;
 	void GetParentComponent();
 	void CenterToMesh(RigidDynamicConstructionData& data);
 	void ReadPhysicValues(RigidDynamicConstructionData& data);
@@ -65,4 +67,5 @@ private:
 	FTransform relativePos;
 	FVector centerMass;
 	bool attached = false;
+	bool clientCreated;
 };
