@@ -129,7 +129,7 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 
 bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream * destructionBitstream, Connection_RM3 * sourceConnection)
 {
-	return true;
+	return false;
 }
 
 void UReplicaRigidDynamicClient::GetParentComponent()
