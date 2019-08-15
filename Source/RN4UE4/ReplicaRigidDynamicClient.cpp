@@ -53,7 +53,6 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 		data.centerMassRot = Quat(centerMassRot.X, centerMassRot.Y, centerMassRot.Z, centerMassRot.W);
 		data.maxAngularVelocity = rigid->getMaxAngularVelocity();
 		data.maxDepenetrationVelocity = rigid->getMaxDepenetrationVelocity();
-		data.typeName = rigid->getConcreteTypeName();
 		data.minCCDAdvanceCoefficient = rigid->getMinCCDAdvanceCoefficient();
 		data.isSleeping = rigid->isSleeping();
 		data.wakeCounter = rigid->getWakeCounter();
@@ -204,15 +203,18 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].X / 2.0f / 50.0f * data.scale.X;
 		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Z / 2.0f / 50.0f * data.scale.Z;
 		data.scale.Z = orionMesh->GetBodySetup()->AggGeom.BoxElems[0].Y / 2.0f / 50.0f * data.scale.Y;
+		data.centerMass = Vec3(0.0f,0.0f,0.0f);
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphylElems.Num() > 0) {
 		data.geom = 2;
 		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Length / 2.0f / 50.0f * data.scale.Z;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Radius / 50.0f * data.scale.X;
+		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphereElems.Num() > 0) {
 		data.geom = 0;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.SphereElems[0].Radius / 50.0f * data.scale.X;
+		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
 	//if mesh
 	else if (orionMesh->GetBodySetup()->AggGeom.ConvexElems.Num() > 0) {
@@ -226,9 +228,8 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 			ver = Vec3(aux.X, aux.Z, aux.Y);
 			data.vertexData.push_back(ver);
 		}
+		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
-	FVector centerLoc = centerMassTransform.GetLocation() / 50.0f;
-	data.centerMass = Vec3(centerLoc.X, centerLoc.Y, centerLoc.Z);
 	data.centerMassRot = Quat(centerMassTransform.GetRotation().X, centerMassTransform.GetRotation().Y, centerMassTransform.GetRotation().Z, centerMassTransform.GetRotation().W);
 	FVector comLoc = GetComponentLocation() / 50.0f;
 	data.pos = Vec3(comLoc.X, comLoc.Z, comLoc.Y);
