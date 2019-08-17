@@ -12,6 +12,8 @@
 #include "NetworkIDManager.h"
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
+#include "PhysicsPublic.h"
+#include "PhysXIncludes.h"
 
 #include "Replica.h"
 
@@ -36,20 +38,6 @@ DECLARE_LOG_CATEGORY_EXTERN(RakNet_RakNetRP, Log, All);
 using namespace RakNet;
 
 class ReplicaManager3Sample;
-
-USTRUCT()
-struct FNestedArray {
-	GENERATED_USTRUCT_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-		TArray<FVector> Vectors;
-
-	//default properties
-	FNestedArray()
-	{
-
-	}
-};
 
 UCLASS()
 class RN4UE4_API ARakNetRP : public AActor, public ReplicaManager3
@@ -81,7 +69,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
-	void RPrpcSignalStaticMesh(FVector pos, FQuat rot, int numberMeshes, TArray<FNestedArray> vertices);
+	void RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices);
 		
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
