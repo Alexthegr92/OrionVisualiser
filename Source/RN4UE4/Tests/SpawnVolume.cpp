@@ -4,6 +4,7 @@
 #include "Rand.h"
 #include "EngineUtils.h"
 #include "../RakNetRP.h"
+#include "RN4UE4GameMode.h"
 
 ASpawnVolume::ASpawnVolume()
 {
@@ -16,7 +17,6 @@ void ASpawnVolume::BeginPlay()
 	Super::BeginPlay();
 	active = true;
 	rand.GenerateNewSeed();
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 void ASpawnVolume::Tick(float DeltaTime)
@@ -24,6 +24,13 @@ void ASpawnVolume::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (!active) return;
+
+	if (rakNetManager == nullptr)
+	{
+		ARN4UE4GameMode* GameMode = static_cast<ARN4UE4GameMode*>(GetWorld()->GetAuthGameMode());
+		ensureMsgf(GameMode != nullptr, TEXT("ReplicaRigidDynamicClient - GameMode is not of type ARN4UE4GameMode"));
+		rakNetManager = GameMode->GetRakNetManager();
+	}
 
 	if (ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
 	{
