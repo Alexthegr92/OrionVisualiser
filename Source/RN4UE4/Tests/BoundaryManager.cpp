@@ -21,7 +21,6 @@ void ABoundaryManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 // Called every frame
@@ -30,7 +29,7 @@ void ABoundaryManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (createCustomBoundariesBoxes)
 	{
-		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetAllServersChecked()) {
+		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetAllServersChecked() && rakNetManager->isReseted()) {
 			ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
 			ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
 			rakNetManager->SetCustomBoundariesCreated(false);

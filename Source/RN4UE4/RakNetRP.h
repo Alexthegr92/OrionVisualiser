@@ -65,6 +65,9 @@ public:
 		void RPrpcSpawn(FVector pos, FVector dir);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void RPrpcSignalReset();
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
@@ -114,6 +117,8 @@ public:
 	bool IsCustomBoundariesCreated() const;
 
 	int getNumberServers();
+
+	bool isReseted();
 private:
 
 	void ConnectToIP(const FString& address);
@@ -131,4 +136,5 @@ private:
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
+	bool					reseted;
 };

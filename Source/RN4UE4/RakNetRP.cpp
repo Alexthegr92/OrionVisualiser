@@ -37,6 +37,7 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 
 	initialised = false;
 	totalServers = -1;
+	reseted = false;
 }
 
 // Called when the game starts or when spawned
@@ -204,6 +205,19 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 	}
 }
 
+void ARakNetRP::RPrpcSignalReset()
+{
+	reseted = false;
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
+
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("Reset", nullptr, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
 void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 {
 	DataStructures::List<RakNet::SystemAddress> addresses;
@@ -279,6 +293,8 @@ void ARakNetRP::CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packe
 	FVector pos;
 	bitStream->ReadVector<float>(pos.X, pos.Y, pos.Z);
 
+	reseted = true;
+
 	switch (geomType)
 	{
 	case 1:
@@ -352,6 +368,11 @@ void ARakNetRP::SetCustomBoundariesCreated(bool boundariesCreated)
 int ARakNetRP::getNumberServers()
 {
 	return totalServers;
+}
+
+bool ARakNetRP::isReseted()
+{
+	return reseted;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)

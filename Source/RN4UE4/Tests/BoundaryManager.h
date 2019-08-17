@@ -31,7 +31,7 @@ public:
 
 	bool CheckBoxesHaveDifferentRanks();
 
-	UPROPERTY(EditAnywhere, Category = "Raknet")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Raknet")
 		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		bool createCustomBoundariesBoxes;
