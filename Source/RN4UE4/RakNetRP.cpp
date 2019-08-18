@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine.h"
 
+
 using namespace std::placeholders;
 
 DEFINE_LOG_CATEGORY(RakNet_RakNetRP);
@@ -222,20 +223,24 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-void ARakNetRP::RPrpcSignalStaticMesh(FVector pos, FQuat rot, int numberMeshes, TArray<FNestedArray> vertices)
+void ARakNetRP::RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices)
 {
 	RakNet::BitStream testBs;
+	FRotator rot1 = FRotator(rot);
+	rot1.Add(0.0f,0.0f,90.0f);
+	FQuat qua = rot1.Quaternion();
 	testBs.WriteVector<float>(pos.X/50.0f, pos.Z / 50.0f, pos.Y / 50.0f);
-	testBs.WriteVector<float>(rot.X, rot.Z, rot.Y);
-	testBs.Write<float>(rot.W);
-	testBs.Write<int>(numberMeshes);
-	for (int i = 0; i < numberMeshes; i++) {
-		testBs.Write<int>(vertices[i].Vectors.Num());
-		for (int j = 0; j < vertices[i].Vectors.Num(); j++) {
-			testBs.WriteVector<float>(vertices[i].Vectors[j].X, vertices[i].Vectors[j].Y, vertices[i].Vectors[j].Z);
-		}
+	testBs.WriteVector<float>(qua.X, qua.Z, qua.Y);
+	testBs.Write<float>(qua.W);
+	testBs.Write<int>(nbVertices);
+	for (int i = 0; i < nbVertices; i++) {
+		testBs.WriteVector<float>(vertices[i].X, vertices[i].Y, vertices[i].Z);
 	}
-
+	testBs.Write<int>(nbIndices);
+	for (int i = 0; i < nbIndices; i++) {
+		testBs.Write<PxU16>(indices[i]);
+	}
+	
 	DataStructures::List<RakNet::SystemAddress> addresses;
 	DataStructures::List<RakNet::RakNetGUID> guids;
 	rakPeer->GetSystemList(addresses, guids);

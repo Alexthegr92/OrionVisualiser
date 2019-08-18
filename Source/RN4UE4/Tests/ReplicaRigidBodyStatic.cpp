@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/PhysicsEngine/AggregateGeom.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h"
+#include "ThirdParty/PhysX3/PhysX_3.4/include/geometry/PxTriangleMesh.h"
 
 
 // Sets default values
@@ -28,17 +29,19 @@ void UReplicaRigidBodyStatic::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
 	{
-		int nbMeshes;
-		TArray<FNestedArray> vertices;
-		GetAllVertices(nbMeshes, vertices);
-		SignalData(nbMeshes, vertices);
+		int nbVertices;
+		TArray<FVector> vertices;
+		int nbIndices;
+		TArray<PxU16> indices;
+		GetAllVertices(nbVertices, vertices, nbIndices, indices);
+		SignalData(nbVertices, vertices, nbIndices, indices);
 		registered = true;
 	}
 }
 
-void UReplicaRigidBodyStatic::GetAllVertices(int &nbMeshes, TArray<FNestedArray> &vertices)
+void UReplicaRigidBodyStatic::GetAllVertices(int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices)
 {
 	TArray<UPrimitiveComponent*> comps;
 	GetOwner()->GetComponents(comps);
@@ -47,24 +50,52 @@ void UReplicaRigidBodyStatic::GetAllVertices(int &nbMeshes, TArray<FNestedArray>
 		orionMesh = Cast<UStaticMeshComponent>(*Iter);
 		if (orionMesh)
 		{
-			nbMeshes = orionMesh->GetBodySetup()->AggGeom.ConvexElems.Num();
-			for (int i = 0; i < orionMesh->GetBodySetup()->AggGeom.ConvexElems.Num(); i++)
+			PxTriangleMesh* TempTriMesh = orionMesh->GetBodySetup()->TriMeshes[0];
+			check(TempTriMesh);
+			int32 TriNumber = TempTriMesh->getNbTriangles();
+			nbVertices = TempTriMesh->getNbVertices();
+			nbIndices = TempTriMesh->getNbTriangles()*3;
+			const PxVec3* PVertices = TempTriMesh->getVertices();
+			const void* Triangles = TempTriMesh->getTriangles();
+
+			// Grab triangle indices
+			int32 I0, I1, I2;
+
+			for (int32 TriIndex = 0; TriIndex < TriNumber; ++TriIndex)
 			{
-				FNestedArray verticesElem;
-				for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[i].VertexData)
+				if (TempTriMesh->getTriangleMeshFlags() & PxTriangleMeshFlag::e16_BIT_INDICES)
 				{
-					FVector aux = vec / 50.0f;
-					FVector ver = FVector(aux.X, aux.Z, aux.Y);
-					verticesElem.Vectors.Push(ver);
+					PxU16* P16BitIndices = (PxU16*)Triangles;
+					I0 = P16BitIndices[(TriIndex * 3) + 0];
+					I1 = P16BitIndices[(TriIndex * 3) + 1];
+					I2 = P16BitIndices[(TriIndex * 3) + 2];
 				}
-				vertices.Push(verticesElem);
+				else
+				{
+					PxU32* P32BitIndices = (PxU32*)Triangles;
+					I0 = P32BitIndices[(TriIndex * 3) + 0];
+					I1 = P32BitIndices[(TriIndex * 3) + 1];
+					I2 = P32BitIndices[(TriIndex * 3) + 2];
+				}
+
+				// Local position
+				FVector V0 = FVector(PVertices[I0].x, PVertices[I0].y, PVertices[I0].z);
+				FVector V1 = FVector(PVertices[I1].x, PVertices[I1].y, PVertices[I1].z);
+				FVector V2 = FVector(PVertices[I2].x, PVertices[I2].y, PVertices[I2].z);
+				indices.Push(I0);
+				indices.Push(I1);
+				indices.Push(I2);
+			}
+			for (int32 TriIndex = 0; TriIndex < nbVertices; ++TriIndex)
+			{
+				vertices.Push(FVector(PVertices[TriIndex].x / 50.0f, PVertices[TriIndex].y / 50.0f, PVertices[TriIndex].z / 50.0f));
 			}
 		}
 	}
 }
 
-void UReplicaRigidBodyStatic::SignalData(int &nbMeshes, TArray<FNestedArray> &vertices)
+void UReplicaRigidBodyStatic::SignalData(int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices)
 {
-	rakNetManager->RPrpcSignalStaticMesh(GetOwner()->GetActorLocation(), GetOwner()->GetActorQuat(), nbMeshes, vertices);
+	rakNetManager->RPrpcSignalStaticMesh(GetOwner()->GetActorLocation(), GetOwner()->GetActorQuat(), nbVertices, vertices, nbIndices, indices);
 }
 

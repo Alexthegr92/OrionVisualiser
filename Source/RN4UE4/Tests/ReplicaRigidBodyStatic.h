@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "RakNetRP.h"
+#include "PhysicsPublic.h"
+#include "PhysXIncludes.h"
 #include "ReplicaRigidBodyStatic.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -27,8 +30,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void GetAllVertices(int &nbMeshes, TArray<FNestedArray> &vertices);
-	void SignalData(int &nbMeshes, TArray<FNestedArray> &vertices);
+	void GetAllVertices(int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices);
+	void SignalData(int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices);
 
 private:
 	bool registered = false;
