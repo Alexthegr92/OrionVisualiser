@@ -20,7 +20,8 @@ public:
 	{
 		RakNetManager = Manager;
 	}
-
+	
+	UFUNCTION(BlueprintCallable, Category = "RakNet")
 	ARakNetRP* GetRakNetManager() const
 	{
 		return RakNetManager;
