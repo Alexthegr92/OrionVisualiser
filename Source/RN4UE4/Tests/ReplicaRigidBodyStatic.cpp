@@ -20,8 +20,6 @@ UReplicaRigidBodyStatic::UReplicaRigidBodyStatic()
 void UReplicaRigidBodyStatic::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 // Called every frame

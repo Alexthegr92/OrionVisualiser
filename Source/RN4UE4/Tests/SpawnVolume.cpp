@@ -16,7 +16,6 @@ void ASpawnVolume::BeginPlay()
 	Super::BeginPlay();
 	active = true;
 	rand.GenerateNewSeed();
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 void ASpawnVolume::Tick(float DeltaTime)

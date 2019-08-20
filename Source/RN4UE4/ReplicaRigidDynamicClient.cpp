@@ -18,8 +18,6 @@ UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	
 	registered = false;
 }
@@ -211,6 +209,10 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		data.geom = 2;
 		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Length / 2.0f / 50.0f * data.scale.Z;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Radius / 50.0f * data.scale.X;
+		relativePos.SetLocation(FVector(data.centerMass.Z, data.centerMass.X, data.centerMass.Y));
+		FRotator relRot = FRotator(0, 0, 0);
+		relRot.Add(90.0f, 0.0f, 0.0f);
+		relativePos.SetRotation(relRot.Quaternion());
 		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphereElems.Num() > 0) {
