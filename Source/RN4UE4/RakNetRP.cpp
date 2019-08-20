@@ -6,7 +6,8 @@
 #include "ReplicaBase.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine.h"
-
+#include "RN4UE4GameMode.h"
+#include "Engine/World.h"
 
 using namespace std::placeholders;
 
@@ -45,6 +46,10 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 void ARakNetRP::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ARN4UE4GameMode* GameMode = static_cast<ARN4UE4GameMode*>(GetWorld()->GetAuthGameMode());
+	ensureMsgf(GameMode != nullptr, TEXT("RakNetRP - GameMode is not of type ARN4UE4GameMode"));
+	GameMode->RegisterRakNetManager(this);
 
 	auto fp = std::bind(&ARakNetRP::CreateBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("CreateBoundary", fp, 0);

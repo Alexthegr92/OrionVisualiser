@@ -9,6 +9,8 @@
 #include "PhysXIncludes.h" 
 #include "PhysXPublic.h"
 #include "PhysicsPublic.h"
+#include "RN4UE4GameMode.h"
+#include "Engine/World.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -25,8 +27,14 @@ void UReplicaRigidDynamicClient::BeginPlay()
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (rakNetManager == nullptr)
+	{
+		ARN4UE4GameMode* GameMode = static_cast<ARN4UE4GameMode*>(GetWorld()->GetAuthGameMode());
+		ensureMsgf(GameMode != nullptr, TEXT("ReplicaRigidDynamicClient - GameMode is not of type ARN4UE4GameMode"));
+		rakNetManager = GameMode->GetRakNetManager();
+	}
 	
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);
 		registered = true;

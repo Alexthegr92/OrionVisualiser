@@ -21,9 +21,6 @@ public:
 	// Sets default values for this component's properties
 	UReplicaRigidDynamicClient();
 
-	UPROPERTY(EditAnywhere, Category = "Raknet")
-		ARakNetRP*		rakNetManager;
-		
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
@@ -65,4 +62,5 @@ private:
 	FTransform relativePos;
 	FVector centerMass;
 	bool attached = false;
+	ARakNetRP*		rakNetManager;
 };
