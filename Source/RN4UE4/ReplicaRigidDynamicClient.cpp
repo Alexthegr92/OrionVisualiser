@@ -1,6 +1,5 @@
 #include "ReplicaRigidDynamicClient.h"
-#include "RN4UE4GameMode.h"
-#include "Engine/World.h"
+#include "RN4UE4GameInstance.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -22,9 +21,9 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 
 	if (rakNetManager == nullptr)
 	{
-		ARN4UE4GameMode* GameMode = static_cast<ARN4UE4GameMode*>(GetWorld()->GetAuthGameMode());
-		ensureMsgf(GameMode != nullptr, TEXT("ReplicaRigidDynamicClient - GameMode is not of type ARN4UE4GameMode"));
-		rakNetManager = GameMode->GetRakNetManager();
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetOwner()->GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
 	}
 	
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
