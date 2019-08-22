@@ -3,6 +3,9 @@
 #include "RN4UE4GameInstance.h"
 #include "RN4UE4.h"
 #include "Runtime/Engine/Classes/Engine/LevelStreaming.h"
+#include "Array.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/GameInstance.h"
 
 TArray<FName> URN4UE4GameInstance::GetAllMapNames() const
 {
@@ -20,4 +23,27 @@ FString URN4UE4GameInstance::RemoveMapPrefix(FString mapName) const
 {
 	mapName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 	return mapName;
+}
+
+void URN4UE4GameInstance::LoadStreamLevelFromIndex(int index)
+{
+	TArray<FName> AllLevels = GetAllMapNames();
+
+	if (AllLevels.IsValidIndex(IndexLevel))
+	{
+		FName CurrentlyLoadedLevel = AllLevels[IndexLevel];
+		FLatentActionInfo info;
+		info.UUID = 0;
+		UGameplayStatics::UnloadStreamLevel(this, CurrentlyLoadedLevel, info);
+	}
+
+	if (AllLevels.IsValidIndex(index))
+	{
+		FName NewLevel = AllLevels[index];
+		FLatentActionInfo info;
+		info.UUID = 1;
+		UGameplayStatics::LoadStreamLevel(this, NewLevel, true, true, info);
+	}
+
+	IndexLevel = index;
 }

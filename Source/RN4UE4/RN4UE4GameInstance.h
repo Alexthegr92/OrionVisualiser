@@ -23,9 +23,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Levels")
 		FString RemoveMapPrefix(FString mapName) const;
 
-	// TODO: Store this in a level changer class
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
-		int IndexLevel;
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		void LoadStreamLevelFromIndex(int index);
 
 	void RegisterRakNetManager(ARakNetRP* Manager)
 	{
@@ -40,4 +39,7 @@ public:
 
 private:
 	ARakNetRP* RakNetManager;
+
+	// TODO: Store this in a level changer class
+	int IndexLevel;
 };
