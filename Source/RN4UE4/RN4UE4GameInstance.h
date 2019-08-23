@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Levels")
 		void LoadStreamLevelFromIndex(int index);
 
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		void ReloadCurrentStreamLevel();
+
 	void RegisterRakNetManager(ARakNetRP* Manager)
 	{
 		RakNetManager = Manager;

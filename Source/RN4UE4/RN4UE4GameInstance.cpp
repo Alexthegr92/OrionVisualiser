@@ -47,3 +47,8 @@ void URN4UE4GameInstance::LoadStreamLevelFromIndex(int index)
 
 	IndexLevel = index;
 }
+
+void URN4UE4GameInstance::ReloadCurrentStreamLevel()
+{
+	LoadStreamLevelFromIndex(IndexLevel);
+}
