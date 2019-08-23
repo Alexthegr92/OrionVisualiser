@@ -155,6 +155,7 @@ void AReplica::PostDeserializeConstruction(RakNet::BitStream *constructionBitstr
 	switch (rank)
 	{
 	case 0:
+		
 		SetMaterial(0, server0Material);
 		break;
 	case 1:

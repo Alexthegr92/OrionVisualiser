@@ -52,6 +52,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)             //Baisc random colour
+		FLinearColor Server1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor Server2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor Server3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor Server4;
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void RandomColourSet();
+
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPStartup();
 
@@ -63,6 +78,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSpawn(FVector pos, FVector dir);
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void RPrpcIM(FVector pos, FVector dir, float fps);
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
+		void RPrpcSwitch();
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);

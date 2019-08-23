@@ -194,6 +194,36 @@ void ARakNetRP::RPrpcSpawn(FVector pos, FVector dir)
 	}
 }
 
+void ARakNetRP::RPrpcIM(FVector pos, FVector dir, float fps)         //interest management signal
+{
+	RakNet::BitStream testIs;
+	testIs.WriteVector<float>(pos.X, pos.Y, pos.Z);
+	testIs.WriteVector<float>(dir.X, dir.Y, dir.Z);
+	testIs.Write(fps);
+	DataStructures::List<RakNet::SystemAddress> addressesi;
+	DataStructures::List<RakNet::RakNetGUID> guidsi;
+	rakPeer->GetSystemList(addressesi, guidsi);
+
+	for (unsigned int i = 0; i < addressesi.Size(); ++i)
+	{
+		rpc.Signal("IM", &testIs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addressesi[i], false, false);
+	}
+}
+
+void ARakNetRP::RPrpcSwitch()                             //random switch pause
+{
+	RakNet::BitStream testSs;
+	
+	DataStructures::List<RakNet::SystemAddress> addressess;
+	DataStructures::List<RakNet::RakNetGUID> guidss;
+	rakPeer->GetSystemList(addressess, guidss);
+
+	for (unsigned int i = 0; i < addressess.Size(); ++i)
+	{
+		rpc.Signal("Switch", &testSs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addressess[i], false, false);
+	}
+}
+
 void ARakNetRP::RPrpcSignalAllServers(const FString& sharedIdentifier)
 {
 	DataStructures::List<RakNet::SystemAddress> addresses;
@@ -318,4 +348,12 @@ void ARakNetRP::ConnectToIP(const FString& address)
 	}
 
 	RPConnect(host, portNumber);
+}
+
+void ARakNetRP::RandomColourSet()
+{
+	Server1.MakeRandomColor();
+	Server2.MakeRandomColor();
+	Server3.MakeRandomColor();
+	Server4.MakeRandomColor();
 }
