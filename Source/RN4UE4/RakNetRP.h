@@ -97,6 +97,8 @@ public:
 		newConnectionCallback = fun;
 	}
 
+	RPC4* GetRpc() { return &rpc; }
+
 	bool GetInitialised() const { return initialised; }
 
 	bool GetAllServersChecked() const;
