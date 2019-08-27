@@ -92,6 +92,11 @@ public:
 
 	void DroppedConnection(unsigned short Port);
 
+	void SetNewConnectionCallback(const std::function<void(SystemAddress address)>& fun)
+	{
+		newConnectionCallback = fun;
+	}
+
 	bool GetInitialised() const { return initialised; }
 
 	bool GetAllServersChecked() const;
@@ -104,6 +109,8 @@ private:
 	RakPeerInterface*		rakPeer				= nullptr;
 	NetworkIDManager		networkIdManager;	// ReplicaManager3 requires NetworkIDManager to lookup pointers from numbers.
 	Packet*					p					= nullptr;// Holds packets
+
+	std::function<void(SystemAddress address)> newConnectionCallback;
 	
 	RPC4 rpc;
 

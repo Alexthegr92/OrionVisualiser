@@ -79,9 +79,17 @@ void ARakNetRP::Tick(float DeltaTime)
 			break;
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_CONNECTION_REQUEST_ACCEPTED\n"));
+			if (newConnectionCallback != nullptr)
+			{
+				newConnectionCallback(p->systemAddress);
+			}
 			break;
 		case ID_NEW_INCOMING_CONNECTION:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_NEW_INCOMING_CONNECTION from %s\n"), p->systemAddress.ToString());
+			if (newConnectionCallback != nullptr)
+			{
+				newConnectionCallback(p->systemAddress);
+			}
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_DISCONNECTION_NOTIFICATION\n"));
