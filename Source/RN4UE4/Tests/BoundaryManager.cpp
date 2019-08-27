@@ -6,7 +6,9 @@
 #include "BoundaryBox.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "../RakNetRP.h"
+#include "RN4UE4GameInstance.h"
 
+using namespace std::placeholders;
 
 // Sets default values
 ABoundaryManager::ABoundaryManager()
@@ -16,31 +18,31 @@ ABoundaryManager::ABoundaryManager()
 
 }
 
-// Called when the game starts or when spawned
-void ABoundaryManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
-}
-
 // Called every frame
 void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (createCustomBoundariesBoxes)
+
+	if (rakNetManager == nullptr)
 	{
-		if (!boundariesSent && ensure(rakNetManager) && rakNetManager->GetAllServersChecked()) {
-			ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
-			ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
-			rakNetManager->SetCustomBoundariesCreated(false);
-			SignalBoundariesToServer();
-			boundariesSent = true;
-		}
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
+		ensure(rakNetManager);
+
+		const auto newConnection = std::bind(&ABoundaryManager::SignalBoundariesToServer, this, _1);
+		rakNetManager->SetNewConnectionCallback(newConnection);
+	}
+
+	if (createCustomBoundariesBoxes && (!boundariesSent && rakNetManager->GetAllServersChecked()))
+	{
+		ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
+		ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
+		boundariesSent = true;
 	}
 }
 
-void ABoundaryManager::SignalBoundariesToServer()
+void ABoundaryManager::SignalBoundariesToServer(const RakNet::SystemAddress address)
 {
 	TArray<FVector> pos;
 	TArray<FVector> size;
@@ -69,9 +71,24 @@ void ABoundaryManager::SignalBoundariesToServer()
 				ranks.Add(box->rank);
 			}
 		}
-
 	}
-	rakNetManager->RPrpcSignalBoundaryBox(pos, size, ranks);
+
+	RPrpcSignalBoundaryBox(pos, size, ranks, address);
+}
+
+void ABoundaryManager::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks, const RakNet::SystemAddress address)
+{
+	RakNet::BitStream testBs;
+	testBs.Write<int>(pos.Num());
+
+	for (int i = 0; i < pos.Num(); i++)
+	{
+		testBs.WriteVector<float>(pos[i].X, pos[i].Y, pos[i].Z);
+		testBs.WriteVector<float>(size[i].X, size[i].Y, size[i].Z);
+		testBs.Write<int>(ranks[i]);
+	}
+
+	rakNetManager->GetRpc()->Signal("CreateBoundaryVisualizer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false, false);
 }
 
 bool ABoundaryManager::CheckServersNumber()

@@ -67,11 +67,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
-	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-		void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks);
 
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
-	void SetCustomBoundariesCreated(bool boundariesCreated);
+		void SetCustomBoundariesCreated(bool boundariesCreated);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
 		TSubclassOf<AReplica> objectToSpawn;
@@ -79,7 +77,7 @@ public:
 	AReplica* GetObjectFromType(RakString typeName);
 
 	void CustomCreatedBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
-
+	
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
@@ -112,7 +110,7 @@ public:
 	bool GetAllServersChecked() const;
 
 	bool IsCustomBoundariesCreated() const;
-
+	
 	int getNumberServers();
 private:
 

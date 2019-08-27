@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RakNetTypes.h"
 #include "BoundaryManager.generated.h"
 
 class ABoundaryBox;
@@ -17,25 +18,21 @@ public:
 	// Sets default values for this actor's properties
 	ABoundaryManager();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SignalBoundariesToServer();
+	void SignalBoundariesToServer(const RakNet::SystemAddress address);
+	void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks, const RakNet::SystemAddress address);
 
 	bool CheckServersNumber();
 
 	bool CheckBoxesHaveDifferentRanks();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Raknet")
-		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		bool createCustomBoundariesBoxes;
 
 private:
+	ARakNetRP*		rakNetManager;
 	bool boundariesSent = false;
 };
