@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "RakNetTypes.h"
 #include "BoundaryManager.generated.h"
 
-class ABoundaryBox;
 class ARakNetRP;
+
 UCLASS()
 class RN4UE4_API ABoundaryManager : public AActor
 {
@@ -17,22 +16,21 @@ class RN4UE4_API ABoundaryManager : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABoundaryManager();
-
-public:	
+	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
-	void SignalBoundariesToServer(const RakNet::SystemAddress address);
-	void RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks, const RakNet::SystemAddress address);
+	void SignalBoundariesToServer(RakNet::SystemAddress address) const;
+	void RPrpcSignalBoundaryBox(const TArray<FVector>& pos, const TArray<FVector>& size, const TArray<int>& ranks, RakNet::SystemAddress address) const;
 
-	bool CheckServersNumber();
+	bool CheckServersNumber() const;
 
-	bool CheckBoxesHaveDifferentRanks();
+	bool CheckBoxesHaveDifferentRanks() const;
 
 	UPROPERTY(EditAnywhere, Category = "Raknet")
 		bool createCustomBoundariesBoxes;
 
 private:
 	ARakNetRP*		rakNetManager;
-	bool boundariesSent = false;
+	bool BoundariesChecked = false;
 };

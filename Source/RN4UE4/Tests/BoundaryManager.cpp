@@ -13,9 +13,8 @@ using namespace std::placeholders;
 // Sets default values
 ABoundaryManager::ABoundaryManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called every frame
@@ -34,51 +33,48 @@ void ABoundaryManager::Tick(float DeltaTime)
 		rakNetManager->SetNewConnectionCallback(newConnection);
 	}
 
-	if (createCustomBoundariesBoxes && (!boundariesSent && rakNetManager->GetAllServersChecked()))
+	if (createCustomBoundariesBoxes && (!BoundariesChecked && rakNetManager->GetAllServersChecked()))
 	{
 		ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
 		ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
-		boundariesSent = true;
+		BoundariesChecked = true;
 	}
 }
 
-void ABoundaryManager::SignalBoundariesToServer(const RakNet::SystemAddress address)
+void ABoundaryManager::SignalBoundariesToServer(const SystemAddress address) const
 {
-	TArray<FVector> pos;
-	TArray<FVector> size;
-	TArray<int> ranks;
+	TArray<FVector> Positions;
+	TArray<FVector> Sizes;
+	TArray<int>     Ranks;
+
 	for (TActorIterator<ABoundaryBox> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		if (*ActorItr != nullptr)
-		{
-			ABoundaryBox *box = *ActorItr;
-			if (box)
-			{
-				FVector sizeBox;
-				TArray<UPrimitiveComponent*> comps;
-				box->GetComponents(comps);
-				for (auto Iter = comps.CreateConstIterator(); Iter; ++Iter)
-				{
-					UBoxComponent* box = Cast<UBoxComponent>(*Iter);
-					if (box)
-					{
-						sizeBox = box->GetScaledBoxExtent() / 50.0f;
-					}
-				}
-				FVector position = box->GetActorLocation() / 50.0f;
-				pos.Add(FVector(position.X,position.Z,position.Y));
-				size.Add(FVector(sizeBox.X, sizeBox.Z, sizeBox.Y));
-				ranks.Add(box->rank);
-			}
-		}
+		if (*ActorItr == nullptr) continue;
+
+		ABoundaryBox* BoundaryBox = *ActorItr;
+		if (BoundaryBox == nullptr) continue;
+
+		TArray<UBoxComponent*> Components;
+		BoundaryBox->GetComponents<UBoxComponent>(Components);
+
+		ensureMsgf(Components.Num() == 1, TEXT("BoundaryManager - Boundary box without exactly one box component on it"));
+
+		UBoxComponent* BoxComponent = Components[0];
+		const FVector  BoxSize      = BoxComponent->GetScaledBoxExtent() / 50.0f;
+
+		const FVector ThisBoxComponentPosition = BoundaryBox->GetActorLocation() / 50.0f;
+		Positions.Add(FVector(ThisBoxComponentPosition.X, ThisBoxComponentPosition.Z, ThisBoxComponentPosition.Y));
+		Sizes.Add(FVector(BoxSize.X, BoxSize.Z, BoxSize.Y));
+		Ranks.Add(BoundaryBox->Rank);
 	}
 
-	RPrpcSignalBoundaryBox(pos, size, ranks, address);
+	RPrpcSignalBoundaryBox(Positions, Sizes, Ranks, address);
 }
 
-void ABoundaryManager::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const TArray<FVector> size, const TArray<int> ranks, const RakNet::SystemAddress address)
+void ABoundaryManager::RPrpcSignalBoundaryBox(const TArray<FVector>& pos, const TArray<FVector>& size, const TArray<int>& ranks,
+											const SystemAddress      address) const
 {
-	RakNet::BitStream testBs;
+	BitStream testBs;
 	testBs.Write<int>(pos.Num());
 
 	for (int i = 0; i < pos.Num(); i++)
@@ -88,37 +84,34 @@ void ABoundaryManager::RPrpcSignalBoundaryBox(const TArray<FVector> pos, const T
 		testBs.Write<int>(ranks[i]);
 	}
 
-	rakNetManager->GetRpc()->Signal("CreateBoundaryVisualizer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false, false);
+	rakNetManager->GetRpc()->Signal("CreateBoundaryVisualizer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false,
+									false);
 }
 
-bool ABoundaryManager::CheckServersNumber()
+bool ABoundaryManager::CheckServersNumber() const
 {
-	TArray<AActor*> foundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), foundActors);
-	return rakNetManager->getNumberServers() == foundActors.Num();
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), FoundActors);
+
+	return rakNetManager->getNumberServers() == FoundActors.Num();
 }
 
-bool ABoundaryManager::CheckBoxesHaveDifferentRanks()
+bool ABoundaryManager::CheckBoxesHaveDifferentRanks() const
 {
-	for (TActorIterator<ABoundaryBox> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	UWorld* world = GetWorld();
+	for (TActorIterator<ABoundaryBox> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		ABoundaryBox *box = *ActorItr;
-		if (box)
+		ABoundaryBox* Box = *ActorItr;
+		if (Box == nullptr) continue;
+
+		for (TActorIterator<ABoundaryBox> ActorItr2(world); ActorItr2; ++ActorItr2)
 		{
-			for (TActorIterator<ABoundaryBox> ActorItr2(GetWorld()); ActorItr2; ++ActorItr2)
-			{
-				ABoundaryBox *box2 = *ActorItr2;
-				if (box2)
-				{
-					if (box != box2)
-					{
-						if (box->rank == box2->rank)
-							return false;
-					}
-				}
-			}
+			ABoundaryBox* Box2 = *ActorItr2;
+			if (Box2 == nullptr || Box == Box2 || Box->Rank != Box2->Rank) continue;
+
+			return false;
 		}
 	}
+
 	return true;
 }
-
