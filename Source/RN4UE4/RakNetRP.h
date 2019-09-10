@@ -71,7 +71,7 @@ public:
 		TSubclassOf<AReplica> objectToSpawn;
 
 	AReplica* GetObjectFromType(RakString typeName);
-	
+
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
 	void DeleteBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
@@ -102,7 +102,7 @@ public:
 	bool GetInitialised() const { return initialised; }
 
 	bool GetAllServersChecked() const;
-	
+
 	int GetExpectedNumberOfServers() const;
 private:
 
@@ -117,6 +117,7 @@ private:
 	RPC4 rpc;
 
 	bool initialised;
+	
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
