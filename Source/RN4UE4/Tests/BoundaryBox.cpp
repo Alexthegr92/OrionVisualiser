@@ -3,13 +3,8 @@
 #include "BoundaryBox.h"
 #include "RakNetRP.h"
 
-
-
-// Sets default values
 ABoundaryBox::ABoundaryBox()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 }
 

@@ -54,8 +54,6 @@ void ARakNetRP::BeginPlay()
 	rpc.RegisterSlot("DeleteBoundary", deleteFunction, 0);
 	auto getExpectedServersFunction = std::bind(&ARakNetRP::GetExpectedServersSlot, this, _1, _2);
 	rpc.RegisterSlot("NumberServers", getExpectedServersFunction, 0);
-	auto getCustomBoundariesCreatedFunction = std::bind(&ARakNetRP::CustomCreatedBoundarySlot, this, _1, _2);
-	rpc.RegisterSlot("CustomBoundariesCreated", getCustomBoundariesCreatedFunction, 0);
 
 	allServersChecked = false;
 }
@@ -244,11 +242,6 @@ AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
 	return nullptr;
 }
 
-void ARakNetRP::CustomCreatedBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)
-{
-	customBoundariesCreated = true;
-}
-
 void ARakNetRP::CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet)
 {
 	int rank;
@@ -320,17 +313,7 @@ bool ARakNetRP::GetAllServersChecked() const
 	return allServersChecked;
 }
 
-bool ARakNetRP::IsCustomBoundariesCreated() const
-{
-	return customBoundariesCreated;
-}
-
-void ARakNetRP::SetCustomBoundariesCreated(bool boundariesCreated)
-{
-	customBoundariesCreated = boundariesCreated;
-}
-
-int ARakNetRP::getNumberServers()
+int ARakNetRP::GetExpectedNumberOfServers() const
 {
 	return totalServers;
 }

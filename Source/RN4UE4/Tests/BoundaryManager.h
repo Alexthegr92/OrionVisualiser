@@ -14,12 +14,11 @@ class RN4UE4_API ABoundaryManager : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ABoundaryManager();
 	
-	// Called every frame
 	void Tick(float DeltaTime) override;
 
+private:
 	void SignalBoundariesToServer(RakNet::SystemAddress address) const;
 	void RPrpcSignalBoundaryBox(const TArray<FVector>& pos, const TArray<FVector>& size, const TArray<int>& ranks, RakNet::SystemAddress address) const;
 
@@ -28,9 +27,8 @@ public:
 	bool CheckBoxesHaveDifferentRanks() const;
 
 	UPROPERTY(EditAnywhere, Category = "Raknet")
-		bool createCustomBoundariesBoxes;
-
-private:
-	ARakNetRP*		rakNetManager;
+		bool CreateCustomBoundariesBoxes;
+	
+	ARakNetRP*		RakNetManager;
 	bool BoundariesChecked = false;
 };

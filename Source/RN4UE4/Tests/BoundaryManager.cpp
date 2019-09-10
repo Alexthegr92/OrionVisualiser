@@ -22,18 +22,18 @@ void ABoundaryManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (rakNetManager == nullptr)
+	if (RakNetManager == nullptr)
 	{
 		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetGameInstance());
 		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
-		rakNetManager = GameInstance->GetRakNetManager();
-		ensure(rakNetManager);
+		RakNetManager = GameInstance->GetRakNetManager();
+		ensure(RakNetManager);
 
-		const auto newConnection = std::bind(&ABoundaryManager::SignalBoundariesToServer, this, _1);
-		rakNetManager->SetNewConnectionCallback(newConnection);
+		const auto NewConnection = std::bind(&ABoundaryManager::SignalBoundariesToServer, this, _1);
+		RakNetManager->SetNewConnectionCallback(NewConnection);
 	}
 
-	if (createCustomBoundariesBoxes && (!BoundariesChecked && rakNetManager->GetAllServersChecked()))
+	if (CreateCustomBoundariesBoxes && (!BoundariesChecked && RakNetManager->GetAllServersChecked()))
 	{
 		ensureMsgf(CheckServersNumber(), TEXT("Number of servers connected and boundaries boxes created aren't the same"));
 		ensureMsgf(CheckBoxesHaveDifferentRanks(), TEXT("There are more than one box using the same rank value"));
@@ -65,7 +65,7 @@ void ABoundaryManager::SignalBoundariesToServer(const SystemAddress address) con
 		const FVector ThisBoxComponentPosition = BoundaryBox->GetActorLocation() / 50.0f;
 		Positions.Add(FVector(ThisBoxComponentPosition.X, ThisBoxComponentPosition.Z, ThisBoxComponentPosition.Y));
 		Sizes.Add(FVector(BoxSize.X, BoxSize.Z, BoxSize.Y));
-		Ranks.Add(BoundaryBox->Rank);
+		Ranks.Add(BoundaryBox->GetRank());
 	}
 
 	RPrpcSignalBoundaryBox(Positions, Sizes, Ranks, address);
@@ -74,17 +74,17 @@ void ABoundaryManager::SignalBoundariesToServer(const SystemAddress address) con
 void ABoundaryManager::RPrpcSignalBoundaryBox(const TArray<FVector>& pos, const TArray<FVector>& size, const TArray<int>& ranks,
 											const SystemAddress      address) const
 {
-	BitStream testBs;
-	testBs.Write<int>(pos.Num());
+	BitStream TestBs;
+	TestBs.Write<int>(pos.Num());
 
 	for (int i = 0; i < pos.Num(); i++)
 	{
-		testBs.WriteVector<float>(pos[i].X, pos[i].Y, pos[i].Z);
-		testBs.WriteVector<float>(size[i].X, size[i].Y, size[i].Z);
-		testBs.Write<int>(ranks[i]);
+		TestBs.WriteVector<float>(pos[i].X, pos[i].Y, pos[i].Z);
+		TestBs.WriteVector<float>(size[i].X, size[i].Y, size[i].Z);
+		TestBs.Write<int>(ranks[i]);
 	}
 
-	rakNetManager->GetRpc()->Signal("CreateBoundaryVisualizer", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false,
+	RakNetManager->GetRpc()->Signal("CreateBoundaryVisualizer", &TestBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false,
 									false);
 }
 
@@ -93,21 +93,21 @@ bool ABoundaryManager::CheckServersNumber() const
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoundaryBox::StaticClass(), FoundActors);
 
-	return rakNetManager->getNumberServers() == FoundActors.Num();
+	return RakNetManager->GetExpectedNumberOfServers() == FoundActors.Num();
 }
 
 bool ABoundaryManager::CheckBoxesHaveDifferentRanks() const
 {
-	UWorld* world = GetWorld();
-	for (TActorIterator<ABoundaryBox> ActorItr(world); ActorItr; ++ActorItr)
+	UWorld* World = GetWorld();
+	for (TActorIterator<ABoundaryBox> ActorItr(World); ActorItr; ++ActorItr)
 	{
 		ABoundaryBox* Box = *ActorItr;
 		if (Box == nullptr) continue;
 
-		for (TActorIterator<ABoundaryBox> ActorItr2(world); ActorItr2; ++ActorItr2)
+		for (TActorIterator<ABoundaryBox> ActorItr2(World); ActorItr2; ++ActorItr2)
 		{
 			ABoundaryBox* Box2 = *ActorItr2;
-			if (Box2 == nullptr || Box == Box2 || Box->Rank != Box2->Rank) continue;
+			if (Box2 == nullptr || Box == Box2 || Box->GetRank() != Box2->GetRank()) continue;
 
 			return false;
 		}
