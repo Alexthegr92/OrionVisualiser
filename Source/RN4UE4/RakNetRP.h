@@ -117,7 +117,7 @@ private:
 	RPC4 rpc;
 
 	bool initialised;
-	
+
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
