@@ -134,7 +134,7 @@ void ARakNetRP::Tick(float DeltaTime)
 	}
 
 	// TODO: Handle servers disconnecting
-	if (!allServersChecked)
+	if (!allServersChecked && initialised)
 	{
 		DataStructures::List<RakNet::SystemAddress> addresses;
 		DataStructures::List<RakNet::RakNetGUID> guids;
@@ -311,6 +311,11 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 bool ARakNetRP::GetAllServersChecked() const
 {
 	return allServersChecked;
+}
+
+int ARakNetRP::GetExpectedNumberOfServers() const
+{
+	return totalServers;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)

@@ -103,7 +103,7 @@ public:
 
 	bool GetAllServersChecked() const;
 
-
+	int GetExpectedNumberOfServers() const;
 private:
 
 	void ConnectToIP(const FString& address);
