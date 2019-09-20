@@ -6,8 +6,8 @@
 #include "Runtime/Engine/Classes/PhysicsEngine/BodySetup.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/BodyInstance.h"
 #include "ThirdParty/PhysX3/PhysX_3.4/include/geometry/PxTriangleMesh.h"
-#include "RN4UE4GameMode.h"
 #include "Engine/World.h"
+#include "RN4UE4GameInstance.h"
 
 
 // Sets default values
@@ -28,12 +28,12 @@ void UReplicaRigidBodyStatic::BeginPlay()
 void UReplicaRigidBodyStatic::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	if (rakNetManager == nullptr)
 	{
-		ARN4UE4GameMode* GameMode = static_cast<ARN4UE4GameMode*>(GetWorld()->GetAuthGameMode());
-		ensureMsgf(GameMode != nullptr, TEXT("ReplicaRigidDynamicClient - GameMode is not of type ARN4UE4GameMode"));
-		rakNetManager = GameMode->GetRakNetManager();
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetOwner()->GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
 	}
 
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetAllServersChecked())

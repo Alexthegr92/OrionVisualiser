@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "RakNetRP.h"
 #include "RN4UE4GameInstance.generated.h"
 
 /**
@@ -21,4 +22,27 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Levels")
 		FString RemoveMapPrefix(FString mapName) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		void LoadStreamLevelFromIndex(int index);
+
+	UFUNCTION(BlueprintCallable, Category = "Levels")
+		void ReloadCurrentStreamLevel();
+
+	void RegisterRakNetManager(ARakNetRP* Manager)
+	{
+		RakNetManager = Manager;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "RakNet")
+		ARakNetRP* GetRakNetManager() const
+		{
+			return RakNetManager;
+		}
+
+private:
+	ARakNetRP* RakNetManager;
+
+	// TODO: Store this in a level changer class
+	int IndexLevel;
 };
