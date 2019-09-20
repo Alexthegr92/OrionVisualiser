@@ -19,9 +19,6 @@ public:
 	// Sets default values for this actor's properties
 	UReplicaRigidBodyStatic();
 
-	UPROPERTY(EditAnywhere, Category = "Raknet")
-		ARakNetRP*		rakNetManager;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,5 +33,5 @@ public:
 private:
 	bool registered = false;
 	UStaticMeshComponent* orionMesh = nullptr;
-	
+	ARakNetRP*		rakNetManager;
 };

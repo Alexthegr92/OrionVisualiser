@@ -9,6 +9,8 @@
 #include "PhysXIncludes.h" 
 #include "PhysXPublic.h"
 #include "PhysicsPublic.h"
+#include "Engine/World.h"
+#include "RN4UE4GameInstance.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -19,8 +21,6 @@ UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 void UReplicaRigidDynamicClient::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 	
 	registered = false;
 }
@@ -28,8 +28,14 @@ void UReplicaRigidDynamicClient::BeginPlay()
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (rakNetManager == nullptr)
+	{
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetOwner()->GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
+	}
 	
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);
 		registered = true;
@@ -218,6 +224,10 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 		data.geom = 2;
 		data.scale.Y = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Length / 2.0f / 50.0f * data.scale.Z;
 		data.scale.X = orionMesh->GetBodySetup()->AggGeom.SphylElems[0].Radius / 50.0f * data.scale.X;
+		relativePos.SetLocation(FVector(data.centerMass.Z, data.centerMass.X, data.centerMass.Y));
+		FRotator relRot = FRotator(0, 0, 0);
+		relRot.Add(90.0f, 0.0f, 0.0f);
+		relativePos.SetRotation(relRot.Quaternion());
 		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
 	else if (orionMesh->GetBodySetup()->AggGeom.SphereElems.Num() > 0) {
