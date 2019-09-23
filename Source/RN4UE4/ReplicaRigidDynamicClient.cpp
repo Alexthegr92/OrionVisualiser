@@ -118,7 +118,7 @@ void UReplicaRigidDynamicClient::Deserialize(DeserializeParameters* deserializeP
 void UReplicaRigidDynamicClient::OnPoppedConnection(Connection_RM3 * droppedConnection)
 {
 	ReplicaBase::OnPoppedConnection(droppedConnection);
-	GetOwner()->Destroy();
+	DestroyThis();
 }
 
 void UReplicaRigidDynamicClient::UpdateTransform()
@@ -144,14 +144,19 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 
 bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection)
 {
+	DestroyThis();
+
+	return true;
+}
+
+void UReplicaRigidDynamicClient::DestroyThis()
+{
 	if (visual != nullptr)
 	{
 		visual->Destroy();
 	}
 
 	GetOwner()->Destroy();
-
-	return true;
 }
 
 void UReplicaRigidDynamicClient::SetSpawned(bool spa)

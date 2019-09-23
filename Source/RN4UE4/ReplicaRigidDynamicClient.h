@@ -94,6 +94,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	void DestroyThis();
+
 	bool registered;
 
 	ARakNetRP*		rakNetManager;
