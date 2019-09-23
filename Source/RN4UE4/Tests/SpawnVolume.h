@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "RakNetRP.h"
 #include "SpawnVolume.generated.h"
 
 class ARakNetRP;
@@ -33,14 +34,12 @@ public:
 	FVector		GetRandomUnitVector() const;
 	UPROPERTY(EditAnywhere, Category = "SpawnerBox")
 		UBoxComponent* BoxComponent;
-	UPROPERTY(EditAnywhere, Category = "Raknet")
-		ARakNetRP*		rakNetManager;
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 		float			spawnTime;
 private:
 	bool			active;
 	float			currentTime;
 	FRandomStream			rand;
-	
-	
+
+	ARakNetRP*		rakNetManager;	
 };

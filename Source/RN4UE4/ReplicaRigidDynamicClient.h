@@ -24,9 +24,6 @@ public:
 	// Sets default values for this component's properties
 	UReplicaRigidDynamicClient();
 
-	UPROPERTY(EditAnywhere, Category = "Raknet")
-		ARakNetRP*		rakNetManager;
-
 	void OnConstruction(const RigidDynamicConstructionData& data);
 
 	UPROPERTY(EditAnywhere, Category = "Server0Material")
@@ -98,5 +95,7 @@ protected:
 
 private:
 	bool registered;
+
+	ARakNetRP*		rakNetManager;
 	bool spawned = false;
 };

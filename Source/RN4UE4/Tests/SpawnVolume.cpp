@@ -4,6 +4,7 @@
 #include "Rand.h"
 #include "EngineUtils.h"
 #include "../RakNetRP.h"
+#include "RN4UE4GameInstance.h"
 
 ASpawnVolume::ASpawnVolume()
 {
@@ -16,7 +17,6 @@ void ASpawnVolume::BeginPlay()
 	Super::BeginPlay();
 	active = true;
 	rand.GenerateNewSeed();
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
 }
 
 void ASpawnVolume::Tick(float DeltaTime)
@@ -24,6 +24,13 @@ void ASpawnVolume::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (!active) return;
+
+	if (rakNetManager == nullptr)
+	{
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
+	}
 
 	if (ensure(rakNetManager) && rakNetManager->GetAllServersChecked())
 	{

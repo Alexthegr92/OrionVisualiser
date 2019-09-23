@@ -1,5 +1,7 @@
 #include "ReplicaRigidDynamicClient.h"
+#include "RN4UE4GameInstance.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Engine/World.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
@@ -51,7 +53,13 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ensureMsgf(rakNetManager, TEXT("Unexpected null rakNetManager!"));
+	if (rakNetManager == nullptr)
+	{
+		URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetOwner()->GetGameInstance());
+		ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+		rakNetManager = GameInstance->GetRakNetManager();
+	}
+	
 	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
 	{
 		rakNetManager->Reference(this);

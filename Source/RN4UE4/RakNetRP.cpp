@@ -6,6 +6,8 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine.h"
 #include "ReplicaBase.h"
+#include "RN4UE4GameInstance.h"
+#include "Engine/World.h"
 #include "ReplicaRigidDynamicClient.h"
 
 using namespace std::placeholders;
@@ -45,6 +47,10 @@ void ARakNetRP::BeginPlay()
 {
 	Super::BeginPlay();
 
+	URN4UE4GameInstance* GameInstance = static_cast<URN4UE4GameInstance*>(GetGameInstance());
+	ensureMsgf(GameInstance != nullptr, TEXT("RakNetRP - GameInstance is not of type URN4UE4GameInstance"));
+	GameInstance->RegisterRakNetManager(this);
+
 	auto fp = std::bind(&ARakNetRP::CreateBoundarySlot, this, _1, _2);
 	rpc.RegisterSlot("CreateBoundary", fp, 0);
 	auto deleteFunction = std::bind(&ARakNetRP::DeleteBoundarySlot, this, _1, _2);
@@ -76,9 +82,17 @@ void ARakNetRP::Tick(float DeltaTime)
 			break;
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_CONNECTION_REQUEST_ACCEPTED\n"));
+			if (newConnectionCallback != nullptr)
+			{
+				newConnectionCallback(p->systemAddress);
+			}
 			break;
 		case ID_NEW_INCOMING_CONNECTION:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_NEW_INCOMING_CONNECTION from %s\n"), p->systemAddress.ToString());
+			if (newConnectionCallback != nullptr)
+			{
+				newConnectionCallback(p->systemAddress);
+			}
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
 			UE_LOG(RakNet_RakNetRP, Log, TEXT("ID_DISCONNECTION_NOTIFICATION\n"));
@@ -123,7 +137,7 @@ void ARakNetRP::Tick(float DeltaTime)
 	}
 
 	// TODO: Handle servers disconnecting
-	if (!allServersChecked)
+	if (!allServersChecked && initialised)
 	{
 		DataStructures::List<RakNet::SystemAddress> addresses;
 		DataStructures::List<RakNet::RakNetGUID> guids;
@@ -223,7 +237,6 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 		UReplicaRigidDynamicClient* replicaClient = NewObject<UReplicaRigidDynamicClient>(newReplica);
 		replicaClient->SetSpawned(true);
 		replicaClient->RegisterComponentWithWorld(GetWorld());
-		replicaClient->rakNetManager = this;
 		return replicaClient;
 	}
 
@@ -299,6 +312,11 @@ void ARakNetRP::DeallocConnection(Connection_RM3 *connection) const {
 bool ARakNetRP::GetAllServersChecked() const
 {
 	return allServersChecked;
+}
+
+int ARakNetRP::GetExpectedNumberOfServers() const
+{
+	return totalServers;
 }
 
 void ARakNetRP::ConnectToIP(const FString& address)
