@@ -136,7 +136,13 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 
 bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection)
 {
+	if (visual != nullptr)
+	{
+		visual->Destroy();
+	}
+
 	GetOwner()->Destroy();
+
 	return true;
 }
 
