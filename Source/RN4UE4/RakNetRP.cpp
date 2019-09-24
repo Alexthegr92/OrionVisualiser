@@ -235,7 +235,7 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 		USceneComponent * RootSceneComponent = NewObject<USceneComponent>(newReplica,TEXT("RootScene"));
 		newReplica->SetRootComponent(RootSceneComponent);
 		UReplicaRigidDynamicClient* replicaClient = NewObject<UReplicaRigidDynamicClient>(newReplica);
-		replicaClient->SetSpawned(true);
+		replicaClient->MarkAsReferenced();
 		replicaClient->RegisterComponentWithWorld(GetWorld());
 		return replicaClient;
 	}

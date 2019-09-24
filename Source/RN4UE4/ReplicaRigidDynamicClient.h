@@ -83,21 +83,18 @@ public:
 
 	void UpdateTransform();
 	void SetVisual(physx::PxGeometryType::Enum geomType);
-	void SetSpawned(bool spa);
 	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
+	// Used so server created replicas don't get referenced twice
+	void MarkAsReferenced() { registered = true; }
+	
 private:
 	void DestroyThis();
 
 	bool registered;
 
 	ARakNetRP*		rakNetManager;
-	bool spawned = false;
 };

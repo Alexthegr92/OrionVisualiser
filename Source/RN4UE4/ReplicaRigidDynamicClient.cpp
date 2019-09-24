@@ -40,11 +40,6 @@ UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 	{
 		server3Material = MatFinder3.Object;
 	}
-}
-
-void UReplicaRigidDynamicClient::BeginPlay()
-{
-	Super::BeginPlay();
 
 	registered = false;
 }
@@ -60,7 +55,7 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 		rakNetManager = GameInstance->GetRakNetManager();
 	}
 	
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised() && !spawned)
+	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);
 		registered = true;
@@ -157,11 +152,6 @@ void UReplicaRigidDynamicClient::DestroyThis()
 	}
 
 	GetOwner()->Destroy();
-}
-
-void UReplicaRigidDynamicClient::SetSpawned(bool spa)
-{
-	spawned = spa;
 }
 
 void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
