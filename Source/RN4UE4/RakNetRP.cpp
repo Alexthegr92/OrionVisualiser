@@ -234,11 +234,12 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
 		USceneComponent * RootSceneComponent = NewObject<USceneComponent>(NewReplica, TEXT("RootSceneComponent"));
 		NewReplica->SetRootComponent(RootSceneComponent);
 
-		UReplicaRigidDynamicClient* ReplicaComponent = NewObject<UReplicaRigidDynamicClient>(NewReplica, "ReplicaComponent", RF_DefaultSubObject,
+		checkf(ReplicaComponent != nullptr, TEXT("ARakNetRP::GetObjectFromType() - ReplicaComponent is null"));
+		UReplicaRigidDynamicClient* ReplicaComponentInstance = NewObject<UReplicaRigidDynamicClient>(NewReplica, "ReplicaComponent", RF_DefaultSubObject,
 			ReplicaComponent->GetDefaultObject<UReplicaRigidDynamicClient>());
 
-		ReplicaComponent->MarkAsReferenced();
-		return ReplicaComponent;
+		ReplicaComponentInstance->MarkAsReferenced();
+		return ReplicaComponentInstance;
 	}
 
 	return nullptr;
