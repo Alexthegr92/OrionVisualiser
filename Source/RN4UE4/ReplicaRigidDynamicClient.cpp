@@ -6,41 +6,6 @@
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	static ConstructorHelpers::FClassFinder<AStaticMeshActor> SphereBlueprint(TEXT("/Game/Blueprints/Sphere"));
-	if (SphereBlueprint.Succeeded()) {
-		sphereBP = SphereBlueprint.Class;
-	}
-	static ConstructorHelpers::FClassFinder<AStaticMeshActor> BoxBlueprint(TEXT("/Game/Blueprints/Box"));
-	if (BoxBlueprint.Succeeded()) {
-		boxBP = BoxBlueprint.Class;
-	}
-	static ConstructorHelpers::FClassFinder<AStaticMeshActor> CapsuleBlueprint(TEXT("/Game/Blueprints/Capsule"));
-	if (CapsuleBlueprint.Succeeded()) {
-		capsuleBP = CapsuleBlueprint.Class;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder0(TEXT("Material'/Game/Materials/Server0'"));
-	if (MatFinder0.Succeeded())
-	{
-		server0Material = MatFinder0.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder1(TEXT("Material'/Game/Materials/Server1'"));
-	if (MatFinder1.Succeeded())
-	{
-		server1Material = MatFinder1.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder2(TEXT("Material'/Game/Materials/Server2'"));
-	if (MatFinder2.Succeeded())
-	{
-		server2Material = MatFinder2.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UMaterial> MatFinder3(TEXT("Material'/Game/Materials/Server3'"));
-	if (MatFinder3.Succeeded())
-	{
-		server3Material = MatFinder3.Object;
-	}
-
 	registered = false;
 }
 

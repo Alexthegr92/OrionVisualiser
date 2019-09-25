@@ -100,6 +100,10 @@ public:
 	bool GetAllServersChecked() const;
 
 	int GetExpectedNumberOfServers() const;
+
+	UPROPERTY(EditAnywhere, Category = "ReplicaComponent")
+		TSubclassOf<UReplicaRigidDynamicClient> ReplicaComponent;
+	
 private:
 
 	void ConnectToIP(const FString& address);
