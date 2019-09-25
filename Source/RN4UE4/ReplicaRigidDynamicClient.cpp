@@ -135,6 +135,12 @@ void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterf
 
 void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection)
 {
+	check(server0Material != nullptr);
+	check(server1Material != nullptr);
+	check(server2Material != nullptr);
+	check(server3Material != nullptr);
+	check(unknownMaterial != nullptr);
+	
 	unsigned short port = sourceConnection->GetSystemAddress().GetPort();
 	int rank = port - 12345;
 
@@ -161,8 +167,10 @@ void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *
 
 void UReplicaRigidDynamicClient::SetVisual(physx::PxGeometryType::Enum geomType)
 {
-	FActorSpawnParameters Parameters = FActorSpawnParameters();
-	FTransform SpawnTransform = FTransform();
+	check(sphereBP != nullptr);
+	check(capsuleBP != nullptr);
+	check(boxBP != nullptr);
+	
 	AStaticMeshActor* shape = nullptr;
 
 	switch (geomType)
@@ -202,17 +210,16 @@ void UReplicaRigidDynamicClient::SetVisual(physx::PxGeometryType::Enum geomType)
 	default:
 		break;
 	}
-	AActor * ac = GetOwner();
-	if (shape != nullptr)
-	{
-		Parameters.Template = shape;
-		visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
-	}
 
-	if (visual != nullptr)
-	{
-		
-		visual->AttachToActor(ac, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
-	}
+	checkf(shape != nullptr, TEXT("UReplicaRigidDynamicClient::SetVisual() - geometry type not supported: %s"), geomType);
+
+	FActorSpawnParameters Parameters = FActorSpawnParameters();
+	FTransform SpawnTransform = FTransform();
+	Parameters.Template = shape;
+	visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+
+	check(visual != nullptr);
+	
+	visual->AttachToActor(GetOwner(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true));
 }
 
