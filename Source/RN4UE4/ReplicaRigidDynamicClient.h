@@ -50,9 +50,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
 		TSubclassOf<AStaticMeshActor> capsuleBP;
 
-	UPROPERTY(EditAnywhere, Category = "VisualRepresentation")
-		AActor* visual = nullptr;
-
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
 	{
@@ -96,4 +93,6 @@ private:
 	bool registered;
 
 	ARakNetRP*		rakNetManager;
+	
+	AActor* visual = nullptr;
 };
