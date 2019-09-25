@@ -76,12 +76,11 @@ public:
 
 	virtual RigidDynamicConstructionData GetConstructionData() override;
 	virtual void Deserialize(DeserializeParameters* deserializeParameters) override;
-
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
+	void UpdateTransform();
 
 	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
 
-	void UpdateTransform();
 	void SetVisual(physx::PxGeometryType::Enum geomType);
 	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
 	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
