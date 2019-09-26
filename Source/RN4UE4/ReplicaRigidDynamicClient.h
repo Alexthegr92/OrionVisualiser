@@ -24,31 +24,31 @@ public:
 	// Sets default values for this component's properties
 	UReplicaRigidDynamicClient();
 
-	void OnConstruction(const RigidDynamicConstructionData& data);
+	void OnConstruction(const RigidDynamicConstructionData& Data) override;
 
-	UPROPERTY(EditAnywhere, Category = "Server0Material")
-		UMaterial* server0Material;
+	UPROPERTY(EditAnywhere, Category = "ServerMaterials")
+		UMaterial* Server0Material;
 
-	UPROPERTY(EditAnywhere, Category = "Server1Material")
-		UMaterial* server1Material;
+	UPROPERTY(EditAnywhere, Category = "ServerMaterials")
+		UMaterial* Server1Material;
 
-	UPROPERTY(EditAnywhere, Category = "Server2Material")
-		UMaterial* server2Material;
+	UPROPERTY(EditAnywhere, Category = "ServerMaterials")
+		UMaterial* Server2Material;
 
-	UPROPERTY(EditAnywhere, Category = "Server3Material")
-		UMaterial* server3Material;
+	UPROPERTY(EditAnywhere, Category = "ServerMaterials")
+		UMaterial* Server3Material;
 
-	UPROPERTY(EditAnywhere, Category = "UnknownMaterial")
-		UMaterial* unknownMaterial;
+	UPROPERTY(EditAnywhere, Category = "ServerMaterials")
+		UMaterial* UnknownMaterial;
 
-	UPROPERTY(EditDefaultsOnly, Category = "SphereBP")
-		TSubclassOf<AStaticMeshActor> sphereBP;
+	UPROPERTY(EditDefaultsOnly, Category = "ReplicaActors")
+		TSubclassOf<AStaticMeshActor> SphereBP;
 
-	UPROPERTY(EditDefaultsOnly, Category = "BoxBP")
-		TSubclassOf<AStaticMeshActor> boxBP;
+	UPROPERTY(EditDefaultsOnly, Category = "ReplicaActors")
+		TSubclassOf<AStaticMeshActor> BoxBP;
 
-	UPROPERTY(EditDefaultsOnly, Category = "CapsuleBP")
-		TSubclassOf<AStaticMeshActor> capsuleBP;
+	UPROPERTY(EditDefaultsOnly, Category = "ReplicaActors")
+		TSubclassOf<AStaticMeshActor> CapsuleBP;
 
 	virtual RakString GetName() const { return RakString("ReplicaRigidDynamic"); }
 	virtual RM3SerializationResult Serialize(SerializeParameters *serializeParameters)
@@ -76,11 +76,11 @@ public:
 	void OnPoppedConnection(Connection_RM3* droppedConnection) override;
 	void UpdateTransform();
 
-	virtual bool DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection);
+	bool DeserializeDestruction(BitStream *DestructionBitstream, Connection_RM3 *SourceConnection) override;
 
-	void SetVisual(physx::PxGeometryType::Enum geomType);
-	void SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial);
-	virtual void PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection) override;
+	void SetVisual(const PxGeometryType::Enum GeomType);
+	void SetMaterial(int32 ElementIndex, UMaterialInterface* InMaterial) const;
+	void PostDeserializeConstruction(BitStream *ConstructionBitstream, Connection_RM3 *SourceConnection) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -88,7 +88,7 @@ public:
 	void MarkAsReferenced() { registered = true; }
 	
 private:
-	void DestroyThis();
+	void DestroyThis() const;
 
 	bool registered;
 

@@ -225,9 +225,9 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString typeName)
+UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString TypeName) const
 {
-	if (typeName == "ReplicaRigidDynamic") 
+	if (TypeName == "ReplicaRigidDynamic") 
 	{
 		// spawn the object
 		AActor* NewReplica = GetWorld()->SpawnActor(AActor::StaticClass(), new FTransform(), FActorSpawnParameters());

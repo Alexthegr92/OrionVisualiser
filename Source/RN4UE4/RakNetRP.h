@@ -66,7 +66,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
-	UReplicaRigidDynamicClient* GetObjectFromType(RakString typeName);
+	UReplicaRigidDynamicClient* GetObjectFromType(RakString TypeName) const;
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 

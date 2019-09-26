@@ -1,6 +1,5 @@
 #include "ReplicaRigidDynamicClient.h"
 #include "RN4UE4GameInstance.h"
-#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
@@ -27,13 +26,13 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 	}
 }
 
-void UReplicaRigidDynamicClient::OnConstruction(const RigidDynamicConstructionData & data)
+void UReplicaRigidDynamicClient::OnConstruction(const RigidDynamicConstructionData& Data)
 {
-	physx::PxGeometryType::Enum geomType = static_cast<physx::PxGeometryType::Enum>(data.geom);
-	SetVisual(geomType);
+	const PxGeometryType::Enum GeomType = static_cast<PxGeometryType::Enum>(Data.geom);
+	SetVisual(GeomType);
 
-	pos = data.pos;
-	rot = data.rot;
+	pos = Data.pos;
+	rot = Data.rot;
 
 	UpdateTransform();
 }
@@ -102,14 +101,14 @@ void UReplicaRigidDynamicClient::UpdateTransform()
 	GetOwner()->SetActorTransform(transform, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
-bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *destructionBitstream, Connection_RM3 *sourceConnection)
+bool UReplicaRigidDynamicClient::DeserializeDestruction(BitStream *DestructionBitstream, Connection_RM3 *SourceConnection)
 {
 	DestroyThis();
 
 	return true;
 }
 
-void UReplicaRigidDynamicClient::DestroyThis()
+void UReplicaRigidDynamicClient::DestroyThis() const
 {
 	if (visual != nullptr)
 	{
@@ -119,104 +118,104 @@ void UReplicaRigidDynamicClient::DestroyThis()
 	GetOwner()->Destroy();
 }
 
-void UReplicaRigidDynamicClient::SetMaterial(int32 elementIndex, UMaterialInterface* inMaterial)
+void UReplicaRigidDynamicClient::SetMaterial(int32 ElementIndex, UMaterialInterface* InMaterial) const
 {
-	TArray<UStaticMeshComponent*> components;
-	visual->GetComponents<UStaticMeshComponent>(components);
-	for (int32 i = 0; i < components.Num(); i++)
+	TArray<UStaticMeshComponent*> Components;
+	visual->GetComponents<UStaticMeshComponent>(Components);
+	for (int32 i = 0; i < Components.Num(); i++)
 	{
-		UStaticMeshComponent* StaticMeshComponent = components[i];
+		UStaticMeshComponent* StaticMeshComponent = Components[i];
 		if (StaticMeshComponent)
 		{
-			StaticMeshComponent->SetMaterial(elementIndex, inMaterial);
+			StaticMeshComponent->SetMaterial(ElementIndex, InMaterial);
 		}
 	}
 }
 
-void UReplicaRigidDynamicClient::PostDeserializeConstruction(RakNet::BitStream *constructionBitstream, RakNet::Connection_RM3 *sourceConnection)
+void UReplicaRigidDynamicClient::PostDeserializeConstruction(BitStream* ConstructionBitstream, Connection_RM3* SourceConnection)
 {
-	check(server0Material != nullptr);
-	check(server1Material != nullptr);
-	check(server2Material != nullptr);
-	check(server3Material != nullptr);
-	check(unknownMaterial != nullptr);
+	check(Server0Material != nullptr);
+	check(Server1Material != nullptr);
+	check(Server2Material != nullptr);
+	check(Server3Material != nullptr);
+	check(UnknownMaterial != nullptr);
 	
-	unsigned short port = sourceConnection->GetSystemAddress().GetPort();
-	int rank = port - 12345;
+	const unsigned short Port = SourceConnection->GetSystemAddress().GetPort();
+	const int Rank = Port - 12345;
 
-	switch (rank)
+	switch (Rank)
 	{
 	case 0:
-		SetMaterial(0, server0Material);
+		SetMaterial(0, Server0Material);
 		break;
 	case 1:
-		SetMaterial(0, server1Material);
+		SetMaterial(0, Server1Material);
 		break;
 	case 2:
-		SetMaterial(0, server2Material);
+		SetMaterial(0, Server2Material);
 		break;
 	case 3:
-		SetMaterial(0, server3Material);
+		SetMaterial(0, Server3Material);
 		break;
 	default:
-		SetMaterial(0, unknownMaterial);
+		SetMaterial(0, UnknownMaterial);
 		break;
 	}
 }
 
 
-void UReplicaRigidDynamicClient::SetVisual(physx::PxGeometryType::Enum geomType)
+void UReplicaRigidDynamicClient::SetVisual(const PxGeometryType::Enum GeomType)
 {
-	check(sphereBP != nullptr);
-	check(capsuleBP != nullptr);
-	check(boxBP != nullptr);
+	check(SphereBP != nullptr);
+	check(CapsuleBP != nullptr);
+	check(BoxBP != nullptr);
 	
-	AStaticMeshActor* shape = nullptr;
+	AStaticMeshActor* Shape = nullptr;
 
-	switch (geomType)
+	switch (GeomType)
 	{
-	case physx::PxGeometryType::eSPHERE:
+	case PxGeometryType::eSPHERE:
 	{
-		if (sphereBP == nullptr) break;
+		if (SphereBP == nullptr) break;
 
-		shape = Cast<AStaticMeshActor>(sphereBP->GetDefaultObject());
+		Shape = Cast<AStaticMeshActor>(SphereBP->GetDefaultObject());
 	}
 	break;
-	case physx::PxGeometryType::ePLANE:
+	case PxGeometryType::ePLANE:
 		break;
-	case physx::PxGeometryType::eCAPSULE:
+	case PxGeometryType::eCAPSULE:
 	{
-		if (capsuleBP == nullptr) break;
+		if (CapsuleBP == nullptr) break;
 
-		shape = Cast<AStaticMeshActor>(capsuleBP->GetDefaultObject());
+		Shape = Cast<AStaticMeshActor>(CapsuleBP->GetDefaultObject());
 	}
 	break;
-	case physx::PxGeometryType::eBOX:
+	case PxGeometryType::eBOX:
 	{
-		if (boxBP == nullptr) break;
-		shape = Cast<AStaticMeshActor>(boxBP->GetDefaultObject());
+		if (BoxBP == nullptr) break;
+		Shape = Cast<AStaticMeshActor>(BoxBP->GetDefaultObject());
 	}
 	break;
-	case physx::PxGeometryType::eCONVEXMESH:
+	case PxGeometryType::eCONVEXMESH:
 		break;
-	case physx::PxGeometryType::eTRIANGLEMESH:
+	case PxGeometryType::eTRIANGLEMESH:
 		break;
-	case physx::PxGeometryType::eHEIGHTFIELD:
+	case PxGeometryType::eHEIGHTFIELD:
 		break;
-	case physx::PxGeometryType::eGEOMETRY_COUNT:
+	case PxGeometryType::eGEOMETRY_COUNT:
 		break;
-	case physx::PxGeometryType::eINVALID:
+	case PxGeometryType::eINVALID:
 		break;
 	default:
 		break;
 	}
 
-	checkf(shape != nullptr, TEXT("UReplicaRigidDynamicClient::SetVisual() - geometry type not supported: %s"), geomType);
+	checkf(Shape != nullptr, TEXT("UReplicaRigidDynamicClient::SetVisual() - geometry type not supported: %s"), GeomType);
 
 	FActorSpawnParameters Parameters = FActorSpawnParameters();
 	FTransform SpawnTransform = FTransform();
-	Parameters.Template = shape;
-	visual = GetWorld()->SpawnActor(shape->GetClass(), &SpawnTransform, Parameters);
+	Parameters.Template = Shape;
+	visual = GetWorld()->SpawnActor(Shape->GetClass(), &SpawnTransform, Parameters);
 
 	check(visual != nullptr);
 	
