@@ -83,14 +83,9 @@ public:
 	void PostDeserializeConstruction(BitStream *ConstructionBitstream, Connection_RM3 *SourceConnection) override;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	// Used so server created replicas don't get referenced twice
-	void MarkAsReferenced() { registered = true; }
 	
 private:
 	void DestroyThis() const;
-
-	bool registered;
 
 	ARakNetRP*		rakNetManager;
 	

@@ -237,8 +237,7 @@ UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString TypeName) con
 		checkf(ReplicaComponent != nullptr, TEXT("ARakNetRP::GetObjectFromType() - ReplicaComponent is null"));
 		UReplicaRigidDynamicClient* ReplicaComponentInstance = NewObject<UReplicaRigidDynamicClient>(NewReplica, "ReplicaComponent", RF_DefaultSubObject,
 			ReplicaComponent->GetDefaultObject<UReplicaRigidDynamicClient>());
-
-		ReplicaComponentInstance->MarkAsReferenced();
+		
 		return ReplicaComponentInstance;
 	}
 

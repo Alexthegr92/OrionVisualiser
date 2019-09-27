@@ -5,7 +5,6 @@
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	registered = false;
 }
 
 void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -19,10 +18,9 @@ void UReplicaRigidDynamicClient::TickComponent(float DeltaTime, ELevelTick TickT
 		rakNetManager = GameInstance->GetRakNetManager();
 	}
 	
-	if (!registered && ensure(rakNetManager) && rakNetManager->GetInitialised())
+	if (!WasReferenced() && ensure(rakNetManager) && rakNetManager->GetInitialised())
 	{
 		rakNetManager->Reference(this);
-		registered = true;
 	}
 }
 
