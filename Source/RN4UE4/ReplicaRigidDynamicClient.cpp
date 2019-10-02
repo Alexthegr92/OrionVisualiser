@@ -63,72 +63,24 @@ void UReplicaRigidDynamicClient::ReadPhysicValues(RigidDynamicConstructionData& 
 		data.isSleeping = rigid->isSleeping();
 		data.wakeCounter = rigid->getWakeCounter();
 		data.maxContactImpulse = rigid->getMaxContactImpulse();
-		data.linearVelocity = Vec3(rigid->getLinearVelocity().x, rigid->getLinearVelocity().z, rigid->getLinearVelocity().y);
-		data.angularVelocity = Vec3(rigid->getAngularVelocity().x, rigid->getAngularVelocity().z, rigid->getAngularVelocity().y);
-		PxU32 velCounts;
-		PxU32 posCounts;
-		rigid->getSolverIterationCounts(posCounts, velCounts);
-		data.posCounts = posCounts;
-		data.velCounts = velCounts;
-		data.disableGravity = rigid->getActorFlags().isSet(PxActorFlag::eDISABLE_GRAVITY);
-		data.disableSimulation = rigid->getActorFlags().isSet(PxActorFlag::eDISABLE_SIMULATION);
-		data.sendSleepNotes = rigid->getActorFlags().isSet(PxActorFlag::eSEND_SLEEP_NOTIFIES);
-		data.isVisualization = rigid->getActorFlags().isSet(PxActorFlag::eVISUALIZATION);
-		data.isEnableCCD = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eENABLE_CCD);
-		data.isEnableCCDFriction = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eENABLE_CCD_FRICTION);
-		data.isEnableCCDMaxContact = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eENABLE_CCD_MAX_CONTACT_IMPULSE);
-		data.isPoseIntegration = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eENABLE_POSE_INTEGRATION_PREVIEW);
-		//data.isKinematic = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eKINEMATIC);
-		//data.isKinematicScene = rigid->getRigidBodyFlags().isSet(PxRigidBodyFlag::eUSE_KINEMATIC_TARGET_FOR_SCENE_QUERIES);
-		data.isKinematic = false;
-		data.isKinematicScene = false;
-		data.isAngX = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X);
-		data.isAngZ = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
-		data.isAngY = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
-		data.isLinX = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_LINEAR_X);
-		data.isLinZ = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_LINEAR_Y);
-		data.isLinY = rigid->getRigidDynamicLockFlags().isSet(PxRigidDynamicLockFlag::eLOCK_LINEAR_Z);
-		data.restitution = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitution();
-		PxCombineMode::Enum restituCombineMode = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getRestitutionCombineMode();
-		data.dynamicFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getDynamicFriction();
-		data.staticFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getStaticFriction();
-		PxCombineMode::Enum frictionCombineMode = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFrictionCombineMode();
-		data.isDisableFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags().isSet(physx::PxMaterialFlag::eDISABLE_FRICTION);
-		data.isDisableStrongFriction = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial()->getFlags().isSet(physx::PxMaterialFlag::eDISABLE_STRONG_FRICTION);
-		switch (restituCombineMode)
-		{
-		case PxCombineMode::eAVERAGE:
-			data.restitutionCombineMode = 0;
-			break;
-		case PxCombineMode::eMIN:
-			data.restitutionCombineMode = 1;
-			break;
-		case PxCombineMode::eMULTIPLY:
-			data.restitutionCombineMode = 2;
-			break;
-		case PxCombineMode::eMAX:
-			data.restitutionCombineMode = 3;
-			break;
-		default:
-			break;
-		}
-		switch (frictionCombineMode)
-		{
-		case PxCombineMode::eAVERAGE:
-			data.frictionCombineModeInt = 0;
-			break;
-		case PxCombineMode::eMIN:
-			data.frictionCombineModeInt = 1;
-			break;
-		case PxCombineMode::eMULTIPLY:
-			data.frictionCombineModeInt = 2;
-			break;
-		case PxCombineMode::eMAX:
-			data.frictionCombineModeInt = 3;
-			break;
-		default:
-			break;
-		}
+
+		const PxVec3& linVel = rigid->getLinearVelocity();
+		const PxVec3& angVel = rigid->getAngularVelocity();
+		data.linearVelocity = Vec3(linVel.x, linVel.z, linVel.y);
+		data.angularVelocity = Vec3(angVel.x, angVel.z, angVel.y);
+
+		rigid->getSolverIterationCounts(data.posCounts, data.velCounts);
+
+		data.actorFlags = uint8_t(rigid->getActorFlags());
+		data.rigidBodyFlags = uint8_t(rigid->getRigidBodyFlags());
+		data.rigidDynamicLockFlags = uint16_t(rigid->getRigidDynamicLockFlags());
+		physx::PxMaterial* material = orionMesh->GetBodySetup()->GetPhysMaterial()->GetPhysXMaterial();
+		data.restitution = material->getRestitution();
+		data.restitutionCombineMode = material->getRestitutionCombineMode();
+		data.dynamicFriction = material->getDynamicFriction();
+		data.staticFriction = material->getStaticFriction();
+		data.frictionCombineMode = material->getFrictionCombineMode();
+		data.materialFlags = uint16_t(material->getFlags());
 	}
 	SCENE_UNLOCK_READ(SyncScene);
 	orionMesh->SetSimulatePhysics(false);
@@ -205,6 +157,7 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	data.rot = Quat(actorTransform.GetRotation().X, actorTransform.GetRotation().Y, actorTransform.GetRotation().Z, actorTransform.GetRotation().W);
 	data.scale = Vec3(actorTransform.GetScale3D().X, actorTransform.GetScale3D().Y, actorTransform.GetScale3D().Z);
 	data.numVertex = 0;
+	data.vertexData = nullptr;
 
 	if (orionMesh->GetBodySetup()->AggGeom.BoxElems.Num() > 0) {
 		data.geom = 3;
@@ -232,13 +185,13 @@ RigidDynamicConstructionData UReplicaRigidDynamicClient::GetConstructionData()
 	else if (orionMesh->GetBodySetup()->AggGeom.ConvexElems.Num() > 0) {
 		data.geom = 4;
 		data.numVertex = orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData.Num();
-		for (FVector vec : orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData)
+		data.vertexData = new Vec3[data.numVertex];
+		for (size_t i = 0; i < data.numVertex; ++i)
 		{
+			FVector vec = orionMesh->GetBodySetup()->AggGeom.ConvexElems[0].VertexData[i];
 			FVector aux = vec * orionMesh->GetComponentScale() - FVector(data.centerMass.X, data.centerMass.Y, data.centerMass.Z);
 			aux = aux / 50.0f;
-			Vec3 ver;
-			ver = Vec3(aux.X, aux.Z, aux.Y);
-			data.vertexData.push_back(ver);
+			data.vertexData[i] = Vec3(aux.X, aux.Z, aux.Y);
 		}
 		data.centerMass = Vec3(0.0f, 0.0f, 0.0f);
 	}
