@@ -3,11 +3,14 @@
 #include "RakNetRP.h"
 #include <functional>
 #include <string>
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine.h"
 #include "ReplicaBase.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine.h"
 #include "RN4UE4GameInstance.h"
 #include "Engine/World.h"
+#include "ReplicaRigidDynamicClient.h"
 
 using namespace std::placeholders;
 
@@ -264,21 +267,20 @@ void ARakNetRP::RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, T
 	}
 }
 
-AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
+UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString TypeName) const
 {
-	if (typeName == "ReplicaRigidDynamic") 
+	if (TypeName == "ReplicaRigidDynamic") 
 	{
-		if (objectToSpawn == nullptr)
-		{
-			UE_LOG(RakNet_RakNetRP, Error, TEXT("ARakNetRP::GetObjectFromType() objectToSpawn is null, no replica object created"));
-			return nullptr;
-		}
+		// spawn the object
+		AActor* NewReplica = GetWorld()->SpawnActor(AActor::StaticClass(), new FTransform(), FActorSpawnParameters());
+		USceneComponent * RootSceneComponent = NewObject<USceneComponent>(NewReplica, TEXT("RootSceneComponent"));
+		NewReplica->SetRootComponent(RootSceneComponent);
 
-		// spawn the object 
-		FActorSpawnParameters Parameters;
-		AReplica* replica = objectToSpawn->GetDefaultObject<AReplica>();
-		Parameters.Template = replica;
-		return (AReplica*)GetWorld()->SpawnActor(replica->GetClass(), new FTransform(), Parameters);
+		checkf(ReplicaComponent != nullptr, TEXT("ARakNetRP::GetObjectFromType() - ReplicaComponent is null"));
+		UReplicaRigidDynamicClient* ReplicaComponentInstance = NewObject<UReplicaRigidDynamicClient>(NewReplica, "ReplicaComponent", RF_DefaultSubObject,
+			ReplicaComponent->GetDefaultObject<UReplicaRigidDynamicClient>());
+		
+		return ReplicaComponentInstance;
 	}
 
 	return nullptr;

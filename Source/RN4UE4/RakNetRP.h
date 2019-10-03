@@ -15,8 +15,6 @@
 #include "PhysicsPublic.h"
 #include "PhysXIncludes.h"
 
-#include "Replica.h"
-
 //#include <stdio.h>
 //#include "Kbhit.h"
 //#include <string.h>
@@ -39,6 +37,7 @@ using namespace RakNet;
 
 class ReplicaManager3Sample;
 
+class UReplicaRigidDynamicClient;
 UCLASS()
 class RN4UE4_API ARakNetRP : public AActor, public ReplicaManager3
 {
@@ -71,10 +70,7 @@ public:
 
 	void RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices);
 		
-	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
-		TSubclassOf<AReplica> objectToSpawn;
-
-	AReplica* GetObjectFromType(RakString typeName);
+	UReplicaRigidDynamicClient* GetObjectFromType(RakString TypeName) const;
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
@@ -108,6 +104,10 @@ public:
 	bool GetAllServersChecked() const;
 
 	int GetExpectedNumberOfServers() const;
+
+	UPROPERTY(EditAnywhere, Category = "ReplicaComponent")
+		TSubclassOf<UReplicaRigidDynamicClient> ReplicaComponent;
+	
 private:
 
 	void ConnectToIP(const FString& address);
