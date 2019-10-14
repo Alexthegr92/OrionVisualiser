@@ -3,12 +3,11 @@
 #include "RakNetRP.h"
 #include <functional>
 #include <string>
+#include "ReplicaBase.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine.h"
-#include "ReplicaBase.h"
 #include "RN4UE4GameInstance.h"
 #include "Engine/World.h"
-#include "ReplicaRigidDynamicClient.h"
 
 using namespace std::placeholders;
 
@@ -37,6 +36,7 @@ ARakNetRP::ARakNetRP() : ReplicaManager3()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 
 	initialised = false;
 	totalServers = -1;
@@ -65,7 +65,12 @@ void ARakNetRP::BeginPlay()
 void ARakNetRP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//pause game if unpause
+	if (!paused && !allServersChecked)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		paused = true;
+	}
 	if (rakPeer == nullptr)	{	return;	}
 
 	for (p = rakPeer->Receive(); p; rakPeer->DeallocatePacket(p), p = rakPeer->Receive())
@@ -145,6 +150,12 @@ void ARakNetRP::Tick(float DeltaTime)
 		if (totalServers == addresses.Size())
 		{
 			allServersChecked = true;
+			//unapuse game
+			if (paused)
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), false);
+				paused = false;
+			}
 		}
 	}
 }
@@ -225,20 +236,49 @@ void ARakNetRP::DroppedConnection(unsigned short Port)
 	DeleteBoundaryBox(rank);
 }
 
-UReplicaRigidDynamicClient* ARakNetRP::GetObjectFromType(RakString TypeName) const
+void ARakNetRP::RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices)
 {
-	if (TypeName == "ReplicaRigidDynamic") 
-	{
-		// spawn the object
-		AActor* NewReplica = GetWorld()->SpawnActor(AActor::StaticClass(), new FTransform(), FActorSpawnParameters());
-		USceneComponent * RootSceneComponent = NewObject<USceneComponent>(NewReplica, TEXT("RootSceneComponent"));
-		NewReplica->SetRootComponent(RootSceneComponent);
+	RakNet::BitStream testBs;
+	FRotator rot1 = FRotator(rot);
+	rot1.Add(0.0f,0.0f,90.0f);
+	FQuat qua = rot1.Quaternion();
+	testBs.WriteVector<float>(pos.X/50.0f, pos.Z / 50.0f, pos.Y / 50.0f);
+	testBs.WriteVector<float>(qua.X, qua.Z, qua.Y);
+	testBs.Write<float>(qua.W);
+	testBs.Write<int>(nbVertices);
+	for (int i = 0; i < nbVertices; i++) {
+		testBs.WriteVector<float>(vertices[i].X, vertices[i].Y, vertices[i].Z);
+	}
+	testBs.Write<int>(nbIndices);
+	for (int i = 0; i < nbIndices; i++) {
+		testBs.Write<PxU16>(indices[i]);
+	}
+	
+	DataStructures::List<RakNet::SystemAddress> addresses;
+	DataStructures::List<RakNet::RakNetGUID> guids;
+	rakPeer->GetSystemList(addresses, guids);
 
-		checkf(ReplicaComponent != nullptr, TEXT("ARakNetRP::GetObjectFromType() - ReplicaComponent is null"));
-		UReplicaRigidDynamicClient* ReplicaComponentInstance = NewObject<UReplicaRigidDynamicClient>(NewReplica, "ReplicaComponent", RF_DefaultSubObject,
-			ReplicaComponent->GetDefaultObject<UReplicaRigidDynamicClient>());
-		
-		return ReplicaComponentInstance;
+	for (unsigned int i = 0; i < addresses.Size(); ++i)
+	{
+		rpc.Signal("ReplicaRigidBodyStatic", &testBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, addresses[i], false, false);
+	}
+}
+
+AReplica* ARakNetRP::GetObjectFromType(RakString typeName)
+{
+	if (typeName == "ReplicaRigidDynamic") 
+	{
+		if (objectToSpawn == nullptr)
+		{
+			UE_LOG(RakNet_RakNetRP, Error, TEXT("ARakNetRP::GetObjectFromType() objectToSpawn is null, no replica object created"));
+			return nullptr;
+		}
+
+		// spawn the object 
+		FActorSpawnParameters Parameters;
+		AReplica* replica = objectToSpawn->GetDefaultObject<AReplica>();
+		Parameters.Template = replica;
+		return (AReplica*)GetWorld()->SpawnActor(replica->GetClass(), new FTransform(), Parameters);
 	}
 
 	return nullptr;

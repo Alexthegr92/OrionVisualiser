@@ -12,6 +12,10 @@
 #include "NetworkIDManager.h"
 #include "VariableDeltaSerializer.h"
 #include "GetTime.h"
+#include "PhysicsPublic.h"
+#include "PhysXIncludes.h"
+
+#include "Replica.h"
 
 //#include <stdio.h>
 //#include "Kbhit.h"
@@ -35,7 +39,6 @@ using namespace RakNet;
 
 class ReplicaManager3Sample;
 
-class UReplicaRigidDynamicClient;
 UCLASS()
 class RN4UE4_API ARakNetRP : public AActor, public ReplicaManager3
 {
@@ -66,7 +69,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RakNet|RakNetRP")
 		void RPrpcSignalAllServers(const FString& sharedIdentifier);
 
-	UReplicaRigidDynamicClient* GetObjectFromType(RakString TypeName) const;
+	void RPrpcSignalStaticMesh(FVector pos, FQuat rot, int &nbVertices, TArray<FVector> &vertices, int &nbIndices, TArray<PxU16> &indices);
+		
+	UPROPERTY(EditDefaultsOnly, Category = "Object to spawn")
+		TSubclassOf<AReplica> objectToSpawn;
+
+	AReplica* GetObjectFromType(RakString typeName);
 
 	void CreateBoundarySlot(RakNet::BitStream * bitStream, Packet * packet);
 
@@ -100,10 +108,6 @@ public:
 	bool GetAllServersChecked() const;
 
 	int GetExpectedNumberOfServers() const;
-
-	UPROPERTY(EditAnywhere, Category = "ReplicaComponent")
-		TSubclassOf<UReplicaRigidDynamicClient> ReplicaComponent;
-	
 private:
 
 	void ConnectToIP(const FString& address);
@@ -117,7 +121,7 @@ private:
 	RPC4 rpc;
 
 	bool initialised;
-
+	bool paused = false;
 	static const int SERVER_PORT = 12345;
 	int						totalServers;
 	bool					allServersChecked;
