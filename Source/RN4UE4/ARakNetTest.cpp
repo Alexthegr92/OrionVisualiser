@@ -1,6 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ARakNetTest.h"
+#include "BitStream.h"
+#include "MessageIdentifiers.h"
+#include "RakPeerInterface.h"
 
 DEFINE_LOG_CATEGORY(RakNet_RakNetTest);
 

@@ -1,14 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RakNetRP.h"
-#include <functional>
-#include <string>
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "Engine.h"
-#include "ReplicaBase.h"
-#include "RN4UE4GameInstance.h"
+#include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "MessageIdentifiers.h"
+#include "ReplicaBase.h"
 #include "ReplicaRigidDynamicClient.h"
+#include "RN4UE4GameInstance.h"
 
 using namespace std::placeholders;
 
