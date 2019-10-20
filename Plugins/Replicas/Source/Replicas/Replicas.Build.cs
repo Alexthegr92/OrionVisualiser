@@ -7,7 +7,11 @@ public class Replicas : ModuleRules
 {
 	public Replicas(ReadOnlyTargetRules Target) : base(Target)
 	{
+		// Enable IWYU mode
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		// Disable unity build
+		bFasterWithoutUnity = true;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "RakNet" });
 
