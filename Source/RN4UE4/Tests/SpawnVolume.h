@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "Math/RandomStream.h"
 #include "RakNetRP.h"
 #include "SpawnVolume.generated.h"
 

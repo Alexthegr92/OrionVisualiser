@@ -1,6 +1,6 @@
 #include "ReplicaRigidDynamicClient.h"
+#include "Engine/StaticMesh.h"
 #include "RN4UE4GameInstance.h"
-#include "Engine/World.h"
 #include "Util.h"
 
 UReplicaRigidDynamicClient::UReplicaRigidDynamicClient()

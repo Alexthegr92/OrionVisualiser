@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Runtime/Engine/Classes/Engine/StaticMeshActor.h"
-#include "PhysXIncludes.h" 
-#include "ReplicaRigidDynamic.h"
-#include "RakNetRP.h"
+#include "Engine/StaticMeshActor.h"
 #include "Materials/Material.h"
+#include "PhysXIncludes.h" 
+#include "RakNetRP.h"
+#include "ReplicaRigidDynamic.h"
 #include "ReplicaRigidDynamicClient.generated.h"
 
 
@@ -78,7 +78,7 @@ public:
 
 	bool DeserializeDestruction(BitStream *DestructionBitstream, Connection_RM3 *SourceConnection) override;
 
-	void SetVisual(const PxGeometryType::Enum GeomType);
+	void SetVisual(const physx::PxGeometryType::Enum GeomType);
 	void SetMaterial(int32 ElementIndex, UMaterialInterface* InMaterial) const;
 	void PostDeserializeConstruction(BitStream *ConstructionBitstream, Connection_RM3 *SourceConnection) override;
 	// Called every frame

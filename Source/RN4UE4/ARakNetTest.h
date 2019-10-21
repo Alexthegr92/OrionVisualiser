@@ -2,13 +2,10 @@
 
 #pragma once
 
-#include "RakNet.h"
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "RakNetTypes.h"
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "BitStream.h"
 #include "ARakNetTest.generated.h"
-
 
 DECLARE_LOG_CATEGORY_EXTERN(RakNet_RakNetTest, Log, All);
 

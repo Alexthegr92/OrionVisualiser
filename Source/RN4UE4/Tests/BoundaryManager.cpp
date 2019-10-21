@@ -1,11 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BoundaryManager.h"
-#include "RN4UE4.h"
-#include "EngineUtils.h"
 #include "BoundaryBox.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "../RakNetRP.h"
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 #include "RN4UE4GameInstance.h"
 
 using namespace std::placeholders;

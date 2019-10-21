@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RN4UE4GameInstance.h"
-#include "RN4UE4.h"
-#include "Runtime/Engine/Classes/Engine/LevelStreaming.h"
-#include "Array.h"
+#include "Engine/LevelStreaming.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/GameInstance.h"
 
 TArray<FName> URN4UE4GameInstance::GetAllMapNames() const
 {

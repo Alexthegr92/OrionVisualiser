@@ -3,27 +3,13 @@
 
 #pragma once
 
-#include "RakNet.h"
-#include "RakNetTypes.h"
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "BitStream.h"
-#include "ReplicaManager3.h"
-#include "NetworkIDManager.h"
-#include "VariableDeltaSerializer.h"
-#include "GetTime.h"
-
-//#include <stdio.h>
-//#include "Kbhit.h"
-//#include <string.h>
-//#include <stdlib.h>
-//#include "RakSleep.h"
-//#include "Gets.h"
-
+#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NetworkIDManager.h"
+#include "RakPeerInterface.h"
+#include "ReplicaManager3.h"
 #include "RPC4Plugin.h"
 #include "RakNetRP.generated.h"
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAllocReplica, FString, receivedString);
 
